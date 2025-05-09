@@ -65,7 +65,7 @@
                         <div class="banniere__logo banniere__logo__desktop">
 
                             <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
-                                <img src="images/logo-lisv-2020.jpg" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                                <img src="../images/logo-lisv-2020.jpg" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
                             </a>
                         </div>
 
@@ -149,34 +149,35 @@
                            <th>Emplacement fichier de la fiche ZRR</th>
                            <th>Emplacement fichier de l'avis réservé</th>
                         </tr>
+                        {% for infos in infos %}
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
+                            <td>{{ infos['Nom'] }}</td>
+                            <td>{{ infos['Prénom'] }}</td>
+                            <td>{{ infos['Date de naissance'] }}</td>
+                            <td>{{ infos['Nationalité'] }}</td>
+                            <td>{{ infos['Statut'] }}</td>
+                            <td>{{ infos['Nature du contrat'] }}</td>
+                            <td>{{ infos['Contrat au sein du laboratoire'] }}</td>
+                            <td>{{ infos["Établissement d'origine"] }}</td>
+                            <td>{{ infos['Date demande ZRR'] }}</td>
+                            <td>{{ infos["Date d’arrivée estimée"] }}</td>
+                            <td>{{ infos["Date d’arrivée réelle"] }}</td>
+                            <td>{{ infos['Adresse mail'] }}</td>
+                            <td>{{ infos['Avis ZRR positif'] }}</td>
+                            <td>{{ infos['Avis ZRR négatif'] }}</td>
+                            <td>{{ infos['Caution'] }}</td>
+                            <td>{{ infos['Bureau'] }}</td>
+                            <td>{{ infos['Date de sortie'] }}</td>
+                            <td>{{ infos['Charte informatique'] }}</td>
+                            <td>{{ infos['Adresse MAC'] }}</td>
+                            <td>{{ infos['Prêt matériel'] }}</td>
+                            <td>{{ infos['Fiche renseignement archive'] }}</td>
+                            <td>{{ infos['Fiche ZRR Archivé'] }}</td>
+                            <td>{{ infos["Emplacement fichier de la fiche de renseignement"] }}</td>
+                            <td>{{ infos["Emplacement fichier de la fiche ZRR"] }}</td>
+                            <td>{{ infos["Emplacement fichier de l’avis réservé"] }}</td>
                         </tr>
+                        {% endfor %}
 
                     </tbody>
                 </table>
