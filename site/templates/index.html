@@ -44,13 +44,34 @@
                 background-color: #005493 !important;
             }
 
-            th {
+            td, th {
                 text-align: center;
+                padding: 5px;
+                font-size: 14px; /* Réduit légèrement la taille du texte */
+                min-width: 120px; /* Ajuste selon tes besoins */
+            }
+
+            thead {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 10;
             }
 
             .table-container {
-                overflow-x: auto;
+                overflow-x: scroll;
+                max-width: 100%;
+                position: relative;
+                margin-bottom: 150px;
+                white-space: nowrap;
+                scrollbar-width: thin;
             }
+
+            html, body {
+                overflow-x: hidden;
+            }
+
+
 
 
         </style>
@@ -112,6 +133,7 @@
         <main>
 
         <br>
+
         <div class="table-container">
             <table>
                     <thead>
@@ -145,37 +167,39 @@
                            <th>Prêt matériel</th>
                            <th>Fiche renseignement archive</th>
                            <th>Fiche ZRR Archivé</th>
+                           <th>Fiche ZRR Avis réservé</th>
                            <th>Emplacement fichier de la fiche de renseignement</th>
                            <th>Emplacement fichier de la fiche ZRR</th>
                            <th>Emplacement fichier de l'avis réservé</th>
                         </tr>
-                        {% for infos in infos %}
+                        {% for info in infos %}
                         <tr>
-                            <td>{{ infos['Nom'] }}</td>
-                            <td>{{ infos['Prénom'] }}</td>
-                            <td>{{ infos['Date de naissance'] }}</td>
-                            <td>{{ infos['Nationalité'] }}</td>
-                            <td>{{ infos['Statut'] }}</td>
-                            <td>{{ infos['Nature du contrat'] }}</td>
-                            <td>{{ infos['Contrat au sein du laboratoire'] }}</td>
-                            <td>{{ infos["Établissement d'origine"] }}</td>
-                            <td>{{ infos['Date demande ZRR'] }}</td>
-                            <td>{{ infos["Date d’arrivée estimée"] }}</td>
-                            <td>{{ infos["Date d’arrivée réelle"] }}</td>
-                            <td>{{ infos['Adresse mail'] }}</td>
-                            <td>{{ infos['Avis ZRR positif'] }}</td>
-                            <td>{{ infos['Avis ZRR négatif'] }}</td>
-                            <td>{{ infos['Caution'] }}</td>
-                            <td>{{ infos['Bureau'] }}</td>
-                            <td>{{ infos['Date de sortie'] }}</td>
-                            <td>{{ infos['Charte informatique'] }}</td>
-                            <td>{{ infos['Adresse MAC'] }}</td>
-                            <td>{{ infos['Prêt matériel'] }}</td>
-                            <td>{{ infos['Fiche renseignement archive'] }}</td>
-                            <td>{{ infos['Fiche ZRR Archivé'] }}</td>
-                            <td>{{ infos["Emplacement fichier de la fiche de renseignement"] }}</td>
-                            <td>{{ infos["Emplacement fichier de la fiche ZRR"] }}</td>
-                            <td>{{ infos["Emplacement fichier de l’avis réservé"] }}</td>
+                            <td>{{ info[0] }}</td>
+                            <td>{{ info[1] }}</td>
+                            <td>{{ info[2] }}</td>
+                            <td>{{ info[3] }}</td>
+                            <td>{{ info[4] }}</td>
+                            <td>{{ info[5] }}</td>
+                            <td>{{ info[6] }}</td>
+                            <td>{{ info[7] }}</td>
+                            <td>{{ info[8] }}</td>
+                            <td>{{ info[9] }}</td>
+                            <td>{{ info[10] }}</td>
+                            <td>{{ info[11] }}</td>
+                            <td>{{ info[12] }}</td>
+                            <td>{{ info[13] }}</td>
+                            <td>{{ info[14] }}</td>
+                            <td>{{ info[15] }}</td>
+                            <td>{{ info[16] }}</td>
+                            <td>{{ info[17] }}</td>
+                            <td>{{ info[18] }}</td>
+                            <td>{{ info[19] }}</td>
+                            <td>{{ info[20] }}</td>
+                            <td>{{ info[21] }}</td>
+                            <td>{{ info[22] }}</td>
+                            <td>{{ info[23] }}</td>
+                            <td>{{ info[24] }}</td>
+                            <td>{{ info[25] }}</td>
                         </tr>
                         {% endfor %}
 
@@ -183,6 +207,7 @@
                 </table>
             </div>
         <br>
+
 
         </main>
 
