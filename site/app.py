@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from datetime import datetime
 import MySQLdb
 
 app = Flask(__name__)
@@ -29,9 +30,30 @@ def index():
         return " Échec de connexion à MySQL"
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM info')
-    infos = cursor.fetchall()
+    raw_infos = cursor.fetchall()
     cursor.close()
     conn.close()
+
+    infos = []
+    for info in raw_infos:
+        info_list = list(info)
+
+        if info_list[2]:
+            info_list[2] = info_list[2].strftime('%d/%m/%Y')
+
+        if info_list[8]:
+            info_list[8] = info_list[8].strftime('%d/%m/%Y')
+
+        if info_list[9]:
+            info_list[9] = info_list[9].strftime('%d/%m/%Y')
+
+        if info_list[10]:
+            info_list[10] = info_list[10].strftime('%d/%m/%Y')
+
+        if info_list[16]:
+            info_list[16] = info_list[16].strftime('%d/%m/%Y')
+
+        infos.append(info_list)
 
     return render_template('index.html', infos=infos)
 
