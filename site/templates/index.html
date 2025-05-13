@@ -141,7 +141,7 @@
                             <th scope="row" colspan="14" >Thierry</th>
                             <th scope="row" colspan="3">Olivier</th>
                             <th scope="row" colspan="3">Tuyet</th>
-                            <th scope="row" colspan="6">Complément d'information</th>
+                            <th scope="row" colspan="3">Complément d'information</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -169,9 +169,6 @@
                            <th>Fiche renseignement archive</th>
                            <th>Fiche ZRR Archivé</th>
                            <th>Fiche ZRR Avis réservé</th>
-                           <th>Emplacement fichier de la fiche de renseignement</th>
-                           <th>Emplacement fichier de la fiche ZRR</th>
-                           <th>Emplacement fichier de l'avis réservé</th>
                         </tr>
                         {% for info in infos %}
                         <tr>
@@ -198,9 +195,6 @@
                             <td>{{ info[20] }}</td>
                             <td>{{ info[21] }}</td>
                             <td>{{ info[22] }}</td>
-                            <td>{{ info[23] }}</td>
-                            <td>{{ info[24] }}</td>
-                            <td>{{ info[25] }}</td>
                         </tr>
                         {% endfor %}
 
