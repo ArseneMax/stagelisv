@@ -1,9 +1,4 @@
-from flask import Flask, render_template
-from datetime import datetime
 import MySQLdb
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
-app = Flask(__name__)
 
 
 def get_db_connection():
@@ -23,14 +18,7 @@ def get_db_connection():
         print(" erreur de con:")
         return None
 
-auth = HTTPBasicAuth()
-users = {
-    "admin": [generate_password_hash("admin"), ["admin", "user"]],
-    "user": [generate_password_hash("user"), ["user"]]
-}
-@app.route('/')
-@auth.login_required
-def index():
+def select_all_infos():
     conn = get_db_connection()
     if conn is None:
         return " Échec de connexion à MySQL"
@@ -60,21 +48,4 @@ def index():
             info_list[16] = info_list[16].strftime('%d/%m/%Y')
 
         infos.append(info_list)
-
-    return render_template('index.html', infos=infos)
-
-#auth#
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username)[0], password):
-        return username
-    return None
-
-@auth.get_user_roles
-def get_user_roles(username):
-    return users.get(username)[1]
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return infos
