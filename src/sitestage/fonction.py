@@ -1,4 +1,5 @@
 import MySQLdb
+from flask_login import UserMixin
 
 
 def get_db_connection():
@@ -49,3 +50,33 @@ def select_all_infos():
 
         infos.append(info_list)
     return infos
+
+
+class User(UserMixin):
+    def __init__(self, id, username,password):
+        self.id = id
+        self.username = username
+        self.password = password
+
+    @staticmethod
+    def get_all_users():
+        conn = get_db_connection()
+        if conn is None:
+            return []
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute('SELECT * FROM users')
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return users
+
+    @staticmethod
+    def get_user(user_id):
+        users = User.get_all_users()
+        for user in users:
+            if user['id'] == user_id:
+                return User(user['id'], user['login'], user['password'])
+        return None
+
+    def get_id(self):
+        return str(self.id)

@@ -1,47 +1,46 @@
-from MySQLdb import IntegrityError
+import flask
 from flask import render_template, Blueprint, flash, redirect
-import logging
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
 from sitestage.fonction import *
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Length
 
+from flask_login import LoginManager, login_user, login_required, logout_user
 
 web_ui= Blueprint('web_ui', __name__, url_prefix="/")
 
+class LoginForm(FlaskForm):
+    username = StringField('Nom d’utilisateur', validators=[DataRequired(), Length(min=3, max=50)])
+    password = PasswordField('Mot de passe', validators=[DataRequired(), Length(min=3, max=50)])
 
-auth = HTTPBasicAuth()
-users = {
-    "admin": [generate_password_hash("admin"), ["admin", "user"]],
-    "user": [generate_password_hash("user"), ["user"]]
-}
+
 @web_ui.route('/')
-@auth.login_required
+@login_required
 def index():
-
     return render_template('index.html', infos=select_all_infos())
 
-#auth#
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username)[0], password):
-        return username
-    return None
+@web_ui.route('/login', methods=['GET', 'POST'])
+def login():
 
-@auth.get_user_roles
-def get_user_roles(username):
-    return users.get(username)[1]
+    form = LoginForm()
+    if form.validate_on_submit():
 
-#error#
-@web_ui.errorhandler(IntegrityError)
-def handle_internal_error(error):
-    flash("Erreur interne du serveur", "error")
-    logging.exception(error)
-    return redirect("/")
+        login_user(user)
+
+        flask.flash('Logged in successfully.')
 
 
-@web_ui.errorhandler(500)
-def handle_internal_error(error):
-    flash("Erreur interne du serveur", "error")
-    logging.exception(error)
-    return redirect("/")
+
+        return redirect('/')
+    return flask.render_template('login.html', form=form)
+
+@web_ui.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect('/login')
+
+@web_ui.route('/signup')
+def signup():
+    return 'Signup'
+
