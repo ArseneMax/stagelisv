@@ -63,8 +63,8 @@ class User(UserMixin):
         conn = get_db_connection()
         if conn is None:
             return []
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM users')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM user')
         users = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -74,8 +74,8 @@ class User(UserMixin):
     def get_user(user_id):
         users = User.get_all_users()
         for user in users:
-            if user['id'] == user_id:
-                return User(user['id'], user['login'], user['password'])
+            if str(user[0]) == str(user_id):  # user[0] = id
+                return User(user[0], user[1], user[2])  # id, login, password
         return None
 
     def get_id(self):

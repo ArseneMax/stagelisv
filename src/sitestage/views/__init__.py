@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_login import LoginManager
 
@@ -9,8 +11,8 @@ def create_app():
 
     app = Flask(__name__)
 
-    app.config.from_prefixed_env(prefix='ARCHILOG_FLASK')
-
+    app.config.from_prefixed_env(prefix='LISV_FLASK')
+    app.secret_key = os.environ.get('LISV_FLASK_SECRET_KEY')
     from .app import web_ui
 
     app.register_blueprint(web_ui)
