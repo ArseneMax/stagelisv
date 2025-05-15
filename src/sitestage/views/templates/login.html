@@ -70,6 +70,23 @@
             background-color: #004173;
         }
 
+        .signup-btn {
+            display: inline-block;
+            background-color: #0078d7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .signup-btn:hover {
+            background-color: #005a9e;
+        }
+
+
     </style>
 </head>
 <body>
@@ -97,6 +114,10 @@
 
         <div>
             {{ form.submit(class="btn") }}
+        </div>
+
+        <div style="margin-top: 10px; text-align: center;">
+            <a href="/signup" class="signup-btn">S'inscrire</a>
         </div>
     </form>
 </div>

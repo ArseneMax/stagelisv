@@ -1,4 +1,5 @@
 import MySQLdb
+from flask import flash
 from flask_login import UserMixin
 
 
@@ -80,3 +81,24 @@ class User(UserMixin):
 
     def get_id(self):
         return str(self.id)
+
+    @staticmethod
+    def add_user(username, password):
+
+        conn = get_db_connection()
+        if conn is None:
+            print('Erreur de connexion à la base.')
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute('INSERT INTO user (login, password) VALUES (%s, %s)', (username, password))
+            conn.commit()
+            flash('Inscription réussie, vous pouvez maintenant vous connecter.')
+            return 'oui'
+        except Exception as e:
+            flash('Erreur lors de l\'inscription.')
+            print(e)
+            return 'non'
+        finally:
+            cursor.close()
+            conn.close()

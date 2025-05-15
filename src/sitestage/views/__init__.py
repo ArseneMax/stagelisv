@@ -1,5 +1,6 @@
 import os
 
+from dotenv import load_dotenv
 from flask import Flask
 from flask_login import LoginManager
 
@@ -7,20 +8,25 @@ from sitestage.fonction import User
 
 login_manager = LoginManager()
 
-def create_app():
+load_dotenv()
 
+def create_app():
     app = Flask(__name__)
 
     app.config.from_prefixed_env(prefix='LISV_FLASK')
-    app.secret_key = os.environ.get('LISV_FLASK_SECRET_KEY')
-    from .app import web_ui
+    app.config.update(
+        SECRET_KEY='temp'
+    )
+    print('SECRET_KEY:', app.config.get('SECRET_KEY'))  # Ajout utile pour debug
 
+    from .app import web_ui
     app.register_blueprint(web_ui)
 
     login_manager.init_app(app)
     login_manager.login_view = 'web_ui.login'
 
     return app
+
 
 
 @login_manager.user_loader
