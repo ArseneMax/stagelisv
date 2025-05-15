@@ -38,7 +38,6 @@ def login():
             if user[1] == username and user[2] == password:
                 user_obj = User(user[0], user[1], user[2])
                 login_user(user_obj)
-                flash('Connexion réussie.')
                 return redirect('/')
 
         flash('Nom d’utilisateur ou mot de passe incorrect.')

@@ -70,12 +70,40 @@
             background-color: #004173;
         }
 
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .flashes li {
+            background-color: #ffe0e0;
+            color: #a94442;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #f5c6cb;
+            font-weight: bold;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="form-container">
     <h2>Inscription</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
     <form method="POST">
         {{ form.hidden_tag() }}
 
