@@ -191,3 +191,22 @@ class User(UserMixin):
         finally:
             cursor.close()
             conn.close()
+
+    @staticmethod
+    def delete_user(user_id):
+        conn = get_db_connection()
+        if conn is None:
+            print('Erreur de connexion à la base.')
+            return False
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute('DELETE FROM user WHERE id = %s', (user_id,))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Erreur lors de la suppression de l'utilisateur: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()

@@ -106,7 +106,7 @@ def update_info():
 @admin_required
 def admin_users():
     users = User.get_all_users()
-    return render_template('admin_users.html', users=users)
+    return render_template('admin_users.html', users=users, current_user_id=current_user.id)
 
 
 @web_ui.route('/admin/change_role/<int:user_id>', methods=['POST'])
@@ -114,6 +114,12 @@ def admin_users():
 @admin_required
 def change_role(user_id):
     new_role = request.form.get('role')
+
+    # Vérifier si l'utilisateur essaie de se retirer son propre rôle d'admin
+    if int(user_id) == int(current_user.id) and new_role != 'admin':
+        flash('Vous ne pouvez pas vous retirer votre propre rôle d\'administrateur.')
+        return redirect(url_for('web_ui.admin_users'))
+
     if new_role not in ['user', 'admin']:
         flash('Rôle non valide.')
         return redirect(url_for('web_ui.admin_users'))
@@ -123,5 +129,23 @@ def change_role(user_id):
         flash(f'Rôle modifié avec succès.')
     else:
         flash('Erreur lors de la modification du rôle.')
+
+    return redirect(url_for('web_ui.admin_users'))
+
+
+@web_ui.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    # Empêcher la suppression de son propre compte
+    if int(user_id) == int(current_user.id):
+        flash('Vous ne pouvez pas supprimer votre propre compte.')
+        return redirect(url_for('web_ui.admin_users'))
+
+    success = User.delete_user(user_id)
+    if success:
+        flash('Utilisateur supprimé avec succès.')
+    else:
+        flash('Erreur lors de la suppression de l\'utilisateur.')
 
     return redirect(url_for('web_ui.admin_users'))

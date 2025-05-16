@@ -37,15 +37,47 @@
             cursor: pointer;
             font-family: 'Montserrat', sans-serif;
             font-size: 14px;
+            margin-right: 5px;
         }
         button:hover {
             background-color: white;
             color: #005493;
             border: 1px solid #005493;
         }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .delete-btn {
+            background-color: #ff5555;
+            color: white;
+            border: 1px solid #ff0000;
+        }
+        .delete-btn:hover {
+            background-color: #ff3333;
+            color: white;
+            border: 1px solid #ff0000;
+        }
         .user-form {
             display: inline-block;
-            margin-right: 10px;
+            margin-right: 5px;
+        }
+        .alerts {
+            margin: 15px 0;
+        }
+        .alert {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .stats {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -78,6 +110,14 @@
 
         <h1>Gestion des utilisateurs</h1>
 
+        <div class="stats">
+            <p>Nombre total d'utilisateurs: <strong>{{ users|length }}</strong></p>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="window.location.href='/signup'">Créer un nouvel utilisateur</button>
+        </div>
+
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="alerts">
@@ -105,12 +145,18 @@
                     <td>{{ user[3] if user|length > 3 else 'user' }}</td>
                     <td>
                         <form class="user-form" action="{{ url_for('web_ui.change_role', user_id=user[0]) }}" method="post">
-                            <select name="role">
+                            <select name="role" {% if user[0] == current_user_id and (user|length > 3 and user[3] == 'admin') %}disabled{% endif %}>
                                 <option value="user" {% if user|length <= 3 or user[3] == 'user' %}selected{% endif %}>Utilisateur</option>
                                 <option value="admin" {% if user|length > 3 and user[3] == 'admin' %}selected{% endif %}>Administrateur</option>
                             </select>
-                            <button type="submit">Changer le rôle</button>
+                            <button type="submit" {% if user[0] == current_user_id and (user|length > 3 and user[3] == 'admin') %}title="Vous ne pouvez pas vous retirer votre propre rôle d'administrateur" disabled{% endif %}>Changer le rôle</button>
                         </form>
+
+                        {% if user[0] != current_user_id %}
+                        <form class="user-form" action="{{ url_for('web_ui.delete_user', user_id=user[0]) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                            <button type="submit" class="delete-btn">Supprimer</button>
+                        </form>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
