@@ -1,28 +1,31 @@
-import flask
-from flask import render_template, Blueprint, flash, redirect
+from flask import render_template, Blueprint, flash, redirect, jsonify, request
 from sitestage.fonction import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user
 
-web_ui= Blueprint('web_ui', __name__, url_prefix="/")
+web_ui = Blueprint('web_ui', __name__, url_prefix="/")
+
 
 class LoginForm(FlaskForm):
-    username = StringField('Nom d’utilisateur', validators=[DataRequired(), Length(min=3, max=50)])
-    password = PasswordField('Mot de passe', validators=[DataRequired(), Length(min=3, max=50)])
-    submit = SubmitField('Connexion')
+    username = StringField("Nom d'utilisateur", validators=[DataRequired(), Length(min=3, max=50)])
+    password = PasswordField("Mot de passe", validators=[DataRequired(), Length(min=3, max=50)])
+    submit = SubmitField("Connexion")
+
 
 class SignupForm(FlaskForm):
-    username = StringField('Nom d’utilisateur', validators=[DataRequired(), Length(min=3, max=50)])
-    password = PasswordField('Mot de passe', validators=[DataRequired(), Length(min=3, max=50)])
-    submit = SubmitField('S\'inscrire')
+    username = StringField("Nom d'utilisateur", validators=[DataRequired(), Length(min=3, max=50)])
+    password = PasswordField("Mot de passe", validators=[DataRequired(), Length(min=3, max=50)])
+    submit = SubmitField("S'inscrire")
+
 
 @web_ui.route('/')
 @login_required
 def index():
     return render_template('index.html', infos=select_all_infos())
+
 
 @web_ui.route('/login', methods=['GET', 'POST'])
 def login():
@@ -40,9 +43,10 @@ def login():
                 login_user(user_obj)
                 return redirect('/')
 
-        flash('Nom d’utilisateur ou mot de passe incorrect.')
+        flash("Nom d'utilisateur ou mot de passe incorrect.")
 
     return render_template('login.html', form=form)
+
 
 @web_ui.route("/logout")
 @login_required
@@ -62,15 +66,35 @@ def signup():
         users = User.get_all_users()
         for user in users:
             if user[1] == username:
-                flash('Nom d’utilisateur déjà pris, merci d’en choisir un autre.')
+                flash("Nom d'utilisateur déjà pris, merci d'en choisir un autre.")
                 return render_template('signup.html', form=form)
 
         res = User.add_user(username, password)
 
-        if res =='oui':
+        if res == 'oui':
             return redirect('/login')
         else:
             return redirect('/signup')
 
     return render_template('signup.html', form=form)
 
+
+@web_ui.route('/update_info', methods=['POST'])
+@login_required
+def update_info():
+    data = request.json
+    changes = data.get('changes', [])
+
+    if not changes:
+        return jsonify({'success': False, 'error': 'Aucune modification fournie'})
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({'success': False, 'error': 'Erreur de connexion à la base de données'})
+
+    success = update_db_info(conn, changes)
+
+    if success:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': 'Erreur lors de la mise à jour des données'})

@@ -53,6 +53,71 @@ def select_all_infos():
     return infos
 
 
+from flask import jsonify, request, flash
+import datetime
+
+
+def update_db_info(conn, changes):
+    """
+    Met à jour les informations dans la base de données.
+
+    Args:
+        conn: Connexion à la base de données
+        changes: Liste des modifications à appliquer
+
+    Returns:
+        True si la mise à jour est réussie, False sinon
+    """
+    try:
+        cursor = conn.cursor()
+
+        # Pour chaque modification, récupérer l'ID de la ligne et mettre à jour la colonne correspondante
+        for change in changes:
+            row_id = int(change['rowId'])
+            column = change['column'].replace('_', ' ')  # Convertir les underscores en espaces
+            value = change['value']
+
+            # Récupérer l'ID unique de la ligne (en supposant que la combinaison nom+prénom est unique)
+            cursor.execute('SELECT Nom, Prénom FROM info LIMIT %s, 1', (row_id,))
+            row_info = cursor.fetchone()
+
+            if not row_info:
+                return False
+
+            nom, prenom = row_info
+
+            # Traitement spécial pour les dates
+            if column in ['Date de naissance', 'Date demande ZRR', 'Date d\'arrivée estimée',
+                          'Date d\'arrivée réelle', 'Date de sortie']:
+                if value:
+                    # Convertir le format de date YYYY-MM-DD en objet datetime
+                    try:
+                        value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+                    except ValueError:
+                        # Si déjà au format DD/MM/YYYY, on le convertit
+                        try:
+                            parts = value.split('/')
+                            if len(parts) == 3:
+                                value = datetime.datetime(int(parts[2]), int(parts[1]), int(parts[0])).date()
+                        except:
+                            value = None
+                else:
+                    value = None
+
+            # Mettre à jour la base de données
+            query = f"UPDATE info SET `{column}` = %s WHERE Nom = %s AND Prénom = %s"
+            cursor.execute(query, (value, nom, prenom))
+
+        conn.commit()
+        cursor.close()
+        return True
+
+    except Exception as e:
+        print(f"Erreur lors de la mise à jour de la base de données: {e}")
+        conn.rollback()
+        return False
+
+
 class User(UserMixin):
     def __init__(self, id, username,password):
         self.id = id
