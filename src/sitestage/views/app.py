@@ -1,9 +1,9 @@
-from flask import render_template, Blueprint, flash, redirect, jsonify, request
+from flask import render_template, Blueprint, flash, redirect, jsonify, request, url_for
 from sitestage.fonction import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
-
+from sitestage.decorators import *
 from flask_login import login_user, login_required, logout_user
 
 web_ui = Blueprint('web_ui', __name__, url_prefix="/")
@@ -81,6 +81,7 @@ def signup():
 
 @web_ui.route('/update_info', methods=['POST'])
 @login_required
+@admin_required
 def update_info():
     data = request.json
     changes = data.get('changes', [])
@@ -98,3 +99,29 @@ def update_info():
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'error': 'Erreur lors de la mise à jour des données'})
+
+
+@web_ui.route('/admin/users', methods=['GET'])
+@login_required
+@admin_required
+def admin_users():
+    users = User.get_all_users()
+    return render_template('admin_users.html', users=users)
+
+
+@web_ui.route('/admin/change_role/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def change_role(user_id):
+    new_role = request.form.get('role')
+    if new_role not in ['user', 'admin']:
+        flash('Rôle non valide.')
+        return redirect(url_for('web_ui.admin_users'))
+
+    success = User.set_role(user_id, new_role)
+    if success:
+        flash(f'Rôle modifié avec succès.')
+    else:
+        flash('Erreur lors de la modification du rôle.')
+
+    return redirect(url_for('web_ui.admin_users'))

@@ -43,8 +43,8 @@
             }
 
             button:hover {
-                background-color: white; /* Ne change pas de fond */
-                color: #005493;          /* Garde la couleur du texte */
+                background-color: white;
+                color: #005493;
                 border: 1px solid #005493;
             }
 
@@ -59,8 +59,8 @@
             td, th {
                 text-align: center;
                 padding: 5px;
-                font-size: 14px; /* Réduit légèrement la taille du texte */
-                min-width: 120px; /* Ajuste selon tes besoins */
+                font-size: 14px;
+                min-width: 120px;
             }
 
             thead {
@@ -83,7 +83,7 @@
                 overflow-x: hidden;
             }
 
-            /* Styles pour les cellules éditables */
+
             .editable {
                 cursor: pointer;
             }
@@ -103,7 +103,7 @@
                 height: 100%;
             }
 
-            /* Notification de sauvegarde */
+
             .save-notification {
                 position: fixed;
                 top: 20px;
@@ -116,10 +116,11 @@
                 z-index: 1000;
             }
 
-            /* Style pour les boutons d'action */
+
             .action-buttons {
                 margin-bottom: 20px;
             }
+
         </style>
 
     </head>
@@ -182,7 +183,10 @@
 
         <div class="action-buttons">
             <button onclick="window.location.href='/logout'">Déconnexion</button>
-            <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+            {% if current_user.is_admin() %}
+                <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+                <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
+            {% endif %}
         </div>
 
         <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
@@ -272,166 +276,177 @@
             </div>
         </footer>
 
-        <script>
+       <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const editableCells = document.querySelectorAll('.editable');
                 const saveAllButton = document.getElementById('saveAllButton');
                 const notification = document.getElementById('saveNotification');
                 let changedCells = [];
 
-                // Fonction pour convertir le format date français (DD/MM/YYYY) en format YYYY-MM-DD pour l'input date
-                function frDateToISO(frDate) {
-                    if (!frDate) return '';
-                    const parts = frDate.split('/');
-                    if (parts.length !== 3) return '';
-                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
+                // Si l'utilisateur est administrateur, activer les fonctionnalités d'édition
+                {% if current_user.is_admin() %}
+                    // Fonction pour convertir le format date français (DD/MM/YYYY) en format YYYY-MM-DD pour l'input date
+                    function frDateToISO(frDate) {
+                        if (!frDate) return '';
+                        const parts = frDate.split('/');
+                        if (parts.length !== 3) return '';
+                        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    }
 
-                // Fonction pour convertir le format ISO (YYYY-MM-DD) en format français (DD/MM/YYYY)
-                function isoDateToFr(isoDate) {
-                    if (!isoDate) return '';
-                    const date = new Date(isoDate);
-                    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-                }
+                    // Fonction pour convertir le format ISO (YYYY-MM-DD) en format français (DD/MM/YYYY)
+                    function isoDateToFr(isoDate) {
+                        if (!isoDate) return '';
+                        const date = new Date(isoDate);
+                        return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                    }
 
-                // Gestion du double-clic sur les cellules
-                editableCells.forEach(cell => {
-                    cell.addEventListener('dblclick', function() {
-                        if (cell.classList.contains('editing')) return;
+                    // Gestion du double-clic sur les cellules
+                    editableCells.forEach(cell => {
+                        cell.addEventListener('dblclick', function() {
+                            if (cell.classList.contains('editing')) return;
 
-                        const value = cell.textContent.trim();
-                        const dataType = cell.getAttribute('data-type') || 'text';
-                        cell.classList.add('editing');
+                            const value = cell.textContent.trim();
+                            const dataType = cell.getAttribute('data-type') || 'text';
+                            cell.classList.add('editing');
 
-                        // Création de l'élément d'édition en fonction du type de données
-                        let inputElement;
+                            // Création de l'élément d'édition en fonction du type de données
+                            let inputElement;
 
-                        if (dataType === 'boolean') {
-                            inputElement = document.createElement('select');
+                            if (dataType === 'boolean') {
+                                inputElement = document.createElement('select');
 
-                            const optionYes = document.createElement('option');
-                            optionYes.value = 'true';
-                            optionYes.textContent = 'Oui';
+                                const optionYes = document.createElement('option');
+                                optionYes.value = 'true';
+                                optionYes.textContent = 'Oui';
 
-                            const optionNo = document.createElement('option');
-                            optionNo.value = 'false';
-                            optionNo.textContent = 'Non';
+                                const optionNo = document.createElement('option');
+                                optionNo.value = 'false';
+                                optionNo.textContent = 'Non';
 
-                            inputElement.appendChild(optionYes);
-                            inputElement.appendChild(optionNo);
+                                inputElement.appendChild(optionYes);
+                                inputElement.appendChild(optionNo);
 
-                            if (value === 'True' || value === '1' || value === 'Oui') {
-                                inputElement.value = 'true';
+                                if (value === 'True' || value === '1' || value === 'Oui') {
+                                    inputElement.value = 'true';
+                                } else {
+                                    inputElement.value = 'false';
+                                }
+                            } else if (dataType === 'date') {
+                                inputElement = document.createElement('input');
+                                inputElement.type = 'date';
+
+                                if (value) {
+                                    inputElement.value = frDateToISO(value);
+                                }
                             } else {
-                                inputElement.value = 'false';
+                                inputElement = document.createElement('input');
+                                inputElement.type = 'text';
+                                inputElement.value = value;
                             }
-                        } else if (dataType === 'date') {
-                            inputElement = document.createElement('input');
-                            inputElement.type = 'date';
 
-                            if (value) {
-                                inputElement.value = frDateToISO(value);
-                            }
-                        } else {
-                            inputElement = document.createElement('input');
-                            inputElement.type = 'text';
-                            inputElement.value = value;
-                        }
+                            // Remplacement temporaire du contenu
+                            const oldContent = cell.innerHTML;
+                            cell.innerHTML = '';
+                            cell.appendChild(inputElement);
 
-                        // Remplacement temporaire du contenu
-                        const oldContent = cell.innerHTML;
-                        cell.innerHTML = '';
-                        cell.appendChild(inputElement);
+                            // Focus sur l'input
+                            inputElement.focus();
 
-                        // Focus sur l'input
-                        inputElement.focus();
+                            // Gestion des événements pour valider ou annuler
+                            inputElement.addEventListener('blur', finishEditing);
+                            inputElement.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter') {
+                                    finishEditing();
+                                } else if (e.key === 'Escape') {
+                                    cell.innerHTML = oldContent;
+                                    cell.classList.remove('editing');
+                                }
+                            });
 
-                        // Gestion des événements pour valider ou annuler
-                        inputElement.addEventListener('blur', finishEditing);
-                        inputElement.addEventListener('keydown', function(e) {
-                            if (e.key === 'Enter') {
-                                finishEditing();
-                            } else if (e.key === 'Escape') {
-                                cell.innerHTML = oldContent;
+                            function finishEditing() {
+                                let newValue;
+
+                                if (dataType === 'boolean') {
+                                    newValue = inputElement.value === 'true' ? 'Oui' : 'Non';
+                                } else if (dataType === 'date' && inputElement.value) {
+                                    newValue = isoDateToFr(inputElement.value);
+                                } else {
+                                    newValue = inputElement.value;
+                                }
+
+                                // Si la valeur a changé, on l'ajoute à la liste des modifications
+                                if (newValue !== value) {
+                                    const rowId = cell.parentElement.getAttribute('data-row-id');
+                                    const column = cell.getAttribute('data-column');
+
+                                    // Vérifier si cette cellule a déjà été modifiée
+                                    const existingChange = changedCells.find(change =>
+                                        change.rowId === rowId && change.column === column
+                                    );
+
+                                    if (existingChange) {
+                                        existingChange.value = dataType === 'boolean' ? (inputElement.value === 'true') :
+                                                            (dataType === 'date' && inputElement.value ? inputElement.value : newValue);
+                                    } else {
+                                        changedCells.push({
+                                            rowId: rowId,
+                                            column: column,
+                                            value: dataType === 'boolean' ? (inputElement.value === 'true') :
+                                                   (dataType === 'date' && inputElement.value ? inputElement.value : newValue)
+                                        });
+                                    }
+                                }
+
+                                cell.innerHTML = newValue;
                                 cell.classList.remove('editing');
                             }
                         });
+                    });
 
-                        function finishEditing() {
-                            let newValue;
-
-                            if (dataType === 'boolean') {
-                                newValue = inputElement.value === 'true' ? 'Oui' : 'Non';
-                            } else if (dataType === 'date' && inputElement.value) {
-                                newValue = isoDateToFr(inputElement.value);
-                            } else {
-                                newValue = inputElement.value;
+                    // Sauvegarde des modifications
+                    if (saveAllButton) {
+                        saveAllButton.addEventListener('click', function() {
+                            if (changedCells.length === 0) {
+                                alert('Aucune modification à sauvegarder');
+                                return;
                             }
 
-                            // Si la valeur a changé, on l'ajoute à la liste des modifications
-                            if (newValue !== value) {
-                                const rowId = cell.parentElement.getAttribute('data-row-id');
-                                const column = cell.getAttribute('data-column');
+                            fetch('/update_info', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ changes: changedCells })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Afficher la notification
+                                    notification.style.display = 'block';
 
-                                // Vérifier si cette cellule a déjà été modifiée
-                                const existingChange = changedCells.find(change =>
-                                    change.rowId === rowId && change.column === column
-                                );
+                                    // Masquer la notification après 3 secondes
+                                    setTimeout(() => {
+                                        notification.style.display = 'none';
+                                    }, 3000);
 
-                                if (existingChange) {
-                                    existingChange.value = dataType === 'boolean' ? (inputElement.value === 'true') :
-                                                        (dataType === 'date' && inputElement.value ? inputElement.value : newValue);
+                                    changedCells = [];
                                 } else {
-                                    changedCells.push({
-                                        rowId: rowId,
-                                        column: column,
-                                        value: dataType === 'boolean' ? (inputElement.value === 'true') :
-                                               (dataType === 'date' && inputElement.value ? inputElement.value : newValue)
-                                    });
+                                    alert('Erreur lors de la sauvegarde: ' + data.error);
                                 }
-                            }
-
-                            cell.innerHTML = newValue;
-                            cell.classList.remove('editing');
-                        }
-                    });
-                });
-
-                // Sauvegarde des modifications
-                saveAllButton.addEventListener('click', function() {
-                    if (changedCells.length === 0) {
-                        alert('Aucune modification à sauvegarder');
-                        return;
+                            })
+                            .catch(error => {
+                                console.error('Erreur:', error);
+                                alert('Une erreur est survenue lors de la sauvegarde');
+                            });
+                        });
                     }
-
-                    fetch('/update_info', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ changes: changedCells })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Afficher la notification
-                            notification.style.display = 'block';
-
-                            // Masquer la notification après 3 secondes
-                            setTimeout(() => {
-                                notification.style.display = 'none';
-                            }, 3000);
-
-                            changedCells = [];
-                        } else {
-                            alert('Erreur lors de la sauvegarde: ' + data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue lors de la sauvegarde');
+                {% else %}
+                    // Si ce n'est pas un admin, supprimer les classes editable pour empêcher la modification
+                    editableCells.forEach(cell => {
+                        cell.classList.remove('editable');
+                        cell.style.cursor = 'default';
                     });
-                });
+                {% endif %}
             });
         </script>
     </body>

@@ -119,10 +119,11 @@ def update_db_info(conn, changes):
 
 
 class User(UserMixin):
-    def __init__(self, id, username,password):
+    def __init__(self, id, username, password, role='user'):
         self.id = id
         self.username = username
         self.password = password
+        self.role = role  # Ajout de l'attribut role
 
     @staticmethod
     def get_all_users():
@@ -141,22 +142,26 @@ class User(UserMixin):
         users = User.get_all_users()
         for user in users:
             if str(user[0]) == str(user_id):  # user[0] = id
-                return User(user[0], user[1], user[2])  # id, login, password
+                return User(user[0], user[1], user[2],
+                            user[3] if len(user) > 3 else 'user')  # id, login, password, role
         return None
 
     def get_id(self):
         return str(self.id)
 
-    @staticmethod
-    def add_user(username, password):
+    def is_admin(self):
+        return self.role == 'admin'
 
+    @staticmethod
+    def add_user(username, password, role='user'):
         conn = get_db_connection()
         if conn is None:
             print('Erreur de connexion à la base.')
+            return 'non'
 
         cursor = conn.cursor()
         try:
-            cursor.execute('INSERT INTO user (login, password) VALUES (%s, %s)', (username, password))
+            cursor.execute('INSERT INTO user (login, password, role) VALUES (%s, %s, %s)', (username, password, role))
             conn.commit()
             flash('Inscription réussie, vous pouvez maintenant vous connecter.')
             return 'oui'
@@ -164,6 +169,25 @@ class User(UserMixin):
             flash('Erreur lors de l\'inscription.')
             print(e)
             return 'non'
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def set_role(user_id, new_role):
+        conn = get_db_connection()
+        if conn is None:
+            print('Erreur de connexion à la base.')
+            return False
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute('UPDATE user SET role = %s WHERE id = %s', (new_role, user_id))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Erreur lors de la mise à jour du rôle: {e}")
+            return False
         finally:
             cursor.close()
             conn.close()

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des utilisateurs - LISV</title>
+    <link rel="icon" type="image/png" href="https://www.lisv.uvsq.fr/jsp/images/favicon.png" />
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .action-buttons {
+            margin: 20px 0;
+        }
+        button {
+            background-color: white;
+            color: #005493;
+            border: 1px solid #005493;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: white;
+            color: #005493;
+            border: 1px solid #005493;
+        }
+        .user-form {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cartouche">
+        <div>
+            <div class="banniere clearfix" role="banner">
+                <div class="banniere__logos banniere__logos__1">
+                    <div class="banniere__logo banniere__logo__desktop">
+                        <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
+                            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                        </a>
+                    </div>
+                </div>
+                <div class="banniere_baseline_reseaux">
+                    <div class="banniere__baselines">
+                        <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)</div>
+                        <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="action-buttons">
+            <button onclick="window.location.href='/'">Retour au tableau</button>
+            <button onclick="window.location.href='/logout'">Déconnexion</button>
+        </div>
+
+        <h1>Gestion des utilisateurs</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerts">
+                    {% for message in messages %}
+                        <div class="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Rôle actuel</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user[0] }}</td>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[3] if user|length > 3 else 'user' }}</td>
+                    <td>
+                        <form class="user-form" action="{{ url_for('web_ui.change_role', user_id=user[0]) }}" method="post">
+                            <select name="role">
+                                <option value="user" {% if user|length <= 3 or user[3] == 'user' %}selected{% endif %}>Utilisateur</option>
+                                <option value="admin" {% if user|length > 3 and user[3] == 'admin' %}selected{% endif %}>Administrateur</option>
+                            </select>
+                            <button type="submit">Changer le rôle</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <div id="pied_page_complement">
+            <div class="pied_page_complement__contenu clearifx">
+                <ul>
+                    <li class="adresse">LISV<br />
+                        Bâtiment Boucher<br />
+                        Pôle scientifique et technologique de Vélizy<br />
+                        10-12 avenue de l'Europe<br />
+                        78140 Vélizy
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
