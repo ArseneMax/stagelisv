@@ -1,9 +1,9 @@
 from flask import render_template, Blueprint, flash, redirect, jsonify, request, url_for
-from sitestage.fonction import *
+from ..fonction import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
-from sitestage.decorators import *
+from ..decorators import *
 from flask_login import login_user, login_required, logout_user
 
 web_ui = Blueprint('web_ui', __name__, url_prefix="/")

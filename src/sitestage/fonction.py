@@ -1,5 +1,4 @@
 import pymysql
-from flask import flash
 from flask_login import UserMixin
 
 
