@@ -1,23 +1,23 @@
-import MySQLdb
+import pymysql
 from flask import flash
 from flask_login import UserMixin
 
 
 def get_db_connection():
     try:
-        print(" Tentative de connexion à MySQL...")
-        conn = MySQLdb.connect(
-            host='127.0.0.1',
+        print("Tentative de connexion à MySQL...")
+        conn = pymysql.connect(
+            host='localhost',
             user='root',
             password='root',
             database='lisv',
             port=3306,
-            auth_plugin='mysql_native_password'
+            charset='utf8mb4'
         )
-        print(" Connexion MySQL réussie!")
+        print("Connexion MySQL réussie!")
         return conn
     except Exception as e:
-        print(" erreur de con:")
+        print(f"Erreur de connexion: {str(e)}")
         return None
 
 def select_all_infos():

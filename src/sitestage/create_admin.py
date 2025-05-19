@@ -1,24 +1,22 @@
-#!/usr/bin/env python3
-# Enregistrer ce fichier comme create_admin.py
-
 import MySQLdb
+import pymysql
 
 
 def get_db_connection():
     try:
         print("Tentative de connexion à MySQL...")
-        conn = MySQLdb.connect(
-            host='127.0.0.1',
+        conn = pymysql.connect(
+            host='localhost',
             user='root',
             password='root',
             database='lisv',
             port=3306,
-            auth_plugin='mysql_native_password'
+            charset='utf8mb4'
         )
         print("Connexion MySQL réussie!")
         return conn
     except Exception as e:
-        print(f"Erreur de connexion: {e}")
+        print(f"Erreur de connexion: {str(e)}")
         return None
 
 
