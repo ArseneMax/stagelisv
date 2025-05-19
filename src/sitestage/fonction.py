@@ -73,7 +73,41 @@ def update_db_info(conn, changes):
         # Pour chaque modification, récupérer l'ID de la ligne et mettre à jour la colonne correspondante
         for change in changes:
             row_id = int(change['rowId'])
-            column = change['column'].replace('_', ' ')  # Convertir les underscores en espaces
+            column_name = change['column']
+
+            # Convertir les noms de colonnes du format frontend au format de la base de données
+            # Remplacer les espaces par des underscores si nécessaire
+            column_mapping = {
+                'Date de naissance': 'Date_de_naissance',
+                'Date demande ZRR': 'Date_demande_ZRR',
+                'Date d\'arrivée estimée': 'Date_arrivee_estimee',
+                'Date d\'arrivée réelle': 'Date_arrivee_reelle',
+                'Date de sortie': 'Date_de_sortie',
+                'Nationalité': 'Nationalité',
+                'Statut': 'Statut',
+                'Nature du contrat': 'Nature_du_contrat',
+                'Contrat au sein du laboratoire': 'Contrat_au_sein_du_laboratoire',
+                'Établissement d\'origine': 'Établissement_d_origine',
+                'Adresse mail': 'Adresse_mail',
+                'Avis ZRR positif': 'Avis_ZRR_positif',
+                'Avis ZRR negatif': 'Avis_ZRR_negatif',
+                'Caution': 'Caution',
+                'Bureau': 'Bureau',
+                'Charte informatique': 'Charte_informatique',
+                'Adresse MAC': 'Adresse_MAC',
+                'Prêt matériel': 'Prêt_matériel',
+                'Fiche renseignement archive': 'Fiche_renseignement_archive',
+                'Fiche ZRR Archivé': 'Fiche_ZRR_Archivé',
+                'Fiche ZRR Avis reservé': 'Fiche_ZRR_Avis_reservé'
+            }
+
+            # Si le nom de colonne est dans notre mapping, utiliser le nom mappé
+            # Sinon, remplacer simplement les espaces par des underscores
+            if column_name in column_mapping:
+                db_column = column_mapping[column_name]
+            else:
+                db_column = column_name.replace(' ', '_')
+
             value = change['value']
 
             # Récupérer l'ID unique de la ligne (en supposant que la combinaison nom+prénom est unique)
@@ -86,8 +120,8 @@ def update_db_info(conn, changes):
             nom, prenom = row_info
 
             # Traitement spécial pour les dates
-            if column in ['Date de naissance', 'Date demande ZRR', 'Date d\'arrivée estimée',
-                          'Date d\'arrivée réelle', 'Date de sortie']:
+            if db_column in ['Date_de_naissance', 'Date_demande_ZRR', 'Date_arrivee_estimee',
+                             'Date_arrivee_reelle', 'Date_de_sortie']:
                 if value:
                     # Convertir le format de date YYYY-MM-DD en objet datetime
                     try:
@@ -103,8 +137,8 @@ def update_db_info(conn, changes):
                 else:
                     value = None
 
-            # Mettre à jour la base de données
-            query = f"UPDATE info SET `{column}` = %s WHERE Nom = %s AND Prénom = %s"
+            # Mettre à jour la base de données - Utiliser des backticks pour les noms de colonnes
+            query = f"UPDATE info SET `{db_column}` = %s WHERE Nom = %s AND Prénom = %s"
             cursor.execute(query, (value, nom, prenom))
 
         conn.commit()
