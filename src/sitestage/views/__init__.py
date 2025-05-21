@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_login import LoginManager
 
-from ..fonction import User
+from sitestage.fonction import User
 
 login_manager = LoginManager()
 
