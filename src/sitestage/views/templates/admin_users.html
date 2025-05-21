@@ -8,26 +8,28 @@
     <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
 
-    <style>
-        table {
+    <style media="screen, print">
+        /* Styles communs avec index.html */
+        #pied_page_complement, #pied_page_complement a {
+            color: white;
+            background: #7f7f7f;
+            position: fixed;
+            bottom: 0;
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+
+        #menu {
+            background: #4f8f00;
         }
-        th {
-            background-color: #f2f2f2;
+
+        a, a:active, a:focus, a:visited {
+            color: #005493;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+
+        h1 {
+            color: #005493;
         }
-        .action-buttons {
-            margin: 20px 0;
-        }
+
         button {
             background-color: white;
             color: #005493;
@@ -39,32 +41,68 @@
             font-size: 14px;
             margin-right: 5px;
         }
+
         button:hover {
             background-color: white;
             color: #005493;
             border: 1px solid #005493;
         }
+
+        button:focus, button:active {
+            outline: 1px dotted #005493;
+        }
+
+        /* Styles spécifiques à admin_users.html */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .action-buttons {
+            margin: 20px 0;
+        }
+
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
+
         .delete-btn {
             background-color: #ff5555;
             color: white;
             border: 1px solid #ff0000;
         }
+
         .delete-btn:hover {
             background-color: #ff3333;
             color: white;
             border: 1px solid #ff0000;
         }
+
         .user-form {
             display: inline-block;
             margin-right: 5px;
         }
+
         .alerts {
             margin: 15px 0;
         }
+
         .alert {
             padding: 10px 15px;
             margin-bottom: 10px;
@@ -73,11 +111,17 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
         .stats {
             margin: 15px 0;
             padding: 10px;
             background-color: #e9ecef;
             border-radius: 4px;
+        }
+
+        /* Ajustement pour que le contenu principal ne soit pas caché par le pied de page fixe */
+        main {
+            margin-bottom: 150px;
         }
     </style>
 </head>
@@ -101,6 +145,20 @@
             </div>
         </div>
     </div>
+
+    <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
+
+            <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+                <li class="close-button-main"></li>
+                <li class="menu_principal-actif  UVSQNEWS
+                                    mobile-menu__item js-mobile-menu__item menu__level--0
+                                    mobile-menu__item--UVSQNEWS">
+                            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false"
+                               role="button"><span>Users</span></a>
+                </li>
+            </ul>
+
+        </nav>
 
     <main>
         <div class="action-buttons">
