@@ -6,11 +6,11 @@ def get_db_connection():
     try:
         print("Tentative de connexion à MySQL...")
         conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='root',
-            database='lisv',
-            port=3306,
+            host='193.51.28.22',
+            user='vba_user',
+            password='!mariadbLisv78140%',
+            database='member',
+            port=3307,
             charset='utf8mb4'
         )
         print("Connexion MySQL réussie!")
