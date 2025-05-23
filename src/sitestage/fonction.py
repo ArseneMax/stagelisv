@@ -96,9 +96,6 @@ def update_db_info(conn, changes):
                 'Charte informatique': 'Charte_informatique',
                 'Adresse MAC': 'Adresse_MAC',
                 'Prêt matériel': 'Prêt_matériel',
-                'Fiche renseignement archive': 'Fiche_renseignement_archive',
-                'Fiche ZRR Archivé': 'Fiche_ZRR_Archivé',
-                'Fiche ZRR Avis reservé': 'Fiche_ZRR_Avis_reservé'
             }
 
             # Si le nom de colonne est dans notre mapping, utiliser le nom mappé

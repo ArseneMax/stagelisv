@@ -198,7 +198,6 @@
                             <th scope="row" colspan="14" >Thierry</th>
                             <th scope="row" colspan="3">Olivier</th>
                             <th scope="row" colspan="3">Tuyet</th>
-                            <th scope="row" colspan="3">Complément d'information</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -223,9 +222,6 @@
                            <th>Charte informatique</th>
                            <th>Adresse mac</th>
                            <th>Prêt matériel</th>
-                           <th>Fiche renseignement archive</th>
-                           <th>Fiche ZRR Archivé</th>
-                           <th>Fiche ZRR Avis réservé</th>
                         </tr>
                         {% for info in infos %}
                         <tr data-row-id="{{ loop.index0 }}">
@@ -249,9 +245,6 @@
                             <td class="editable" data-column="Charte_informatique" data-type="boolean">{{ info[17] }}</td>
                             <td class="editable" data-column="Adresse_MAC">{{ info[18] }}</td>
                             <td class="editable" data-column="Prêt_matériel">{{ info[19] }}</td>
-                            <td class="editable" data-column="Fiche_renseignement_archive">{{ info[20] }}</td>
-                            <td class="editable" data-column="Fiche_ZRR_Archivé">{{ info[21] }}</td>
-                            <td class="editable" data-column="Fiche_ZRR_Avis_réservé">{{ info[22] }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
