@@ -9,7 +9,6 @@
         <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-
         <style media="screen, print">
             #pied_page_complement, #pied_page_complement a {
                 color: white;
@@ -44,7 +43,7 @@
 
             button:hover {
                 background-color: #005493;
-                color: #005493;
+                color: white;
                 border: 1px solid #005493;
             }
 
@@ -59,8 +58,9 @@
             td, th {
                 text-align: center;
                 padding: 5px;
-                font-size: 14px;
-                min-width: 120px;
+                font-size: 12px;
+                min-width: 100px;
+                border: 1px solid #ddd;
             }
 
             thead {
@@ -71,7 +71,7 @@
             }
 
             .table-container {
-                overflow-x: scroll;
+                overflow-x: auto;
                 max-width: 100%;
                 position: relative;
                 margin-bottom: 150px;
@@ -82,7 +82,6 @@
             html, body {
                 overflow-x: hidden;
             }
-
 
             .editable {
                 cursor: pointer;
@@ -96,13 +95,17 @@
                 padding: 0 !important;
             }
 
-            .editing input, .editing select {
+            .editing input, .editing select, .editing textarea {
                 width: 100%;
                 padding: 4px;
                 box-sizing: border-box;
                 height: 100%;
             }
 
+            .editing textarea {
+                height: 60px;
+                resize: none;
+            }
 
             .save-notification {
                 position: fixed;
@@ -116,13 +119,22 @@
                 z-index: 1000;
             }
 
-
             .action-buttons {
                 margin-bottom: 20px;
             }
 
-        </style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
 
+            .section-header {
+                background-color: #005493;
+                color: white;
+                font-weight: bold;
+            }
+
+        </style>
     </head>
 
     <body>
@@ -131,154 +143,163 @@
                 <div class="banniere clearfix" role="banner">
                     <div class="banniere__logos banniere__logos__1">
                         <div class="banniere__logo banniere__logo__desktop">
-
                             <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
                                 <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
                             </a>
                         </div>
-
-                        <div class="banniere__logo banniere__logo__mobile">
-                        </div>
-
-                        <div class="banniere__logo banniere__logo__desktop">
-                        </div>
-
-                        <div class="banniere__logo banniere__logo__desktop">
-                        </div>
+                        <div class="banniere__logo banniere__logo__mobile"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
                     </div>
 
                     <div class="banniere_baseline_reseaux">
                         <div class="banniere__baselines">
-
-                            <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)
-                            </div>
-
-                            <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines
-                            </div>
-
+                            <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)</div>
+                            <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines</div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
 
         <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
-
             <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
                 <li class="close-button-main"></li>
-                <li class="menu_principal-actif  UVSQNEWS
-                                    mobile-menu__item js-mobile-menu__item menu__level--0
-                                    mobile-menu__item--UVSQNEWS">
-                            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false"
-                               role="button"><span>Tableau</span></a>
+                <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false" role="button">
+                        <span>Tableau</span>
+                    </a>
                 </li>
             </ul>
-
         </nav>
 
         <main>
+            <br>
 
-        <br>
+            <div class="action-buttons">
+                <button onclick="window.location.href='/logout'">Déconnexion</button>
+                {% if current_user.is_admin() %}
+                    <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+                    <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
+                {% endif %}
+            </div>
 
-        <div class="action-buttons">
-            <button onclick="window.location.href='/logout'">Déconnexion</button>
-            {% if current_user.is_admin() %}
-                <button id="saveAllButton">Sauvegarder toutes les modifications</button>
-                <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
-            {% endif %}
-        </div>
+            <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
-        <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
-
-        <div class="table-container">
-            <table id="infoTable">
+            <div class="table-container">
+                <table id="infoTable">
                     <thead>
                         <tr>
-                            <th scope="row" colspan="14" >Thierry</th>
-                            <th scope="row" colspan="3">Olivier</th>
-                            <th scope="row" colspan="3">Tuyet</th>
+                            <th scope="col" colspan="7" class="section-header">Informations personnelles</th>
+                            <th scope="col" colspan="6" class="section-header">Informations académiques</th>
+                            <th scope="col" colspan="7" class="section-header">Dates et statuts</th>
+                            <th scope="col" colspan="3" class="section-header">Informations administratives</th>
+                            <th scope="col" colspan="6" class="section-header">Contact et urgence</th>
+                        </tr>
+                        <tr>
+                            <!-- Informations personnelles -->
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Date de naissance</th>
+                            <th>Sexe</th>
+                            <th>Nationalité</th>
+                            <th>Ville de naissance</th>
+                            <th>Pays de naissance</th>
+                            <!-- Informations académiques -->
+                            <th>Statut</th>
+                            <th>Responsable encadrant</th>
+                            <th>Équipe</th>
+                            <th>Sujet stage/visite/thèse</th>
+                            <th>Établissement d'origine</th>
+                            <th>Diplôme préparé</th>
+                            <!-- Dates et statuts -->
+                            <th>Date d'arrivée unité</th>
+                            <th>Date de départ unité</th>
+                            <th>Abandon</th>
+                            <th>Date d'abandon</th>
+                            <th>Avis ZRR positif</th>
+                            <th>Avis ZRR négatif</th>
+                            <th>Nature du contrat</th>
+                            <!-- Informations administratives -->
+                            <th>Caution</th>
+                            <th>Bureau</th>
+                            <th>Charte informatique</th>
+                            <!-- Contact et urgence -->
+                            <th>Numéro de téléphone</th>
+                            <th>Adresse mail</th>
+                            <th>Adresse postale origine</th>
+                            <th>Personne à prévenir urgence</th>
+                            <th>Adresse postale urgence</th>
+                            <th>Tél/mail urgence</th>
                         </tr>
                     </thead>
                     <tbody>
-                       <tr>
-                           <th>Nom</th>
-                           <th>Prénom</th>
-                           <th>Date de naissance</th>
-                           <th>Nationalité</th>
-                           <th>Statut</th>
-                           <th>Nature du contrat</th>
-                           <th>Contrat au sein du laboratoire</th>
-                           <th>Établissement d'origine</th>
-                           <th>Date demande ZRR</th>
-                           <th>Date d'arrivée estimée</th>
-                           <th>Date d'arrivée réelle</th>
-                           <th>Adresse mail</th>
-                           <th>Avis ZRR positif</th>
-                           <th>Avis ZRR négatif</th>
-                           <th>Caution</th>
-                           <th>Bureau</th>
-                           <th>Date de sortie</th>
-                           <th>Charte informatique</th>
-                           <th>Adresse mac</th>
-                           <th>Prêt matériel</th>
-                        </tr>
                         {% for info in infos %}
                         <tr data-row-id="{{ loop.index0 }}">
-                            <td class="editable" data-column="Nom">{{ info[0] }}</td>
-                            <td class="editable" data-column="Prénom">{{ info[1] }}</td>
-                            <td class="editable" data-column="Date_de_naissance" data-type="date">{{ info[2] }}</td>
-                            <td class="editable" data-column="Nationalité">{{ info[3] }}</td>
-                            <td class="editable" data-column="Statut">{{ info[4] }}</td>
-                            <td class="editable" data-column="Nature_du_contrat">{{ info[5] }}</td>
-                            <td class="editable" data-column="Contrat_au_sein_du_laboratoire">{{ info[6] }}</td>
-                            <td class="editable" data-column="Établissement_d_origine">{{ info[7] }}</td>
-                            <td class="editable" data-column="Date_demande_ZRR" data-type="date">{{ info[8] }}</td>
-                            <td class="editable" data-column="Date_d_arrivée_estimée" data-type="date">{{ info[9] }}</td>
-                            <td class="editable" data-column="Date_d_arrivée_réelle" data-type="date">{{ info[10] }}</td>
-                            <td class="editable" data-column="Adresse_mail">{{ info[11] }}</td>
-                            <td class="editable" data-column="Avis_ZRR_positif" data-type="boolean">{{ info[12] }}</td>
-                            <td class="editable" data-column="Avis_ZRR_négatif" data-type="boolean">{{ info[13] }}</td>
-                            <td class="editable" data-column="Caution" data-type="boolean">{{ info[14] }}</td>
-                            <td class="editable" data-column="Bureau">{{ info[15] }}</td>
-                            <td class="editable" data-column="Date_de_sortie" data-type="date">{{ info[16] }}</td>
-                            <td class="editable" data-column="Charte_informatique" data-type="boolean">{{ info[17] }}</td>
-                            <td class="editable" data-column="Adresse_MAC">{{ info[18] }}</td>
-                            <td class="editable" data-column="Prêt_matériel">{{ info[19] }}</td>
+                            <!-- Informations personnelles -->
+                            <td class="editable" data-column="Nom">{{ info[0] if info[0] else '' }}</td>
+                            <td class="editable" data-column="Prenom">{{ info[1] if info[1] else '' }}</td>
+                            <td class="editable" data-column="Date_naissance" data-type="date">{{ info[2] if info[2] else '' }}</td>
+                            <td class="editable" data-column="Sexe" data-type="select" data-options="M,F">{{ info[3] if info[3] else '' }}</td>
+                            <td class="editable" data-column="Nationalite">{{ info[4] if info[4] else '' }}</td>
+                            <td class="editable" data-column="Ville_naissance">{{ info[5] if info[5] else '' }}</td>
+                            <td class="editable" data-column="Pays_naissance">{{ info[6] if info[6] else '' }}</td>
+                            <!-- Informations académiques -->
+                            <td class="editable" data-column="Statut">{{ info[8] if info[8] else '' }}</td>
+                            <td class="editable" data-column="Responsable_encadrant">{{ info[9] if info[9] else '' }}</td>
+                            <td class="editable" data-column="Equipe">{{ info[10] if info[10] else '' }}</td>
+                            <td class="editable" data-column="Sujet_stage_visite_these" data-type="textarea">{{ info[11] if info[11] else '' }}</td>
+                            <td class="editable" data-column="Etablissement_origine">{{ info[12] if info[12] else '' }}</td>
+                            <td class="editable" data-column="Diplome_prepare">{{ info[24] if info[24] else '' }}</td>
+                            <!-- Dates et statuts -->
+                            <td class="editable" data-column="Date_arrivee_unite" data-type="date">{{ info[13] if info[13] else '' }}</td>
+                            <td class="editable" data-column="Date_depart_unite" data-type="date">{{ info[14] if info[14] else '' }}</td>
+                            <td class="editable" data-column="Abandon" data-type="boolean">{{ 'Oui' if info[15] else 'Non' if info[15] is not none else '' }}</td>
+                            <td class="editable" data-column="Date_abandon" data-type="date">{{ info[16] if info[16] else '' }}</td>
+                            <td class="editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non,En cours">{{ info[17] if info[17] else '' }}</td>
+                            <td class="editable" data-column="Avis_ZRR_negatif" data-type="select" data-options="Oui,Non,En cours">{{ info[18] if info[18] else '' }}</td>
+                            <td class="editable" data-column="Nature_contrat">{{ info[25] if info[25] else '' }}</td>
+                            <!-- Informations administratives -->
+                            <td class="editable" data-column="Caution" data-type="boolean">{{ 'Oui' if info[19] else 'Non' if info[19] is not none else '' }}</td>
+                            <td class="editable" data-column="Bureau">{{ info[20] if info[20] else '' }}</td>
+                            <td class="editable" data-column="Charte_informatique" data-type="boolean">{{ 'Oui' if info[21] else 'Non' if info[21] is not none else '' }}</td>
+                            <!-- Contact et urgence -->
+                            <td class="editable" data-column="Numero_telephone">{{ info[7] if info[7] else '' }}</td>
+                            <td class="editable" data-column="Adresse_mail">{{ info[23] if info[23] else '' }}</td>
+                            <td class="editable" data-column="Adresse_postale_origine" data-type="textarea">{{ info[22] if info[22] else '' }}</td>
+                            <td class="editable" data-column="Personne_a_prevenir_urgence">{{ info[26] if info[26] else '' }}</td>
+                            <td class="editable" data-column="Adresse_postale_urgence" data-type="textarea">{{ info[27] if info[27] else '' }}</td>
+                            <td class="editable" data-column="Tel_mail_urgence" data-type="textarea">{{ info[28] if info[28] else '' }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        <br>
-
-
+            <br>
         </main>
 
         <footer>
             <div id="pied_page_complement">
                 <div class="pied_page_complement__contenu clearifx">
                     <ul>
-                            <li class="adresse">LISV<br />
-                Bâtiment Boucher<br />
-                Pôle scientifique et technologique de Vélizy<br />
-                10-12 avenue de l'Europe<br />
-                78140 Vélizy</li>
+                        <li class="adresse">LISV<br />
+                            Bâtiment Boucher<br />
+                            Pôle scientifique et technologique de Vélizy<br />
+                            10-12 avenue de l'Europe<br />
+                            78140 Vélizy</li>
                     </ul>
                 </div>
             </div>
         </footer>
 
-       <script>
+        <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const editableCells = document.querySelectorAll('.editable');
                 const saveAllButton = document.getElementById('saveAllButton');
                 const notification = document.getElementById('saveNotification');
                 let changedCells = [];
 
-                // Si l'utilisateur est administrateur, activer les fonctionnalités d'édition
                 {% if current_user.is_admin() %}
-                    // Fonction pour convertir le format date français (DD/MM/YYYY) en format YYYY-MM-DD pour l'input date
                     function frDateToISO(frDate) {
                         if (!frDate) return '';
                         const parts = frDate.split('/');
@@ -286,69 +307,84 @@
                         return `${parts[2]}-${parts[1]}-${parts[0]}`;
                     }
 
-                    // Fonction pour convertir le format ISO (YYYY-MM-DD) en format français (DD/MM/YYYY)
                     function isoDateToFr(isoDate) {
                         if (!isoDate) return '';
                         const date = new Date(isoDate);
                         return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
                     }
 
-                    // Gestion du double-clic sur les cellules
                     editableCells.forEach(cell => {
                         cell.addEventListener('dblclick', function() {
                             if (cell.classList.contains('editing')) return;
 
                             const value = cell.textContent.trim();
                             const dataType = cell.getAttribute('data-type') || 'text';
+                            const options = cell.getAttribute('data-options');
                             cell.classList.add('editing');
 
-                            // Création de l'élément d'édition en fonction du type de données
                             let inputElement;
 
                             if (dataType === 'boolean') {
                                 inputElement = document.createElement('select');
-
+                                const optionEmpty = document.createElement('option');
+                                optionEmpty.value = '';
+                                optionEmpty.textContent = '';
                                 const optionYes = document.createElement('option');
                                 optionYes.value = 'true';
                                 optionYes.textContent = 'Oui';
-
                                 const optionNo = document.createElement('option');
                                 optionNo.value = 'false';
                                 optionNo.textContent = 'Non';
 
+                                inputElement.appendChild(optionEmpty);
                                 inputElement.appendChild(optionYes);
                                 inputElement.appendChild(optionNo);
 
-                                if (value === 'True' || value === '1' || value === 'Oui') {
+                                if (value === 'Oui') {
                                     inputElement.value = 'true';
-                                } else {
+                                } else if (value === 'Non') {
                                     inputElement.value = 'false';
+                                } else {
+                                    inputElement.value = '';
                                 }
+                            } else if (dataType === 'select' && options) {
+                                inputElement = document.createElement('select');
+                                const optionEmpty = document.createElement('option');
+                                optionEmpty.value = '';
+                                optionEmpty.textContent = '';
+                                inputElement.appendChild(optionEmpty);
+
+                                options.split(',').forEach(option => {
+                                    const optionElement = document.createElement('option');
+                                    optionElement.value = option.trim();
+                                    optionElement.textContent = option.trim();
+                                    inputElement.appendChild(optionElement);
+                                });
+
+                                inputElement.value = value;
                             } else if (dataType === 'date') {
                                 inputElement = document.createElement('input');
                                 inputElement.type = 'date';
-
                                 if (value) {
                                     inputElement.value = frDateToISO(value);
                                 }
+                            } else if (dataType === 'textarea') {
+                                inputElement = document.createElement('textarea');
+                                inputElement.value = value;
                             } else {
                                 inputElement = document.createElement('input');
                                 inputElement.type = 'text';
                                 inputElement.value = value;
                             }
 
-                            // Remplacement temporaire du contenu
                             const oldContent = cell.innerHTML;
                             cell.innerHTML = '';
                             cell.appendChild(inputElement);
-
-                            // Focus sur l'input
                             inputElement.focus();
 
-                            // Gestion des événements pour valider ou annuler
                             inputElement.addEventListener('blur', finishEditing);
                             inputElement.addEventListener('keydown', function(e) {
-                                if (e.key === 'Enter') {
+                                if (e.key === 'Enter' && dataType !== 'textarea') {
                                     finishEditing();
                                 } else if (e.key === 'Escape') {
                                     cell.innerHTML = oldContent;
@@ -360,32 +396,44 @@
                                 let newValue;
 
                                 if (dataType === 'boolean') {
-                                    newValue = inputElement.value === 'true' ? 'Oui' : 'Non';
+                                    if (inputElement.value === 'true') {
+                                        newValue = 'Oui';
+                                    } else if (inputElement.value === 'false') {
+                                        newValue = 'Non';
+                                    } else {
+                                        newValue = '';
+                                    }
                                 } else if (dataType === 'date' && inputElement.value) {
                                     newValue = isoDateToFr(inputElement.value);
                                 } else {
                                     newValue = inputElement.value;
                                 }
 
-                                // Si la valeur a changé, on l'ajoute à la liste des modifications
                                 if (newValue !== value) {
                                     const rowId = cell.parentElement.getAttribute('data-row-id');
                                     const column = cell.getAttribute('data-column');
 
-                                    // Vérifier si cette cellule a déjà été modifiée
                                     const existingChange = changedCells.find(change =>
                                         change.rowId === rowId && change.column === column
                                     );
 
+                                    let dbValue;
+                                    if (dataType === 'boolean') {
+                                        dbValue = inputElement.value === 'true' ? true :
+                                                 inputElement.value === 'false' ? false : null;
+                                    } else if (dataType === 'date' && inputElement.value) {
+                                        dbValue = inputElement.value;
+                                    } else {
+                                        dbValue = newValue || null;
+                                    }
+
                                     if (existingChange) {
-                                        existingChange.value = dataType === 'boolean' ? (inputElement.value === 'true') :
-                                                            (dataType === 'date' && inputElement.value ? inputElement.value : newValue);
+                                        existingChange.value = dbValue;
                                     } else {
                                         changedCells.push({
                                             rowId: rowId,
                                             column: column,
-                                            value: dataType === 'boolean' ? (inputElement.value === 'true') :
-                                                   (dataType === 'date' && inputElement.value ? inputElement.value : newValue)
+                                            value: dbValue
                                         });
                                     }
                                 }
@@ -396,7 +444,6 @@
                         });
                     });
 
-                    // Sauvegarde des modifications
                     if (saveAllButton) {
                         saveAllButton.addEventListener('click', function() {
                             if (changedCells.length === 0) {
@@ -414,14 +461,10 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    // Afficher la notification
                                     notification.style.display = 'block';
-
-                                    // Masquer la notification après 3 secondes
                                     setTimeout(() => {
                                         notification.style.display = 'none';
                                     }, 3000);
-
                                     changedCells = [];
                                 } else {
                                     alert('Erreur lors de la sauvegarde: ' + data.error);
@@ -434,7 +477,6 @@
                         });
                     }
                 {% else %}
-                    // Si ce n'est pas un admin, supprimer les classes editable pour empêcher la modification
                     editableCells.forEach(cell => {
                         cell.classList.remove('editable');
                         cell.style.cursor = 'default';
