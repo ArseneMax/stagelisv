@@ -190,11 +190,11 @@
                 <table id="infoTable">
                     <thead>
                         <tr>
-                            <th scope="col" colspan="7" class="section-header">Informations personnelles</th>
-                            <th scope="col" colspan="6" class="section-header">Informations académiques</th>
-                            <th scope="col" colspan="7" class="section-header">Dates et statuts</th>
+                            <th scope="col" colspan="8" class="section-header">Informations personnelles</th>
+                            <th scope="col" colspan="5" class="section-header">Informations académiques</th>
+                            <th scope="col" colspan="8" class="section-header">Dates et statuts</th>
                             <th scope="col" colspan="3" class="section-header">Informations administratives</th>
-                            <th scope="col" colspan="6" class="section-header">Contact et urgence</th>
+                            <th scope="col" colspan="5" class="section-header">Contact et urgence</th>
                         </tr>
                         <tr>
                             <!-- Informations personnelles -->
@@ -205,13 +205,13 @@
                             <th>Nationalité</th>
                             <th>Ville de naissance</th>
                             <th>Pays de naissance</th>
+                            <th>Numéro de téléphone</th>
                             <!-- Informations académiques -->
                             <th>Statut</th>
                             <th>Responsable encadrant</th>
                             <th>Équipe</th>
                             <th>Sujet stage/visite/thèse</th>
                             <th>Établissement d'origine</th>
-                            <th>Diplôme préparé</th>
                             <!-- Dates et statuts -->
                             <th>Date d'arrivée unité</th>
                             <th>Date de départ unité</th>
@@ -219,13 +219,13 @@
                             <th>Date d'abandon</th>
                             <th>Avis ZRR positif</th>
                             <th>Avis ZRR négatif</th>
+                            <th>Diplôme préparé</th>
                             <th>Nature du contrat</th>
                             <!-- Informations administratives -->
                             <th>Caution</th>
                             <th>Bureau</th>
                             <th>Charte informatique</th>
                             <!-- Contact et urgence -->
-                            <th>Numéro de téléphone</th>
                             <th>Adresse mail</th>
                             <th>Adresse postale origine</th>
                             <th>Personne à prévenir urgence</th>
@@ -240,31 +240,31 @@
                             <td class="editable" data-column="Nom">{{ info[0] if info[0] else '' }}</td>
                             <td class="editable" data-column="Prenom">{{ info[1] if info[1] else '' }}</td>
                             <td class="editable" data-column="Date_naissance" data-type="date">{{ info[2] if info[2] else '' }}</td>
-                            <td class="editable" data-column="Sexe" data-type="select" data-options="M,F">{{ info[3] if info[3] else '' }}</td>
+                            <td class="editable" data-column="Sexe" data-type="select" data-options="H,F">{{ info[3] if info[3] else '' }}</td>
                             <td class="editable" data-column="Nationalite">{{ info[4] if info[4] else '' }}</td>
                             <td class="editable" data-column="Ville_naissance">{{ info[5] if info[5] else '' }}</td>
                             <td class="editable" data-column="Pays_naissance">{{ info[6] if info[6] else '' }}</td>
+                            <td class="editable" data-column="Numero_telephone">{{ info[7] if info[7] else '' }}</td>
                             <!-- Informations académiques -->
                             <td class="editable" data-column="Statut">{{ info[8] if info[8] else '' }}</td>
                             <td class="editable" data-column="Responsable_encadrant">{{ info[9] if info[9] else '' }}</td>
                             <td class="editable" data-column="Equipe">{{ info[10] if info[10] else '' }}</td>
                             <td class="editable" data-column="Sujet_stage_visite_these" data-type="textarea">{{ info[11] if info[11] else '' }}</td>
                             <td class="editable" data-column="Etablissement_origine">{{ info[12] if info[12] else '' }}</td>
-                            <td class="editable" data-column="Diplome_prepare">{{ info[24] if info[24] else '' }}</td>
                             <!-- Dates et statuts -->
                             <td class="editable" data-column="Date_arrivee_unite" data-type="date">{{ info[13] if info[13] else '' }}</td>
                             <td class="editable" data-column="Date_depart_unite" data-type="date">{{ info[14] if info[14] else '' }}</td>
                             <td class="editable" data-column="Abandon" data-type="boolean">{{ 'Oui' if info[15] else 'Non' if info[15] is not none else '' }}</td>
                             <td class="editable" data-column="Date_abandon" data-type="date">{{ info[16] if info[16] else '' }}</td>
-                            <td class="editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non,En cours">{{ info[17] if info[17] else '' }}</td>
-                            <td class="editable" data-column="Avis_ZRR_negatif" data-type="select" data-options="Oui,Non,En cours">{{ info[18] if info[18] else '' }}</td>
+                            <td class="editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ info[17] if info[17] else '' }}</td>
+                            <td class="editable" data-column="Avis_ZRR_negatif" data-type="select" data-options="Oui,Non">{{ info[18] if info[18] else '' }}</td>
+                            <td class="editable" data-column="Diplome_prepare">{{ info[24] if info[24] else '' }}</td>
                             <td class="editable" data-column="Nature_contrat">{{ info[25] if info[25] else '' }}</td>
                             <!-- Informations administratives -->
                             <td class="editable" data-column="Caution" data-type="boolean">{{ 'Oui' if info[19] else 'Non' if info[19] is not none else '' }}</td>
                             <td class="editable" data-column="Bureau">{{ info[20] if info[20] else '' }}</td>
                             <td class="editable" data-column="Charte_informatique" data-type="boolean">{{ 'Oui' if info[21] else 'Non' if info[21] is not none else '' }}</td>
                             <!-- Contact et urgence -->
-                            <td class="editable" data-column="Numero_telephone">{{ info[7] if info[7] else '' }}</td>
                             <td class="editable" data-column="Adresse_mail">{{ info[23] if info[23] else '' }}</td>
                             <td class="editable" data-column="Adresse_postale_origine" data-type="textarea">{{ info[22] if info[22] else '' }}</td>
                             <td class="editable" data-column="Personne_a_prevenir_urgence">{{ info[26] if info[26] else '' }}</td>
