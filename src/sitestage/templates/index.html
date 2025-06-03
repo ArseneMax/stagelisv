@@ -449,6 +449,15 @@
                                             value: dbValue
                                         });
                                     }
+
+                                    // IMPORTANT: Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
+                                    if (column === 'Nom') {
+                                        row.setAttribute('data-nom', newValue);
+                                        console.log('Mise à jour data-nom vers:', newValue);
+                                    } else if (column === 'Prénom') {
+                                        row.setAttribute('data-prenom', newValue);
+                                        console.log('Mise à jour data-prenom vers:', newValue);
+                                    }
                                 }
 
                                 cell.innerHTML = newValue;

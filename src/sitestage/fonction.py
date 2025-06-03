@@ -11,7 +11,7 @@ def get_db_connection():
             host='193.51.28.22',
             user='vba_user',
             password='!mariadbLisv78140%',
-            database='testmember',
+            database='member',
             port=3307,
             charset='utf8mb4'
         )
@@ -210,7 +210,8 @@ def update_db_info(conn, changes):
         cursor = conn.cursor()
         print(f"DEBUG: Début de update_db_info avec {len(changes)} modifications")
 
-        # Pour chaque modification, utiliser les identifiants uniques (nom + prénom + date d'arrivée)
+        # Grouper les modifications par personne pour éviter les conflits
+        changes_by_person = {}
         for i, change in enumerate(changes):
             print(f"DEBUG: Traitement du changement {i}: {change}")
 
@@ -229,101 +230,34 @@ def update_db_info(conn, changes):
                 cursor.close()
                 return False
 
-            # Mapping des noms de colonnes du frontend vers la nouvelle base de données
-            column_mapping = {
-                'Nom': 'Nom',
-                'Prénom': 'Prénom',
-                'Date_de_naissance': 'Date_de_naissance',
-                'HF': 'HF',
-                'Nationalité': 'Nationalité',
-                'Ville_de_naissance': 'Ville_de_naissance',
-                'Pays_de_naissance': 'Pays_de_naissance',
-                'Numéro_de_téléphone': 'Numéro_de_téléphone',
-                'Statut': 'Statut',
-                'Responsable_ou_Encadrant': 'Responsable_ou_Encadrant',
-                'Équipe': 'Équipe',
-                'Nom_de_l_équipe_en_interne': 'Nom_de_l_équipe_en_interne',
-                'Sections_disciplinaires': 'Sections_disciplinaires',
-                'HDR': 'HDR',
-                'Sujet_du_stage_de_la_visite_de_thèse': 'Sujet_du_stage_de_la_visite_de_thèse',
-                'Établissement_d_origine': 'Établissement_d_origine',
-                'Date_d_arrivée_dans_l_unité': 'Date_d_arrivée_dans_l_unité',
-                'Date_de_départ_de_l_unité': 'Date_de_départ_de_l_unité',
-                'Abandon': 'Abandon',
-                'Date_Abandon': 'Date_Abandon',
-                'Date_Soutenance': 'Date_Soutenance',
-                'Date_de_sortie': 'Date_de_sortie',
-                'Avis_ZRR_positif': 'Avis_ZRR_positif',
-                'Avis_ZRR_négatif': 'Avis_ZRR_négatif',
-                'Date_ZRR': 'Date_ZRR',
-                'Caution': 'Caution',
-                'Bureau': 'Bureau',
-                'Charte_Informatique': 'Charte_Informatique',
-                'Adresse_Postale_ou_dans_le_pays_d_origine': 'Adresse_Postale_ou_dans_le_pays_d_origine',
-                'Adresse_mail': 'Adresse_mail',
-                'Diplôme_préparé': 'Diplôme_préparé',
-                'Nature_du_contrat': 'Nature_du_contrat',
-                'Personne_à_prévenir_en_cas_d_urgence': 'Personne_à_prévenir_en_cas_d_urgence',
-                'Adresse_Postale': 'Adresse_Postale',
-                'Tél_et_mail': 'Tél_et_mail'
-            }
+            # Créer une clé unique pour cette personne
+            person_key = f"{nom}|{prenom}|{date_arrivee or 'NULL'}"
 
-            # Si le nom de colonne est dans notre mapping, utiliser le nom mappé
-            # Sinon, utiliser le nom tel quel
-            if column_name in column_mapping:
-                db_column = column_mapping[column_name]
-            else:
-                db_column = column_name
+            if person_key not in changes_by_person:
+                changes_by_person[person_key] = {
+                    'nom': nom,
+                    'prenom': prenom,
+                    'date_arrivee': date_arrivee,
+                    'changes': []
+                }
 
-            print(f"DEBUG: Mapping colonne '{column_name}' -> '{db_column}'")
+            changes_by_person[person_key]['changes'].append({
+                'column': column_name,
+                'value': value
+            })
 
-            # Traitement spécial pour les dates
-            date_columns = [
-                'Date_de_naissance', 'Date_d_arrivée_dans_l_unité',
-                'Date_de_départ_de_l_unité', 'Date_Abandon',
-                'Date_Soutenance', 'Date_de_sortie', 'Date_ZRR'
-            ]
+        print(f"DEBUG: Modifications regroupées pour {len(changes_by_person)} personne(s)")
 
-            if db_column in date_columns:
-                if value:
-                    # Convertir le format de date YYYY-MM-DD en objet datetime
-                    try:
-                        value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
-                        print(f"DEBUG: Date convertie: {value}")
-                    except ValueError:
-                        # Si déjà au format DD/MM/YYYY, on le convertit
-                        try:
-                            parts = value.split('/')
-                            if len(parts) == 3:
-                                value = datetime.datetime(int(parts[2]), int(parts[1]), int(parts[0])).date()
-                                print(f"DEBUG: Date convertie depuis DD/MM/YYYY: {value}")
-                        except:
-                            print(f"ERROR: Impossible de convertir la date: {value}")
-                            value = None
-                else:
-                    value = None
+        # Traiter chaque personne séparément
+        for person_key, person_data in changes_by_person.items():
+            nom = person_data['nom']
+            prenom = person_data['prenom']
+            date_arrivee = person_data['date_arrivee']
+            person_changes = person_data['changes']
 
-            # Traitement spécial pour les champs VARCHAR avec valeurs booléennes
-            boolean_varchar_columns = [
-                'HF', 'HDR', 'Abandon', 'Avis_ZRR_positif',
-                'Avis_ZRR_négatif', 'Charte_Informatique'
-            ]
+            print(f"DEBUG: Traitement de {nom} {prenom} avec {len(person_changes)} modification(s)")
 
-            if db_column in boolean_varchar_columns:
-                if isinstance(value, bool):
-                    if db_column == 'HF':
-                        value = 'H' if value else 'F'
-                    else:
-                        value = 'Oui' if value else 'Non'
-                elif isinstance(value, str):
-                    if db_column == 'HF':
-                        pass  # Garder la valeur telle quelle pour HF
-                    elif value.lower() in ['true', '1', 'oui', 'yes', 'on']:
-                        value = 'Oui'
-                    elif value.lower() in ['false', '0', 'non', 'no', 'off']:
-                        value = 'Non'
-
-            # Construire la clause WHERE avec nom + prénom + date d'arrivée
+            # Construire la clause WHERE une seule fois pour cette personne
             where_conditions = ["`Nom` = %s", "`Prénom` = %s"]
             where_params = [nom, prenom]
 
@@ -341,26 +275,123 @@ def update_db_info(conn, changes):
             check_query = f"SELECT COUNT(*) FROM info WHERE {where_clause}"
             cursor.execute(check_query, where_params)
             count = cursor.fetchone()[0]
-            print(f"DEBUG: Nombre d'enregistrements trouvés: {count}")
+            print(f"DEBUG: Nombre d'enregistrements trouvés pour {nom} {prenom}: {count}")
 
             if count == 0:
-                print(
-                    f"ERROR: Aucun enregistrement trouvé avec les critères: nom='{nom}', prenom='{prenom}', date_arrivee='{date_arrivee}'")
+                print(f"ERROR: Aucun enregistrement trouvé pour {nom} {prenom} avec date_arrivee='{date_arrivee}'")
                 cursor.close()
                 return False
             elif count > 1:
-                print(f"WARNING: Plusieurs enregistrements trouvés ({count}), mise à jour de tous")
+                print(f"WARNING: Plusieurs enregistrements trouvés pour {nom} {prenom} ({count}), mise à jour de tous")
 
-            # Mettre à jour la base de données
-            query = f"UPDATE info SET `{db_column}` = %s WHERE {where_clause}"
-            final_params = [value] + where_params
+            # Appliquer toutes les modifications pour cette personne
+            for change_data in person_changes:
+                column_name = change_data['column']
+                value = change_data['value']
 
-            print(f"DEBUG: Requête SQL: {query}")
-            print(f"DEBUG: Paramètres: {final_params}")
+                # Mapping des noms de colonnes
+                column_mapping = {
+                    'Nom': 'Nom',
+                    'Prénom': 'Prénom',
+                    'Date_de_naissance': 'Date_de_naissance',
+                    'HF': 'HF',
+                    'Nationalité': 'Nationalité',
+                    'Ville_de_naissance': 'Ville_de_naissance',
+                    'Pays_de_naissance': 'Pays_de_naissance',
+                    'Numéro_de_téléphone': 'Numéro_de_téléphone',
+                    'Statut': 'Statut',
+                    'Responsable_ou_Encadrant': 'Responsable_ou_Encadrant',
+                    'Équipe': 'Équipe',
+                    'Nom_de_l_équipe_en_interne': 'Nom_de_l_équipe_en_interne',
+                    'Sections_disciplinaires': 'Sections_disciplinaires',
+                    'HDR': 'HDR',
+                    'Sujet_du_stage_de_la_visite_de_thèse': 'Sujet_du_stage_de_la_visite_de_thèse',
+                    'Établissement_d_origine': 'Établissement_d_origine',
+                    'Date_d_arrivée_dans_l_unité': 'Date_d_arrivée_dans_l_unité',
+                    'Date_de_départ_de_l_unité': 'Date_de_départ_de_l_unité',
+                    'Abandon': 'Abandon',
+                    'Date_Abandon': 'Date_Abandon',
+                    'Date_Soutenance': 'Date_Soutenance',
+                    'Date_de_sortie': 'Date_de_sortie',
+                    'Avis_ZRR_positif': 'Avis_ZRR_positif',
+                    'Avis_ZRR_négatif': 'Avis_ZRR_négatif',
+                    'Date_ZRR': 'Date_ZRR',
+                    'Caution': 'Caution',
+                    'Bureau': 'Bureau',
+                    'Charte_Informatique': 'Charte_Informatique',
+                    'Adresse_Postale_ou_dans_le_pays_d_origine': 'Adresse_Postale_ou_dans_le_pays_d_origine',
+                    'Adresse_mail': 'Adresse_mail',
+                    'Diplôme_préparé': 'Diplôme_préparé',
+                    'Nature_du_contrat': 'Nature_du_contrat',
+                    'Personne_à_prévenir_en_cas_d_urgence': 'Personne_à_prévenir_en_cas_d_urgence',
+                    'Adresse_Postale': 'Adresse_Postale',
+                    'Tél_et_mail': 'Tél_et_mail'
+                }
 
-            cursor.execute(query, final_params)
-            affected_rows = cursor.rowcount
-            print(f"DEBUG: Lignes affectées: {affected_rows}")
+                if column_name in column_mapping:
+                    db_column = column_mapping[column_name]
+                else:
+                    db_column = column_name
+
+                print(f"DEBUG: Mapping colonne '{column_name}' -> '{db_column}' pour {nom} {prenom}")
+
+                # Traitement spécial pour les dates
+                date_columns = [
+                    'Date_de_naissance', 'Date_d_arrivée_dans_l_unité',
+                    'Date_de_départ_de_l_unité', 'Date_Abandon',
+                    'Date_Soutenance', 'Date_de_sortie', 'Date_ZRR'
+                ]
+
+                if db_column in date_columns:
+                    if value:
+                        try:
+                            value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+                            print(f"DEBUG: Date convertie: {value}")
+                        except ValueError:
+                            try:
+                                parts = value.split('/')
+                                if len(parts) == 3:
+                                    value = datetime.datetime(int(parts[2]), int(parts[1]), int(parts[0])).date()
+                                    print(f"DEBUG: Date convertie depuis DD/MM/YYYY: {value}")
+                            except:
+                                print(f"ERROR: Impossible de convertir la date: {value}")
+                                value = None
+                    else:
+                        value = None
+
+                # Traitement spécial pour les champs VARCHAR avec valeurs booléennes
+                boolean_varchar_columns = [
+                    'HF', 'HDR', 'Abandon', 'Avis_ZRR_positif',
+                    'Avis_ZRR_négatif', 'Charte_Informatique'
+                ]
+
+                if db_column in boolean_varchar_columns:
+                    if isinstance(value, bool):
+                        if db_column == 'HF':
+                            value = 'H' if value else 'F'
+                        else:
+                            value = 'Oui' if value else 'Non'
+                    elif isinstance(value, str):
+                        if db_column == 'HF':
+                            pass
+                        elif value.lower() in ['true', '1', 'oui', 'yes', 'on']:
+                            value = 'Oui'
+                        elif value.lower() in ['false', '0', 'non', 'no', 'off']:
+                            value = 'Non'
+
+                # Mettre à jour cette colonne pour cette personne
+                query = f"UPDATE info SET `{db_column}` = %s WHERE {where_clause}"
+                final_params = [value] + where_params
+
+                print(f"DEBUG: Requête SQL pour {db_column}: {query}")
+                print(f"DEBUG: Paramètres: {final_params}")
+
+                cursor.execute(query, final_params)
+                affected_rows = cursor.rowcount
+                print(f"DEBUG: Lignes affectées pour {db_column}: {affected_rows}")
+
+                if affected_rows == 0:
+                    print(f"WARNING: Aucune ligne affectée pour {nom} {prenom} - {db_column}")
 
         conn.commit()
         cursor.close()
