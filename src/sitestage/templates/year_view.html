@@ -230,7 +230,7 @@
 
             <!-- Informations sur l'année filtrée -->
             <div class="year-info">
-                <h3>📅 Personnel présent en {{ year }}</h3>
+                <h3> Personnel présent en {{ year }}</h3>
                 <p><strong>{{ infos|length }}</strong> employé(s) trouvé(s) pour cette année</p>
                 <p><em>Critères : Arrivés avant le 31/12/{{ year }} ET (non partis OU partis après le 01/01/{{ year }})</em></p>
             </div>
@@ -241,7 +241,7 @@
                     ← Retour au tableau complet
                 </button>
                 <button onclick="window.location.href='/filter-by-year'" class="change-year-button">
-                    📅 Changer d'année
+                     Changer d'année
                 </button>
 
                 <!-- Navigation entre années -->
@@ -265,7 +265,6 @@
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
                 {% if current_user.is_admin() %}
                     <button id="saveAllButton">Sauvegarder toutes les modifications</button>
-                    <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
                 {% endif %}
             </div>
 
