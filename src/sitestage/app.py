@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year
 from .decorators import admin_required
 
 # Chargement des variables d'environnement
@@ -47,6 +47,30 @@ class SignupForm(FlaskForm):
 @login_required
 def index():
     return render_template('index.html', infos=select_all_infos())
+
+
+@web_ui.route('/filter-by-year', methods=['GET', 'POST'])
+@login_required
+def filter_by_year_page():
+    if request.method == 'POST':
+        year = request.form.get('year', type=int)
+        if year:
+            return redirect(url_for('web_ui.year_view', year=year))
+
+    available_years = get_available_years()
+    return render_template('filter_year.html', available_years=available_years)
+
+
+
+@web_ui.route('/year/<int:year>')
+@login_required
+def year_view(year):
+    infos = select_infos_by_year(year)
+    available_years = get_available_years()
+    return render_template('year_view.html',
+                           infos=infos,
+                           year=year,
+                           available_years=available_years)
 
 @web_ui.route('/login', methods=['GET', 'POST'])
 def login():

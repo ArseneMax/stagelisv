@@ -3,13 +3,14 @@
     <head>
         <meta property="og:image" content="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" />
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>LISV tableau</title>
+        <title>LISV tableau - Année {{ year }}</title>
         <link rel="icon" type="image/png" href="https://www.lisv.uvsq.fr/jsp/images/favicon.png" />
         <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <style media="screen, print">
+            /* Reprenez tous les styles de votre index.html */
             #pied_page_complement, #pied_page_complement a {
                 color: white;
                 background: #7f7f7f;
@@ -134,6 +135,57 @@
                 font-weight: bold;
             }
 
+            /* Styles spécifiques pour la vue année */
+            .year-info {
+                background-color: #d4edda;
+                border: 1px solid #c3e6cb;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .year-info h3 {
+                color: #155724;
+                margin: 0 0 10px 0;
+                font-size: 20px;
+            }
+
+            .year-info p {
+                color: #155724;
+                margin: 5px 0;
+            }
+
+            .navigation-buttons {
+                margin-bottom: 20px;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .nav-button {
+                background-color: #6c757d;
+                border-color: #6c757d;
+                color: white;
+            }
+
+            .nav-button:hover {
+                background-color: #545b62;
+                border-color: #545b62;
+                color: white;
+            }
+
+            .change-year-button {
+                background-color: #28a745;
+                border-color: #28a745;
+                color: white;
+            }
+
+            .change-year-button:hover {
+                background-color: #218838;
+                border-color: #218838;
+                color: white;
+            }
         </style>
     </head>
 
@@ -167,7 +219,7 @@
                 <li class="close-button-main"></li>
                 <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
                     <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false" role="button">
-                        <span>Tableau</span>
+                        <span>Tableau - Année {{ year }}</span>
                     </a>
                 </li>
             </ul>
@@ -176,20 +228,50 @@
         <main>
             <br>
 
+            <!-- Informations sur l'année filtrée -->
+            <div class="year-info">
+                <h3>📅 Personnel présent en {{ year }}</h3>
+                <p><strong>{{ infos|length }}</strong> employé(s) trouvé(s) pour cette année</p>
+                <p><em>Critères : Arrivés avant le 31/12/{{ year }} ET (non partis OU partis après le 01/01/{{ year }})</em></p>
+            </div>
+
+            <!-- Boutons de navigation -->
+            <div class="navigation-buttons">
+                <button onclick="window.location.href='/'" class="nav-button">
+                    ← Retour au tableau complet
+                </button>
+                <button onclick="window.location.href='/filter-by-year'" class="change-year-button">
+                    📅 Changer d'année
+                </button>
+
+                <!-- Navigation entre années -->
+                {% if available_years %}
+                    {% set current_index = available_years.index(year) %}
+                    {% if current_index > 0 %}
+                        <button onclick="window.location.href='/year/{{ available_years[current_index-1] }}'" class="nav-button">
+                            ← {{ available_years[current_index-1] }}
+                        </button>
+                    {% endif %}
+                    {% if current_index < available_years|length - 1 %}
+                        <button onclick="window.location.href='/year/{{ available_years[current_index+1] }}'" class="nav-button">
+                            {{ available_years[current_index+1] }} →
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Boutons d'action (comme dans l'index original) -->
             <div class="action-buttons">
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
                 {% if current_user.is_admin() %}
                     <button id="saveAllButton">Sauvegarder toutes les modifications</button>
                     <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
                 {% endif %}
-
-                <button onclick="window.location.href='/filter-by-year'" >
-                     Filtrer par année
-                </button>
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
+            <!-- Tableau des données (identique à l'index) -->
             <div class="table-container">
                 <table id="infoTable">
                     <thead>
@@ -247,7 +329,8 @@
                         {% for info in infos %}
                         <tr data-nom="{{ info[0] if info[0] else '' }}"
                             data-prenom="{{ info[1] if info[1] else '' }}"
-                            data-date-arrivee="{{ info[16] if info[16] else '' }}">
+                            data-date-arrivee-original="{{ info[16] if info[16] else '' }}">
+                            <!-- Toutes les colonnes comme dans l'index original -->
                             <!-- Informations personnelles -->
                             <td class="editable" data-column="Nom">{{ info[0] if info[0] else '' }}</td>
                             <td class="editable" data-column="Prénom">{{ info[1] if info[1] else '' }}</td>
@@ -310,6 +393,7 @@
             </div>
         </footer>
 
+        <!-- JavaScript identique à l'index pour la fonctionnalité d'édition -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const editableCells = document.querySelectorAll('.editable');
@@ -446,46 +530,47 @@
                                 cell.innerHTML = newValue;
                                 cell.classList.remove('editing');
                             }
+                        });
+                    });
 
-                            // Et modifiez aussi le saveAllButton pour ajouter les logs :
-                            if (saveAllButton) {
-                                saveAllButton.addEventListener('click', function() {
-                                    if (changedCells.length === 0) {
-                                        alert('Aucune modification à sauvegarder');
-                                        return;
-                                    }
+                    if (saveAllButton) {
+                        saveAllButton.addEventListener('click', function() {
+                            if (changedCells.length === 0) {
+                                alert('Aucune modification à sauvegarder');
+                                return;
+                            }
 
-                                    console.log('Modifications à envoyer:', changedCells);  // Debug
+                            console.log('Modifications à envoyer:', changedCells);  // Debug
 
-                                    fetch('/update_info', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({ changes: changedCells })
-                                    })
-                                    .then(response => {
-                                        console.log('Réponse reçue:', response);  // Debug
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        console.log('Données de réponse:', data);  // Debug
-                                        if (data.success) {
-                                            notification.style.display = 'block';
-                                            setTimeout(() => {
-                                                notification.style.display = 'none';
-                                            }, 3000);
-                                            changedCells = [];
-                                        } else {
-                                            alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Erreur fetch:', error);
-                                        alert('Une erreur est survenue lors de la sauvegarde');
-                                    });
-                                });
-                            }});});
+                            fetch('/update_info', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ changes: changedCells })
+                            })
+                            .then(response => {
+                                console.log('Réponse reçue:', response);  // Debug
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Données de réponse:', data);  // Debug
+                                if (data.success) {
+                                    notification.style.display = 'block';
+                                    setTimeout(() => {
+                                        notification.style.display = 'none';
+                                    }, 3000);
+                                    changedCells = [];
+                                } else {
+                                    alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur fetch:', error);
+                                alert('Une erreur est survenue lors de la sauvegarde');
+                            });
+                        });
+                    }
                 {% else %}
                     editableCells.forEach(cell => {
                         cell.classList.remove('editable');

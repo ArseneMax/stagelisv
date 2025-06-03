@@ -69,6 +69,132 @@ def select_all_infos():
     return infos
 
 
+# Ajoutez ces nouvelles fonctions dans fonction.py
+
+def select_infos_by_year(year):
+    """
+    Récupère les informations des employés présents pendant une année donnée.
+    Un employé est considéré comme présent si :
+    - Il est arrivé avant ou pendant l'année ET (il n'est pas parti OU il est parti après le début de l'année)
+
+    Args:
+        year (int): L'année pour laquelle filtrer les employés
+
+    Returns:
+        list: Liste des informations des employés présents pendant l'année
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return "Échec de connexion à MySQL"
+
+    cursor = conn.cursor()
+
+    # Requête SQL pour filtrer par année
+    # Un employé est présent pendant une année si :
+    # 1. Sa date d'arrivée est <= 31/12/année
+    # 2. ET (sa date de départ est NULL OU sa date de départ est >= 01/01/année)
+    query = """
+            SELECT * \
+            FROM info
+            WHERE (Date_d_arrivée_dans_l_unité IS NULL OR Date_d_arrivée_dans_l_unité <= %s)
+              AND (Date_de_départ_de_l_unité IS NULL OR Date_de_départ_de_l_unité >= %s) \
+            """
+
+    # Dates de début et fin de l'année
+    start_of_year = f"{year}-01-01"
+    end_of_year = f"{year}-12-31"
+
+    cursor.execute(query, (end_of_year, start_of_year))
+    Infos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    infos = []
+    for info in Infos:
+        info_list = list(info)
+
+        # Formatage des dates (même code que select_all_infos)
+        # Date_de_naissance (index 2)
+        if info_list[2]:
+            info_list[2] = info_list[2].strftime('%d/%m/%Y')
+
+        # Date_d_arrivée_dans_l_unité (index 16)
+        if info_list[16]:
+            info_list[16] = info_list[16].strftime('%d/%m/%Y')
+
+        # Date_de_départ_de_l_unité (index 17)
+        if info_list[17]:
+            info_list[17] = info_list[17].strftime('%d/%m/%Y')
+
+        # Date_Abandon (index 19)
+        if info_list[19]:
+            info_list[19] = info_list[19].strftime('%d/%m/%Y')
+
+        # Date_Soutenance (index 20)
+        if info_list[20]:
+            info_list[20] = info_list[20].strftime('%d/%m/%Y')
+
+        # Date_de_sortie (index 21)
+        if info_list[21]:
+            info_list[21] = info_list[21].strftime('%d/%m/%Y')
+
+        # Date_ZRR (index 24)
+        if info_list[24]:
+            info_list[24] = info_list[24].strftime('%d/%m/%Y')
+
+        infos.append(info_list)
+
+    return infos
+
+
+def get_available_years():
+    """
+    Récupère toutes les années disponibles basées sur les dates d'arrivée et de départ.
+    Limite les années à l'année actuelle maximum.
+
+    Returns:
+        list: Liste des années triées par ordre décroissant, limitées à l'année actuelle
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return []
+
+    cursor = conn.cursor()
+
+    # Récupérer les années min et max des dates d'arrivée et de départ
+    query = """
+            SELECT MIN(YEAR (Date_d_arrivée_dans_l_unité)) as min_arrival, \
+                   MAX(YEAR (Date_d_arrivée_dans_l_unité)) as max_arrival, \
+                   MAX(YEAR (Date_de_départ_de_l_unité))   as max_departure
+            FROM info
+            WHERE Date_d_arrivée_dans_l_unité IS NOT NULL \
+            """
+
+    cursor.execute(query)
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not result or not result[0]:
+        return []
+
+    min_year = result[0]
+    max_year = max(result[1] or 0, result[2] or 0)
+
+    # Obtenir l'année actuelle
+    current_year = datetime.datetime.now().year
+
+    # Limiter max_year à l'année actuelle
+    if max_year == 0 or max_year > current_year:
+        max_year = current_year
+
+    # Générer la liste des années
+    years = list(range(min_year, max_year + 1))
+    return sorted(years, reverse=True)  # Tri décroissant
+
+
+# REMPLACEZ complètement votre fonction update_db_info existante par celle-ci :
+
 def update_db_info(conn, changes):
     """
     Met à jour les informations dans la base de données.
@@ -82,69 +208,74 @@ def update_db_info(conn, changes):
     """
     try:
         cursor = conn.cursor()
+        print(f"DEBUG: Début de update_db_info avec {len(changes)} modifications")
 
-        # Pour chaque modification, récupérer l'ID de la ligne et mettre à jour la colonne correspondante
-        for change in changes:
-            row_id = int(change['rowId'])
-            column_name = change['column']
+        # Pour chaque modification, utiliser les identifiants uniques (nom + prénom + date d'arrivée)
+        for i, change in enumerate(changes):
+            print(f"DEBUG: Traitement du changement {i}: {change}")
+
+            # Récupérer les identifiants uniques
+            nom = change.get('nom')
+            prenom = change.get('prenom')
+            date_arrivee = change.get('date_arrivee')  # Format YYYY-MM-DD ou None
+            column_name = change.get('column')
+            value = change.get('value')
+
+            print(
+                f"DEBUG: nom='{nom}', prenom='{prenom}', date_arrivee='{date_arrivee}', column='{column_name}', value='{value}'")
+
+            if not nom or not prenom or not column_name:
+                print(f"ERROR: Champs obligatoires manquants pour le changement {i}")
+                cursor.close()
+                return False
 
             # Mapping des noms de colonnes du frontend vers la nouvelle base de données
             column_mapping = {
                 'Nom': 'Nom',
                 'Prénom': 'Prénom',
-                'Date de naissance': 'Date_de_naissance',
-                'H/F': 'HF',  # Changé de 'H/F' vers 'HF'
-                'Sexe': 'HF',  # Mapping de l'ancien nom vers le nouveau
+                'Date_de_naissance': 'Date_de_naissance',
+                'HF': 'HF',
                 'Nationalité': 'Nationalité',
-                'Ville de naissance': 'Ville_de_naissance',
-                'Pays de naissance': 'Pays_de_naissance',
-                'Numéro de téléphone': 'Numéro_de_téléphone',
+                'Ville_de_naissance': 'Ville_de_naissance',
+                'Pays_de_naissance': 'Pays_de_naissance',
+                'Numéro_de_téléphone': 'Numéro_de_téléphone',
                 'Statut': 'Statut',
-                'Responsable encadrant': 'Responsable_ou_Encadrant',
+                'Responsable_ou_Encadrant': 'Responsable_ou_Encadrant',
                 'Équipe': 'Équipe',
-                'Nom de l\'équipe en interne': 'Nom_de_l_équipe_en_interne',  # Changé les apostrophes
-                'Sections disciplinaires': 'Sections_disciplinaires',
+                'Nom_de_l_équipe_en_interne': 'Nom_de_l_équipe_en_interne',
+                'Sections_disciplinaires': 'Sections_disciplinaires',
                 'HDR': 'HDR',
-                'Sujet stage/visite/thèse': 'Sujet_du_stage_de_la_visite_de_thèse',
-                'Établissement d\'origine': 'Établissement_d_origine',  # Changé les apostrophes
-                'Date d\'arrivée unité': 'Date_d_arrivée_dans_l_unité',  # Changé les apostrophes
-                'Date de départ unité': 'Date_de_départ_de_l_unité',
+                'Sujet_du_stage_de_la_visite_de_thèse': 'Sujet_du_stage_de_la_visite_de_thèse',
+                'Établissement_d_origine': 'Établissement_d_origine',
+                'Date_d_arrivée_dans_l_unité': 'Date_d_arrivée_dans_l_unité',
+                'Date_de_départ_de_l_unité': 'Date_de_départ_de_l_unité',
                 'Abandon': 'Abandon',
-                'Date abandon': 'Date_Abandon',
-                'Date soutenance': 'Date_Soutenance',
-                'Date de sortie': 'Date_de_sortie',
-                'Avis ZRR positif': 'Avis_ZRR_positif',
-                'Avis ZRR négatif': 'Avis_ZRR_négatif',
-                'Date ZRR': 'Date_ZRR',
+                'Date_Abandon': 'Date_Abandon',
+                'Date_Soutenance': 'Date_Soutenance',
+                'Date_de_sortie': 'Date_de_sortie',
+                'Avis_ZRR_positif': 'Avis_ZRR_positif',
+                'Avis_ZRR_négatif': 'Avis_ZRR_négatif',
+                'Date_ZRR': 'Date_ZRR',
                 'Caution': 'Caution',
                 'Bureau': 'Bureau',
-                'Charte informatique': 'Charte_Informatique',
-                'Adresse postale origine': 'Adresse_Postale_ou_dans_le_pays_d_origine',  # Changé les apostrophes
-                'Adresse mail': 'Adresse_mail',
-                'Diplôme préparé': 'Diplôme_préparé',
-                'Nature du contrat': 'Nature_du_contrat',
-                'Personne à prévenir urgence': 'Personne_à_prévenir_en_cas_d_urgence',  # Changé les apostrophes
-                'Adresse postale urgence': 'Adresse_Postale',
-                'Tél/mail urgence': 'Tél_et_mail'
+                'Charte_Informatique': 'Charte_Informatique',
+                'Adresse_Postale_ou_dans_le_pays_d_origine': 'Adresse_Postale_ou_dans_le_pays_d_origine',
+                'Adresse_mail': 'Adresse_mail',
+                'Diplôme_préparé': 'Diplôme_préparé',
+                'Nature_du_contrat': 'Nature_du_contrat',
+                'Personne_à_prévenir_en_cas_d_urgence': 'Personne_à_prévenir_en_cas_d_urgence',
+                'Adresse_Postale': 'Adresse_Postale',
+                'Tél_et_mail': 'Tél_et_mail'
             }
 
             # Si le nom de colonne est dans notre mapping, utiliser le nom mappé
-            # Sinon, utiliser le nom tel quel (au cas où il correspondrait déjà)
+            # Sinon, utiliser le nom tel quel
             if column_name in column_mapping:
                 db_column = column_mapping[column_name]
             else:
                 db_column = column_name
 
-            value = change['value']
-
-            # Récupérer l'ID unique de la ligne (en supposant que la combinaison nom+prénom est unique)
-            cursor.execute('SELECT `Nom`, `Prénom` FROM info LIMIT %s, 1', (row_id,))
-            row_info = cursor.fetchone()
-
-            if not row_info:
-                return False
-
-            nom, prenom = row_info
+            print(f"DEBUG: Mapping colonne '{column_name}' -> '{db_column}'")
 
             # Traitement spécial pour les dates
             date_columns = [
@@ -158,13 +289,16 @@ def update_db_info(conn, changes):
                     # Convertir le format de date YYYY-MM-DD en objet datetime
                     try:
                         value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+                        print(f"DEBUG: Date convertie: {value}")
                     except ValueError:
                         # Si déjà au format DD/MM/YYYY, on le convertit
                         try:
                             parts = value.split('/')
                             if len(parts) == 3:
                                 value = datetime.datetime(int(parts[2]), int(parts[1]), int(parts[0])).date()
+                                print(f"DEBUG: Date convertie depuis DD/MM/YYYY: {value}")
                         except:
+                            print(f"ERROR: Impossible de convertir la date: {value}")
                             value = None
                 else:
                     value = None
@@ -177,33 +311,70 @@ def update_db_info(conn, changes):
 
             if db_column in boolean_varchar_columns:
                 if isinstance(value, bool):
-                    # Pour HF, on peut adapter selon vos besoins
                     if db_column == 'HF':
-                        value = 'H' if value else 'F'  # ou une autre logique
+                        value = 'H' if value else 'F'
                     else:
                         value = 'Oui' if value else 'Non'
                 elif isinstance(value, str):
                     if db_column == 'HF':
-                        # Garder la valeur telle quelle pour HF
-                        pass
+                        pass  # Garder la valeur telle quelle pour HF
                     elif value.lower() in ['true', '1', 'oui', 'yes', 'on']:
                         value = 'Oui'
                     elif value.lower() in ['false', '0', 'non', 'no', 'off']:
                         value = 'Non'
 
-            # Mettre à jour la base de données - Utiliser des backticks pour les noms de colonnes
-            query = f"UPDATE info SET `{db_column}` = %s WHERE `Nom` = %s AND `Prénom` = %s"
-            cursor.execute(query, (value, nom, prenom))
+            # Construire la clause WHERE avec nom + prénom + date d'arrivée
+            where_conditions = ["`Nom` = %s", "`Prénom` = %s"]
+            where_params = [nom, prenom]
+
+            if date_arrivee and date_arrivee != 'null' and date_arrivee != 'None':
+                where_conditions.append("`Date_d_arrivée_dans_l_unité` = %s")
+                where_params.append(date_arrivee)
+                print(f"DEBUG: Utilisation de la date d'arrivée: {date_arrivee}")
+            else:
+                where_conditions.append("`Date_d_arrivée_dans_l_unité` IS NULL")
+                print(f"DEBUG: Date d'arrivée NULL ou vide")
+
+            where_clause = " AND ".join(where_conditions)
+
+            # Vérifier d'abord si l'enregistrement existe
+            check_query = f"SELECT COUNT(*) FROM info WHERE {where_clause}"
+            cursor.execute(check_query, where_params)
+            count = cursor.fetchone()[0]
+            print(f"DEBUG: Nombre d'enregistrements trouvés: {count}")
+
+            if count == 0:
+                print(
+                    f"ERROR: Aucun enregistrement trouvé avec les critères: nom='{nom}', prenom='{prenom}', date_arrivee='{date_arrivee}'")
+                cursor.close()
+                return False
+            elif count > 1:
+                print(f"WARNING: Plusieurs enregistrements trouvés ({count}), mise à jour de tous")
+
+            # Mettre à jour la base de données
+            query = f"UPDATE info SET `{db_column}` = %s WHERE {where_clause}"
+            final_params = [value] + where_params
+
+            print(f"DEBUG: Requête SQL: {query}")
+            print(f"DEBUG: Paramètres: {final_params}")
+
+            cursor.execute(query, final_params)
+            affected_rows = cursor.rowcount
+            print(f"DEBUG: Lignes affectées: {affected_rows}")
 
         conn.commit()
         cursor.close()
+        print("DEBUG: Toutes les modifications ont été commitées avec succès")
         return True
 
     except Exception as e:
-        print(f"Erreur lors de la mise à jour de la base de données: {e}")
+        print(f"ERROR: Erreur lors de la mise à jour de la base de données: {e}")
+        import traceback
+        traceback.print_exc()
+        if 'cursor' in locals():
+            cursor.close()
         conn.rollback()
         return False
-
 
 class User(UserMixin):
     def __init__(self, id, username, password, role='user'):
