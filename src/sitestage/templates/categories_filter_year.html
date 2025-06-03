@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta property="og:image" content="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>LISV - Catégories par année</title>
+        <link rel="icon" type="image/png" href="https://www.lisv.uvsq.fr/jsp/images/favicon.png" />
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <style media="screen, print">
+            #pied_page_complement, #pied_page_complement a {
+                color: white;
+                background: #7f7f7f;
+                position: fixed;
+                bottom:0;
+                width: 100%;
+            }
+
+            #menu {
+                background: #4f8f00;
+            }
+
+            a, a:active, a:focus, a:visited {
+                color: #005493;
+            }
+
+            h1 {
+                color: #005493;
+            }
+
+            button {
+                background-color: white;
+                color: #005493;
+                border: 1px solid #005493;
+                border-radius: 4px;
+                padding: 8px 12px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 14px;
+                margin: 5px;
+            }
+
+            button:hover {
+                background-color: #005493;
+                color: white;
+                border: 1px solid #005493;
+            }
+
+            .filter-container {
+                max-width: 600px;
+                margin: 50px auto;
+                padding: 40px;
+                background-color: #f8f9fa;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                margin-bottom: 150px;
+            }
+
+            .filter-container h2 {
+                color: #005493;
+                margin-bottom: 30px;
+                font-size: 28px;
+            }
+
+            .year-selection {
+                margin: 30px 0;
+            }
+
+            .year-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 15px;
+                margin: 30px 0;
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .year-button {
+                background-color: white;
+                color: #005493;
+                border: 2px solid #005493;
+                border-radius: 8px;
+                padding: 15px 10px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 16px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+            .year-button:hover {
+                background-color: #005493;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 84, 147, 0.3);
+            }
+
+            .back-button {
+                background-color: #6c757d;
+                border-color: #6c757d;
+                color: white;
+                padding: 12px 24px;
+                font-size: 16px;
+                margin: 10px;
+            }
+
+            .back-button:hover {
+                background-color: #545b62;
+                border-color: #545b62;
+                color: white;
+            }
+
+            .all-categories-button {
+                background-color: #005493;
+                border-color: #005493;
+                color: white;
+                padding: 12px 24px;
+                font-size: 16px;
+                margin: 10px;
+            }
+
+            .all-categories-button:hover {
+                background-color: #003d7a;
+                border-color: #003d7a;
+                color: white;
+            }
+
+            .description {
+                color: #666;
+                font-style: italic;
+                margin: 20px 0;
+                line-height: 1.6;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="cartouche">
+            <div>
+                <div class="banniere clearfix" role="banner">
+                    <div class="banniere__logos banniere__logos__1">
+                        <div class="banniere__logo banniere__logo__desktop">
+                            <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
+                                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                            </a>
+                        </div>
+                        <div class="banniere__logo banniere__logo__mobile"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                    </div>
+
+                    <div class="banniere_baseline_reseaux">
+                        <div class="banniere__baselines">
+                            <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)</div>
+                            <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
+            <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+                <li class="close-button-main"></li>
+                <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false" role="button">
+                        <span>Catégories par année</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="filter-container">
+                <h2>Membres par catégories pour une année</h2>
+                
+                <div class="description">
+                    Choisissez une année pour afficher les membres par catégories (permanents, temporaires, doctorants, stagiaires) qui étaient présents pendant cette période.
+                    <br><br>
+                </div>
+
+                {% if available_years %}
+                    <div class="year-grid">
+                        {% for year in available_years %}
+                            <button class="year-button" onclick="window.location.href='/categories?year={{ year }}'">
+                                {{ year }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color: #dc3545; font-weight: bold;">
+                        Aucune donnée de dates disponible dans la base de données.
+                    </p>
+                {% endif %}
+
+                <div style="margin-top: 30px;">
+                    <button class="all-categories-button" onclick="window.location.href='/categories'">
+                        Voir toutes les catégories (toutes années)
+                    </button>
+                    <br>
+                    <button class="back-button" onclick="window.location.href='/'">
+                        ← Retour au tableau complet
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div id="pied_page_complement">
+                <div class="pied_page_complement__contenu clearifx">
+                    <ul>
+                        <li class="adresse">LISV<br />
+                            Bâtiment Boucher<br />
+                            Pôle scientifique et technologique de Vélizy<br />
+                            10-12 avenue de l'Europe<br />
+                            78140 Vélizy</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

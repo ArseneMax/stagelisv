@@ -393,7 +393,7 @@ def classify_member_by_status(statut, nature_contrat=None):
 
     statut_upper = statut.upper().strip()
 
-
+    # Classification basée sur vos données réelles
 
     # Membres permanents (statuts permanents)
     permanents_statuts = [
@@ -416,7 +416,7 @@ def classify_member_by_status(statut, nature_contrat=None):
         'STAGIAIRE', 'APPRENTI'
     ]
 
-
+    # Vérification exacte des statuts
     if statut_upper in permanents_statuts:
         return 'permanents'
     elif statut_upper in temporaires_statuts:
@@ -426,7 +426,7 @@ def classify_member_by_status(statut, nature_contrat=None):
     elif statut_upper in stagiaires_statuts:
         return 'stagiaires'
 
-
+    # Si on a la nature du contrat, on peut affiner
     if nature_contrat:
         nature_upper = nature_contrat.upper().strip()
 
@@ -455,9 +455,91 @@ def classify_member_by_status(statut, nature_contrat=None):
     return 'autres'
 
 
-def get_membres_by_category():
+def classify_member_by_status(statut, nature_contrat=None):
+    """
+    Classifie un membre selon son statut et la nature de son contrat.
+
+    Args:
+        statut (str): Le statut du membre
+        nature_contrat (str): La nature du contrat du membre (optionnel)
+
+    Returns:
+        str: La catégorie ('permanents', 'temporaires', 'doctorants', 'stagiaires', 'autres')
+    """
+    if not statut:
+        return 'autres'
+
+    statut_upper = statut.upper().strip()
+
+    # Classification basée sur vos données réelles
+
+
+    permanents_statuts = [
+        'MCF', 'PR', 'EXIE', 'PR2', 'PR1', 'AJT', 'IR', 'PREMT', 'CH', 'IE'
+    ]
+
+
+    temporaires_statuts = [
+        'CDD IE', 'POST-DOCT', 'CH INVITÉ', 'ATER', 'PROF INVITÉ', 'CH ASSOCIÉ',
+        'CHERCHEUR', 'VISITEUR', 'RESP. GEST. PROJET EUR.'
+    ]
+
+
+    doctorants_statuts = [
+        'DOCTORANT', 'DOCTORANT EXT.'
+    ]
+
+
+    stagiaires_statuts = [
+        'STAGIAIRE', 'APPRENTI'
+    ]
+
+
+    if statut_upper in permanents_statuts:
+        return 'permanents'
+    elif statut_upper in temporaires_statuts:
+        return 'temporaires'
+    elif statut_upper in doctorants_statuts:
+        return 'doctorants'
+    elif statut_upper in stagiaires_statuts:
+        return 'stagiaires'
+
+
+    if nature_contrat:
+        nature_upper = nature_contrat.upper().strip()
+
+
+        if 'FONCTIONNAIRE' in nature_upper or 'ÉMÉRITE' in nature_upper:
+            return 'permanents'
+
+
+        if any(keyword in nature_upper for keyword in ['CDD', 'BRSE', 'CIFRE', 'SALARIÉ']):
+            # Mais si c'est un doctorant avec bourse, c'est un doctorant
+            if any(keyword in nature_upper for keyword in ['BRSE', 'CONTRAT DOC', 'ALLOCATION']):
+                return 'doctorants'
+            else:
+                return 'temporaires'
+
+
+    if any(keyword in statut_upper for keyword in ['DOCT', 'PHD', 'THÈSE']):
+        return 'doctorants'
+    elif any(keyword in statut_upper for keyword in ['STAGE', 'ÉTUDIANT']):
+        return 'stagiaires'
+    elif any(keyword in statut_upper for keyword in ['POST', 'INVITÉ', 'VISIT', 'ATER']):
+        return 'temporaires'
+    elif any(keyword in statut_upper for keyword in ['MCF', 'PR', 'CH', 'IR', 'IE']):
+        return 'permanents'
+
+    return 'autres'
+
+
+def get_membres_by_category(year=None):
     """
     Récupère tous les membres organisés par catégories selon leur statut.
+    Peut être filtré par année.
+
+    Args:
+        year (int, optional): Année pour filtrer les membres présents
 
     Returns:
         dict: Dictionnaire avec les catégories et leurs membres respectifs
@@ -467,12 +549,34 @@ def get_membres_by_category():
         return {}
 
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM info')
+
+    if year:
+
+        query = """
+                SELECT * \
+                FROM info
+                WHERE (Date_d_arrivée_dans_l_unité IS NULL OR Date_d_arrivée_dans_l_unité <= %s)
+                  AND \
+                    (Date_de_départ_de_l_unité IS NULL OR Date_de_départ_de_l_unité >= %s OR YEAR (Date_de_départ_de_l_unité) = \
+                    9999) \
+                """
+        start_of_year = f"{year}-01-01"
+        end_of_year = f"{year}-12-31"
+
+        print(f"DEBUG: Filtrage pour l'année {year}")
+        print(f"DEBUG: Paramètres: end_of_year={end_of_year}, start_of_year={start_of_year}")
+
+        cursor.execute(query, (end_of_year, start_of_year))
+    else:
+        cursor.execute('SELECT * FROM info')
+
     all_infos = cursor.fetchall()
     cursor.close()
     conn.close()
 
+    print(f"DEBUG: Nombre total d'enregistrements trouvés: {len(all_infos)}")
 
+    # Initialiser les catégories
     categories = {
         'permanents': [],
         'temporaires': [],
@@ -481,21 +585,50 @@ def get_membres_by_category():
         'autres': []
     }
 
-    for info in all_infos:
+    for i, info in enumerate(all_infos):
         info_list = list(info)
 
-        # Formatage des dates
+        # Conserver les dates originales pour le debug
+        date_arrivee_originale = info_list[16]
+        date_depart_originale = info_list[17]
+        statut = info_list[8] if info_list[8] else ""
+
+        # Formatage des dates APRÈS la sélection
         date_indices = [2, 16, 17, 19, 20, 21, 24]
         for idx in date_indices:
             if info_list[idx]:
-                info_list[idx] = info_list[idx].strftime('%d/%m/%Y')
+                # Gérer les dates en 9999 (considérées comme "pas de date de fin")
+                if idx in [17, 19, 20, 21] and info_list[idx].year == 9999:
+                    info_list[idx] = ''  # Date de fin vide pour 9999
+                else:
+                    info_list[idx] = info_list[idx].strftime('%d/%m/%Y')
 
-        statut = info_list[8] if info_list[8] else ""
         nature_contrat = info_list[31] if info_list[31] else ""
 
         # Classification selon le statut et la nature du contrat
         category = classify_member_by_status(statut, nature_contrat)
+
+        # Debug spécifique pour l'année demandée
+        if year and i < 10:  # Debug les 10 premiers
+            print(f"DEBUG #{i}: {info_list[1]} {info_list[0]} ({statut})")
+            print(f"  Date arrivée originale: {date_arrivee_originale}")
+            print(f"  Date départ originale: {date_depart_originale}")
+            print(f"  Catégorie: {category}")
+            print(f"  Date arrivée formatée: {info_list[16]}")
+            print(f"  Date départ formatée: {info_list[17]}")
+
         categories[category].append(info_list)
+
+    # Debug final
+    if year:
+        print(f"DEBUG: Résultats finaux pour {year}:")
+        for cat, membres in categories.items():
+            print(f"  {cat}: {len(membres)} membre(s)")
+            if cat == 'stagiaires' and len(membres) > 0:
+                print(f"    Premiers stagiaires:")
+                for i, stagiaire in enumerate(membres[:3]):
+                    print(
+                        f"      {i + 1}. {stagiaire[1]} {stagiaire[0]} - Arrivée: {stagiaire[16]} - Départ: {stagiaire[17]}")
 
     return categories
 

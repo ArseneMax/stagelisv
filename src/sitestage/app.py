@@ -76,8 +76,11 @@ def year_view(year):
 @web_ui.route('/categories')
 @login_required
 def categories():
-    """Route pour afficher les membres par catégories"""
-    categories_data = get_membres_by_category()
+    """Route pour afficher les membres par catégories, avec filtrage optionnel par année"""
+    year = request.args.get('year', type=int)
+    available_years = get_available_years()
+
+    categories_data = get_membres_by_category(year)
 
     # Organiser les données pour l'affichage
     organized_data = {}
@@ -87,7 +90,24 @@ def categories():
             member_data = get_membre_fields(membre, category)
             organized_data[category].append(member_data)
 
-    return render_template('categories.html', categories=organized_data)
+    return render_template('categories.html',
+                           categories=organized_data,
+                           available_years=available_years,
+                           selected_year=year)
+
+
+
+@web_ui.route('/categories-by-year', methods=['GET', 'POST'])
+@login_required
+def categories_by_year_page():
+    if request.method == 'POST':
+        year = request.form.get('year', type=int)
+        if year:
+            return redirect(url_for('web_ui.categories', year=year))
+
+    available_years = get_available_years()
+    return render_template('categories_filter_year.html', available_years=available_years)
+
 
 @web_ui.route('/login', methods=['GET', 'POST'])
 def login():
