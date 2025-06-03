@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta property="og:image" content="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>LISV - Membres par catégories</title>
+        <link rel="icon" type="image/png" href="https://www.lisv.uvsq.fr/jsp/images/favicon.png" />
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <style media="screen, print">
+            #pied_page_complement, #pied_page_complement a {
+                color: white;
+                background: #7f7f7f;
+                position: fixed;
+                bottom:0;
+                width: 100%;
+            }
+
+            #menu {
+                background: #4f8f00;
+            }
+
+            a, a:active, a:focus, a:visited {
+                color: #005493;
+            }
+
+            h1, h2, h3 {
+                color: #005493;
+            }
+
+            button {
+                background-color: white;
+                color: #005493;
+                border: 1px solid #005493;
+                border-radius: 4px;
+                padding: 8px 12px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 14px;
+                margin: 5px;
+            }
+
+            button:hover {
+                background-color: #005493;
+                color: white;
+                border: 1px solid #005493;
+            }
+
+            .categories-container {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 20px;
+            }
+
+            .category-section {
+                margin-bottom: 40px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .category-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #005493;
+            }
+
+            .category-title {
+                font-size: 24px;
+                margin: 0;
+                margin-right: 15px;
+            }
+
+            .member-count {
+                background-color: #005493;
+                color: white;
+                padding: 5px 12px;
+                border-radius: 15px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            .members-grid {
+                display: grid;
+                gap: 20px;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            }
+
+            .member-card {
+                background: white;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 15px;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .member-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+            .member-name {
+                font-size: 18px;
+                font-weight: bold;
+                color: #005493;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 5px;
+            }
+
+            .member-info {
+                display: grid;
+                gap: 5px;
+            }
+
+            .info-row {
+                display: flex;
+                padding: 3px 0;
+            }
+
+            .info-label {
+                font-weight: bold;
+                min-width: 140px;
+                color: #666;
+                font-size: 13px;
+            }
+
+            .info-value {
+                color: #333;
+                font-size: 13px;
+                word-break: break-word;
+            }
+
+            .info-value.email {
+                color: #005493;
+                text-decoration: underline;
+            }
+
+            .info-value.date {
+                font-family: monospace;
+                background-color: #f8f9fa;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
+
+            .info-value.status-yes {
+                color: #28a745;
+                font-weight: bold;
+            }
+
+            .info-value.status-no {
+                color: #dc3545;
+                font-weight: bold;
+            }
+
+            .navigation-buttons {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .nav-button {
+                background-color: #6c757d;
+                border-color: #6c757d;
+                color: white;
+                margin: 0 10px;
+            }
+
+            .nav-button:hover {
+                background-color: #545b62;
+                border-color: #545b62;
+                color: white;
+            }
+
+            .category-icons {
+                font-size: 1.2em;
+            }
+
+            .empty-category {
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                padding: 20px;
+            }
+
+            @media (max-width: 768px) {
+                .members-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .categories-container {
+                    margin: 10px;
+                    padding: 10px;
+                }
+
+                .info-row {
+                    flex-direction: column;
+                }
+
+                .info-label {
+                    min-width: auto;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="cartouche">
+            <div>
+                <div class="banniere clearfix" role="banner">
+                    <div class="banniere__logos banniere__logos__1">
+                        <div class="banniere__logo banniere__logo__desktop">
+                            <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
+                                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                            </a>
+                        </div>
+                        <div class="banniere__logo banniere__logo__mobile"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                    </div>
+
+                    <div class="banniere_baseline_reseaux">
+                        <div class="banniere__baselines">
+                            <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)</div>
+                            <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
+            <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+                <li class="close-button-main"></li>
+                <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false" role="button">
+                        <span>Membres par catégories</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="navigation-buttons">
+                <button onclick="window.location.href='/'" class="nav-button">
+                    ← Retour au tableau complet
+                </button>
+                <button onclick="window.location.href='/filter-by-year'" class="nav-button">
+                     Filtrer par année
+                </button>
+                <button onclick="window.location.href='/logout'">Déconnexion</button>
+            </div>
+
+            <div class="categories-container">
+                <h1 style="text-align: center; margin-bottom: 30px;"> Membres du laboratoire par catégories</h1>
+
+                <!-- Membres permanents -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <h2 class="category-title">
+                            <span class="category-icons"></span> Membres permanents
+                        </h2>
+                        <span class="member-count">{{ categories.permanents|length }} membre(s)</span>
+                    </div>
+
+                    {% if categories.permanents %}
+                        <div class="members-grid">
+                            {% for membre in categories.permanents %}
+                                <div class="member-card">
+                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
+                                    <div class="member-info">
+                                        <div class="info-row">
+                                            <span class="info-label">Statut :</span>
+                                            <span class="info-value">{{ membre.statut }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Équipe :</span>
+                                            <span class="info-value">{{ membre.equipe }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Nom équipe :</span>
+                                            <span class="info-value">{{ membre.nom_equipe }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Section disciplinaire :</span>
+                                            <span class="info-value">{{ membre.section_disciplinaire }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Email :</span>
+                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-category">Aucun membre permanent trouvé</div>
+                    {% endif %}
+                </div>
+
+                <!-- Personnel temporaire -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <h2 class="category-title">
+                            <span class="category-icons"></span> Personnel temporaire
+                        </h2>
+                        <span class="member-count">{{ categories.temporaires|length }} membre(s)</span>
+                    </div>
+
+                    {% if categories.temporaires %}
+                        <div class="members-grid">
+                            {% for membre in categories.temporaires %}
+                                <div class="member-card">
+                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
+                                    <div class="member-info">
+                                        <div class="info-row">
+                                            <span class="info-label">Statut :</span>
+                                            <span class="info-value">{{ membre.statut }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Équipe :</span>
+                                            <span class="info-value">{{ membre.equipe }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Nom équipe :</span>
+                                            <span class="info-value">{{ membre.nom_equipe }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Section disciplinaire :</span>
+                                            <span class="info-value">{{ membre.section_disciplinaire }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date d'arrivée :</span>
+                                            <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date de départ :</span>
+                                            <span class="info-value date">{{ membre.date_depart }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Email :</span>
+                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-category">Aucun personnel temporaire trouvé</div>
+                    {% endif %}
+                </div>
+
+                <!-- Doctorants -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <h2 class="category-title">
+                            <span class="category-icons"></span> Doctorants
+                        </h2>
+                        <span class="member-count">{{ categories.doctorants|length }} membre(s)</span>
+                    </div>
+
+                    {% if categories.doctorants %}
+                        <div class="members-grid">
+                            {% for membre in categories.doctorants %}
+                                <div class="member-card">
+                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
+                                    <div class="member-info">
+                                        <div class="info-row">
+                                            <span class="info-label">Caution :</span>
+                                            <span class="info-value">{{ membre.caution }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Bureau :</span>
+                                            <span class="info-value">{{ membre.bureau }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Abandon :</span>
+                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %}">{{ membre.abandon }}</span>
+                                        </div>
+                                        {% if membre.date_abandon %}
+                                        <div class="info-row">
+                                            <span class="info-label">Date d'abandon :</span>
+                                            <span class="info-value date">{{ membre.date_abandon }}</span>
+                                        </div>
+                                        {% endif %}
+                                        <div class="info-row">
+                                            <span class="info-label">Date soutenance :</span>
+                                            <span class="info-value date">{{ membre.date_soutenance }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Avis ZRR positif :</span>
+                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_positif }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Avis ZRR négatif :</span>
+                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_negatif }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Établissement :</span>
+                                            <span class="info-value">{{ membre.etablissement_origine }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Diplôme préparé :</span>
+                                            <span class="info-value">{{ membre.diplome_prepare }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date d'arrivée :</span>
+                                            <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date de départ :</span>
+                                            <span class="info-value date">{{ membre.date_depart }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Email :</span>
+                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-category">Aucun doctorant trouvé</div>
+                    {% endif %}
+                </div>
+
+                <!-- Stagiaires -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <h2 class="category-title">
+                            <span class="category-icons"></span> Stagiaires
+                        </h2>
+                        <span class="member-count">{{ categories.stagiaires|length }} membre(s)</span>
+                    </div>
+
+                    {% if categories.stagiaires %}
+                        <div class="members-grid">
+                            {% for membre in categories.stagiaires %}
+                                <div class="member-card">
+                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
+                                    <div class="member-info">
+                                        <div class="info-row">
+                                            <span class="info-label">Abandon :</span>
+                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %}">{{ membre.abandon }}</span>
+                                        </div>
+                                        {% if membre.date_abandon %}
+                                        <div class="info-row">
+                                            <span class="info-label">Date d'abandon :</span>
+                                            <span class="info-value date">{{ membre.date_abandon }}</span>
+                                        </div>
+                                        {% endif %}
+                                        <div class="info-row">
+                                            <span class="info-label">Avis ZRR positif :</span>
+                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_positif }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Avis ZRR négatif :</span>
+                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_negatif }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Établissement :</span>
+                                            <span class="info-value">{{ membre.etablissement_origine }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Diplôme préparé :</span>
+                                            <span class="info-value">{{ membre.diplome_prepare }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date d'arrivée :</span>
+                                            <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date de départ :</span>
+                                            <span class="info-value date">{{ membre.date_depart }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Sujet de stage :</span>
+                                            <span class="info-value">{{ membre.sujet_stage }}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Email :</span>
+                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-category">Aucun stagiaire trouvé</div>
+                    {% endif %}
+                </div>
+
+                <!-- Autres (statuts non classifiés) -->
+                {% if categories.autres and categories.autres|length > 0 %}
+                <div class="category-section">
+                    <div class="category-header">
+                        <h2 class="category-title">
+                            <span class="category-icons"></span> Autres statuts
+                        </h2>
+                        <span class="member-count">{{ categories.autres|length }} membre(s)</span>
+                    </div>
+
+                    <div class="members-grid">
+                        {% for membre in categories.autres %}
+                            <div class="member-card">
+                                <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
+                                <div class="member-info">
+                                    <div class="info-row">
+                                        <span class="info-label">Statut :</span>
+                                        <span class="info-value">{{ membre.statut }}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Nature contrat :</span>
+                                        <span class="info-value">{{ membre.nature_contrat }}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Équipe :</span>
+                                        <span class="info-value">{{ membre.equipe }}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Date d'arrivée :</span>
+                                        <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Date de départ :</span>
+                                        <span class="info-value date">{{ membre.date_depart }}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Email :</span>
+                                        <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+
+        <footer>
+            <div id="pied_page_complement">
+                <div class="pied_page_complement__contenu clearifx">
+                    <ul>
+                        <li class="adresse">LISV<br />
+                            Bâtiment Boucher<br />
+                            Pôle scientifique et technologique de Vélizy<br />
+                            10-12 avenue de l'Europe<br />
+                            78140 Vélizy</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

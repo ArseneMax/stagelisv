@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category,get_membre_fields
 from .decorators import admin_required
 
 # Chargement des variables d'environnement
@@ -71,6 +71,23 @@ def year_view(year):
                            infos=infos,
                            year=year,
                            available_years=available_years)
+
+
+@web_ui.route('/categories')
+@login_required
+def categories():
+    """Route pour afficher les membres par catégories"""
+    categories_data = get_membres_by_category()
+
+    # Organiser les données pour l'affichage
+    organized_data = {}
+    for category, membres in categories_data.items():
+        organized_data[category] = []
+        for membre in membres:
+            member_data = get_membre_fields(membre, category)
+            organized_data[category].append(member_data)
+
+    return render_template('categories.html', categories=organized_data)
 
 @web_ui.route('/login', methods=['GET', 'POST'])
 def login():

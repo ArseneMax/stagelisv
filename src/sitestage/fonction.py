@@ -376,6 +376,257 @@ def update_db_info(conn, changes):
         conn.rollback()
         return False
 
+
+def classify_member_by_status(statut, nature_contrat=None):
+    """
+    Classifie un membre selon son statut et la nature de son contrat.
+
+    Args:
+        statut (str): Le statut du membre
+        nature_contrat (str): La nature du contrat du membre (optionnel)
+
+    Returns:
+        str: La catégorie ('permanents', 'temporaires', 'doctorants', 'stagiaires', 'autres')
+    """
+    if not statut:
+        return 'autres'
+
+    statut_upper = statut.upper().strip()
+
+
+
+    # Membres permanents (statuts permanents)
+    permanents_statuts = [
+        'MCF', 'PR', 'EXIE', 'PR2', 'PR1', 'AJT', 'IR', 'PREMT', 'CH', 'IE'
+    ]
+
+    # Personnel temporaire
+    temporaires_statuts = [
+        'CDD IE', 'POST-DOCT', 'CH INVITÉ', 'ATER', 'PROF INVITÉ', 'CH ASSOCIÉ',
+        'CHERCHEUR', 'VISITEUR', 'RESP. GEST. PROJET EUR.'
+    ]
+
+    # Doctorants
+    doctorants_statuts = [
+        'DOCTORANT', 'DOCTORANT EXT.'
+    ]
+
+    # Stagiaires
+    stagiaires_statuts = [
+        'STAGIAIRE', 'APPRENTI'
+    ]
+
+
+    if statut_upper in permanents_statuts:
+        return 'permanents'
+    elif statut_upper in temporaires_statuts:
+        return 'temporaires'
+    elif statut_upper in doctorants_statuts:
+        return 'doctorants'
+    elif statut_upper in stagiaires_statuts:
+        return 'stagiaires'
+
+
+    if nature_contrat:
+        nature_upper = nature_contrat.upper().strip()
+
+        # Fonctionnaires = permanents
+        if 'FONCTIONNAIRE' in nature_upper or 'ÉMÉRITE' in nature_upper:
+            return 'permanents'
+
+        # CDD et autres contrats temporaires
+        if any(keyword in nature_upper for keyword in ['CDD', 'BRSE', 'CIFRE', 'SALARIÉ']):
+            # Mais si c'est un doctorant avec bourse, c'est un doctorant
+            if any(keyword in nature_upper for keyword in ['BRSE', 'CONTRAT DOC', 'ALLOCATION']):
+                return 'doctorants'
+            else:
+                return 'temporaires'
+
+    # Classification par mots-clés si pas de correspondance exacte
+    if any(keyword in statut_upper for keyword in ['DOCT', 'PHD', 'THÈSE']):
+        return 'doctorants'
+    elif any(keyword in statut_upper for keyword in ['STAGE', 'ÉTUDIANT']):
+        return 'stagiaires'
+    elif any(keyword in statut_upper for keyword in ['POST', 'INVITÉ', 'VISIT', 'ATER']):
+        return 'temporaires'
+    elif any(keyword in statut_upper for keyword in ['MCF', 'PR', 'CH', 'IR', 'IE']):
+        return 'permanents'
+
+    return 'autres'
+
+
+def get_membres_by_category():
+    """
+    Récupère tous les membres organisés par catégories selon leur statut.
+
+    Returns:
+        dict: Dictionnaire avec les catégories et leurs membres respectifs
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return {}
+
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM info')
+    all_infos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+
+    categories = {
+        'permanents': [],
+        'temporaires': [],
+        'doctorants': [],
+        'stagiaires': [],
+        'autres': []
+    }
+
+    for info in all_infos:
+        info_list = list(info)
+
+        # Formatage des dates
+        date_indices = [2, 16, 17, 19, 20, 21, 24]
+        for idx in date_indices:
+            if info_list[idx]:
+                info_list[idx] = info_list[idx].strftime('%d/%m/%Y')
+
+        statut = info_list[8] if info_list[8] else ""
+        nature_contrat = info_list[31] if info_list[31] else ""
+
+        # Classification selon le statut et la nature du contrat
+        category = classify_member_by_status(statut, nature_contrat)
+        categories[category].append(info_list)
+
+    return categories
+
+
+def get_membre_fields(membre, category):
+    """
+    Extrait les champs pertinents d'un membre selon sa catégorie.
+
+    Args:
+        membre: Liste contenant toutes les informations du membre
+        category: Catégorie du membre ('permanents', 'temporaires', 'doctorants', 'stagiaires')
+
+    Returns:
+        dict: Dictionnaire avec les champs pertinents pour la catégorie
+    """
+
+    base_info = {
+        'nom': membre[0] or '',
+        'prenom': membre[1] or '',
+    }
+
+    if category == 'permanents':
+        return {
+            **base_info,
+            'statut': membre[8] or '',
+            'equipe': membre[10] or '',
+            'nom_equipe': membre[11] or '',
+            'section_disciplinaire': membre[12] or '',
+            'adresse_mail': membre[29] or '',
+            'nature_contrat': membre[31] or ''
+        }
+
+    elif category == 'temporaires':
+        return {
+            **base_info,
+            'statut': membre[8] or '',
+            'equipe': membre[10] or '',
+            'nom_equipe': membre[11] or '',
+            'section_disciplinaire': membre[12] or '',
+            'date_arrivee': membre[16] or '',
+            'date_depart': membre[17] or '',
+            'adresse_mail': membre[29] or '',
+            'nature_contrat': membre[31] or ''
+        }
+
+    elif category == 'doctorants':
+        return {
+            **base_info,
+            'caution': membre[25] or '',
+            'bureau': membre[26] or '',
+            'abandon': membre[18] or '',
+            'date_abandon': membre[19] or '',
+            'date_soutenance': membre[20] or '',
+            'avis_zrr_positif': membre[22] or '',
+            'avis_zrr_negatif': membre[23] or '',
+            'etablissement_origine': membre[15] or '',
+            'diplome_prepare': membre[30] or '',
+            'date_arrivee': membre[16] or '',
+            'date_depart': membre[17] or '',
+            'adresse_mail': membre[29] or '',
+            'statut': membre[8] or '',
+            'nature_contrat': membre[31] or ''
+        }
+
+    elif category == 'stagiaires':
+        return {
+            **base_info,
+            'abandon': membre[18] or '',
+            'date_abandon': membre[19] or '',
+            'avis_zrr_positif': membre[22] or '',
+            'avis_zrr_negatif': membre[23] or '',
+            'etablissement_origine': membre[15] or '',
+            'diplome_prepare': membre[30] or '',
+            'date_arrivee': membre[16] or '',
+            'date_depart': membre[17] or '',
+            'sujet_stage': membre[14] or '',
+            'adresse_mail': membre[29] or '',
+            'statut': membre[8] or '',
+            'nature_contrat': membre[31] or ''
+        }
+
+    elif category == 'autres':
+        return {
+            **base_info,
+            'statut': membre[8] or '',
+            'equipe': membre[10] or '',
+            'date_arrivee': membre[16] or '',
+            'date_depart': membre[17] or '',
+            'adresse_mail': membre[29] or '',
+            'nature_contrat': membre[31] or ''
+        }
+
+    return base_info
+
+
+def get_classification_stats():
+    """
+    Fonction utilitaire pour analyser la classification des statuts.
+    Utile pour le debug et l'ajustement des règles de classification.
+
+    Returns:
+        dict: Statistiques de classification
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return {}
+
+    cursor = conn.cursor()
+    cursor.execute('SELECT DISTINCT Statut, Nature_du_contrat FROM info WHERE Statut IS NOT NULL')
+    combinations = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    stats = {
+        'permanents': [],
+        'temporaires': [],
+        'doctorants': [],
+        'stagiaires': [],
+        'autres': []
+    }
+
+    for statut, nature in combinations:
+        category = classify_member_by_status(statut, nature)
+        stats[category].append({
+            'statut': statut,
+            'nature_contrat': nature or 'N/A'
+        })
+
+    return stats
+
+
 class User(UserMixin):
     def __init__(self, id, username, password, role='user'):
         self.id = id
