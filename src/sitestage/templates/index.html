@@ -191,25 +191,28 @@
                     <thead>
                         <tr>
                             <th scope="col" colspan="8" class="section-header">Informations personnelles</th>
-                            <th scope="col" colspan="5" class="section-header">Informations académiques</th>
-                            <th scope="col" colspan="8" class="section-header">Dates et statuts</th>
-                            <th scope="col" colspan="3" class="section-header">Informations administratives</th>
-                            <th scope="col" colspan="5" class="section-header">Contact et urgence</th>
+                            <th scope="col" colspan="8" class="section-header">Informations académiques</th>
+                            <th scope="col" colspan="9" class="section-header">Dates et statuts</th>
+                            <th scope="col" colspan="7" class="section-header">Informations administratives</th>
+                            <th scope="col" colspan="3" class="section-header">Contact et urgence</th>
                         </tr>
                         <tr>
                             <!-- Informations personnelles -->
                             <th>Nom</th>
                             <th>Prénom</th>
                             <th>Date de naissance</th>
-                            <th>Sexe</th>
+                            <th>H/F</th>
                             <th>Nationalité</th>
                             <th>Ville de naissance</th>
                             <th>Pays de naissance</th>
                             <th>Numéro de téléphone</th>
                             <!-- Informations académiques -->
                             <th>Statut</th>
-                            <th>Responsable encadrant</th>
+                            <th>Responsable/Encadrant</th>
                             <th>Équipe</th>
+                            <th>Nom de l'équipe interne</th>
+                            <th>Sections disciplinaires</th>
+                            <th>HDR</th>
                             <th>Sujet stage/visite/thèse</th>
                             <th>Établissement d'origine</th>
                             <!-- Dates et statuts -->
@@ -217,17 +220,20 @@
                             <th>Date de départ unité</th>
                             <th>Abandon</th>
                             <th>Date d'abandon</th>
+                            <th>Date soutenance</th>
+                            <th>Date de sortie</th>
                             <th>Avis ZRR positif</th>
                             <th>Avis ZRR négatif</th>
-                            <th>Diplôme préparé</th>
-                            <th>Nature du contrat</th>
+                            <th>Date ZRR</th>
                             <!-- Informations administratives -->
                             <th>Caution</th>
                             <th>Bureau</th>
                             <th>Charte informatique</th>
-                            <!-- Contact et urgence -->
-                            <th>Adresse mail</th>
                             <th>Adresse postale origine</th>
+                            <th>Adresse mail</th>
+                            <th>Diplôme préparé</th>
+                            <th>Nature du contrat</th>
+                            <!-- Contact et urgence -->
                             <th>Personne à prévenir urgence</th>
                             <th>Adresse postale urgence</th>
                             <th>Tél/mail urgence</th>
@@ -238,38 +244,44 @@
                         <tr data-row-id="{{ loop.index0 }}">
                             <!-- Informations personnelles -->
                             <td class="editable" data-column="Nom">{{ info[0] if info[0] else '' }}</td>
-                            <td class="editable" data-column="Prenom">{{ info[1] if info[1] else '' }}</td>
-                            <td class="editable" data-column="Date_naissance" data-type="date">{{ info[2] if info[2] else '' }}</td>
-                            <td class="editable" data-column="Sexe" data-type="select" data-options="H,F">{{ info[3] if info[3] else '' }}</td>
-                            <td class="editable" data-column="Nationalite">{{ info[4] if info[4] else '' }}</td>
-                            <td class="editable" data-column="Ville_naissance">{{ info[5] if info[5] else '' }}</td>
-                            <td class="editable" data-column="Pays_naissance">{{ info[6] if info[6] else '' }}</td>
-                            <td class="editable" data-column="Numero_telephone">{{ info[7] if info[7] else '' }}</td>
+                            <td class="editable" data-column="Prénom">{{ info[1] if info[1] else '' }}</td>
+                            <td class="editable" data-column="Date_de_naissance" data-type="date">{{ info[2] if info[2] else '' }}</td>
+                            <td class="editable" data-column="HF" data-type="select" data-options="H,F">{{ info[3] if info[3] else '' }}</td>
+                            <td class="editable" data-column="Nationalité">{{ info[4] if info[4] else '' }}</td>
+                            <td class="editable" data-column="Ville_de_naissance">{{ info[5] if info[5] else '' }}</td>
+                            <td class="editable" data-column="Pays_de_naissance">{{ info[6] if info[6] else '' }}</td>
+                            <td class="editable" data-column="Numéro_de_téléphone">{{ info[7] if info[7] else '' }}</td>
                             <!-- Informations académiques -->
                             <td class="editable" data-column="Statut">{{ info[8] if info[8] else '' }}</td>
-                            <td class="editable" data-column="Responsable_encadrant">{{ info[9] if info[9] else '' }}</td>
-                            <td class="editable" data-column="Equipe">{{ info[10] if info[10] else '' }}</td>
-                            <td class="editable" data-column="Sujet_stage_visite_these" data-type="textarea">{{ info[11] if info[11] else '' }}</td>
-                            <td class="editable" data-column="Etablissement_origine">{{ info[12] if info[12] else '' }}</td>
+                            <td class="editable" data-column="Responsable_ou_Encadrant">{{ info[9] if info[9] else '' }}</td>
+                            <td class="editable" data-column="Équipe">{{ info[10] if info[10] else '' }}</td>
+                            <td class="editable" data-column="Nom_de_l_équipe_en_interne">{{ info[11] if info[11] else '' }}</td>
+                            <td class="editable" data-column="Sections_disciplinaires">{{ info[12] if info[12] else '' }}</td>
+                            <td class="editable" data-column="HDR" data-type="select" data-options="Oui,Non">{{ info[13] if info[13] else '' }}</td>
+                            <td class="editable" data-column="Sujet_du_stage_de_la_visite_de_thèse" data-type="textarea">{{ info[14] if info[14] else '' }}</td>
+                            <td class="editable" data-column="Établissement_d_origine">{{ info[15] if info[15] else '' }}</td>
                             <!-- Dates et statuts -->
-                            <td class="editable" data-column="Date_arrivee_unite" data-type="date">{{ info[13] if info[13] else '' }}</td>
-                            <td class="editable" data-column="Date_depart_unite" data-type="date">{{ info[14] if info[14] else '' }}</td>
-                            <td class="editable" data-column="Abandon" data-type="boolean">{{ 'Oui' if info[15] else 'Non' if info[15] is not none else '' }}</td>
-                            <td class="editable" data-column="Date_abandon" data-type="date">{{ info[16] if info[16] else '' }}</td>
-                            <td class="editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ info[17] if info[17] else '' }}</td>
-                            <td class="editable" data-column="Avis_ZRR_negatif" data-type="select" data-options="Oui,Non">{{ info[18] if info[18] else '' }}</td>
-                            <td class="editable" data-column="Diplome_prepare">{{ info[24] if info[24] else '' }}</td>
-                            <td class="editable" data-column="Nature_contrat">{{ info[25] if info[25] else '' }}</td>
+                            <td class="editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ info[16] if info[16] else '' }}</td>
+                            <td class="editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ info[17] if info[17] else '' }}</td>
+                            <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ info[18] if info[18] else '' }}</td>
+                            <td class="editable" data-column="Date_Abandon" data-type="date">{{ info[19] if info[19] else '' }}</td>
+                            <td class="editable" data-column="Date_Soutenance" data-type="date">{{ info[20] if info[20] else '' }}</td>
+                            <td class="editable" data-column="Date_de_sortie" data-type="date">{{ info[21] if info[21] else '' }}</td>
+                            <td class="editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ info[22] if info[22] else '' }}</td>
+                            <td class="editable" data-column="Avis_ZRR_négatif" data-type="select" data-options="Oui,Non">{{ info[23] if info[23] else '' }}</td>
+                            <td class="editable" data-column="Date_ZRR" data-type="date">{{ info[24] if info[24] else '' }}</td>
                             <!-- Informations administratives -->
-                            <td class="editable" data-column="Caution" data-type="boolean">{{ 'Oui' if info[19] else 'Non' if info[19] is not none else '' }}</td>
-                            <td class="editable" data-column="Bureau">{{ info[20] if info[20] else '' }}</td>
-                            <td class="editable" data-column="Charte_informatique" data-type="boolean">{{ 'Oui' if info[21] else 'Non' if info[21] is not none else '' }}</td>
+                            <td class="editable" data-column="Caution">{{ info[25] if info[25] else '' }}</td>
+                            <td class="editable" data-column="Bureau">{{ info[26] if info[26] else '' }}</td>
+                            <td class="editable" data-column="Charte_Informatique" data-type="select" data-options="Oui,Non">{{ info[27] if info[27] else '' }}</td>
+                            <td class="editable" data-column="Adresse_Postale_ou_dans_le_pays_d_origine" data-type="textarea">{{ info[28] if info[28] else '' }}</td>
+                            <td class="editable" data-column="Adresse_mail">{{ info[29] if info[29] else '' }}</td>
+                            <td class="editable" data-column="Diplôme_préparé">{{ info[30] if info[30] else '' }}</td>
+                            <td class="editable" data-column="Nature_du_contrat">{{ info[31] if info[31] else '' }}</td>
                             <!-- Contact et urgence -->
-                            <td class="editable" data-column="Adresse_mail">{{ info[23] if info[23] else '' }}</td>
-                            <td class="editable" data-column="Adresse_postale_origine" data-type="textarea">{{ info[22] if info[22] else '' }}</td>
-                            <td class="editable" data-column="Personne_a_prevenir_urgence">{{ info[26] if info[26] else '' }}</td>
-                            <td class="editable" data-column="Adresse_postale_urgence" data-type="textarea">{{ info[27] if info[27] else '' }}</td>
-                            <td class="editable" data-column="Tel_mail_urgence" data-type="textarea">{{ info[28] if info[28] else '' }}</td>
+                            <td class="editable" data-column="Personne_à_prévenir_en_cas_d_urgence">{{ info[32] if info[32] else '' }}</td>
+                            <td class="editable" data-column="Adresse_Postale" data-type="textarea">{{ info[33] if info[33] else '' }}</td>
+                            <td class="editable" data-column="Tél_et_mail" data-type="textarea">{{ info[34] if info[34] else '' }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -324,30 +336,7 @@
 
                             let inputElement;
 
-                            if (dataType === 'boolean') {
-                                inputElement = document.createElement('select');
-                                const optionEmpty = document.createElement('option');
-                                optionEmpty.value = '';
-                                optionEmpty.textContent = '';
-                                const optionYes = document.createElement('option');
-                                optionYes.value = 'true';
-                                optionYes.textContent = 'Oui';
-                                const optionNo = document.createElement('option');
-                                optionNo.value = 'false';
-                                optionNo.textContent = 'Non';
-
-                                inputElement.appendChild(optionEmpty);
-                                inputElement.appendChild(optionYes);
-                                inputElement.appendChild(optionNo);
-
-                                if (value === 'Oui') {
-                                    inputElement.value = 'true';
-                                } else if (value === 'Non') {
-                                    inputElement.value = 'false';
-                                } else {
-                                    inputElement.value = '';
-                                }
-                            } else if (dataType === 'select' && options) {
+                            if (dataType === 'select' && options) {
                                 inputElement = document.createElement('select');
                                 const optionEmpty = document.createElement('option');
                                 optionEmpty.value = '';
@@ -395,15 +384,7 @@
                             function finishEditing() {
                                 let newValue;
 
-                                if (dataType === 'boolean') {
-                                    if (inputElement.value === 'true') {
-                                        newValue = 'Oui';
-                                    } else if (inputElement.value === 'false') {
-                                        newValue = 'Non';
-                                    } else {
-                                        newValue = '';
-                                    }
-                                } else if (dataType === 'date' && inputElement.value) {
+                                if (dataType === 'date' && inputElement.value) {
                                     newValue = isoDateToFr(inputElement.value);
                                 } else {
                                     newValue = inputElement.value;
@@ -418,10 +399,7 @@
                                     );
 
                                     let dbValue;
-                                    if (dataType === 'boolean') {
-                                        dbValue = inputElement.value === 'true' ? true :
-                                                 inputElement.value === 'false' ? false : null;
-                                    } else if (dataType === 'date' && inputElement.value) {
+                                    if (dataType === 'date' && inputElement.value) {
                                         dbValue = inputElement.value;
                                     } else {
                                         dbValue = newValue || null;
