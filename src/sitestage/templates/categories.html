@@ -375,13 +375,15 @@
         </nav>
 
         <main>
+            <br>
+
             {% if selected_year %}
-                <!-- Informations sur l'année filtrée -->
-                <div class="year-info">
-                    <h3>Membres par catégories - Année {{ selected_year }}</h3>
-                    <p><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
-                    <p><a href="/categories" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir toutes les catégories (toutes années)</a></p>
-                </div>
+            <!-- Informations sur l'année filtrée -->
+            <div class="year-info">
+                <h3>Membres par catégories - Année {{ selected_year }}</h3>
+                <p><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
+                <p><a href="/categories" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir toutes les catégories (toutes années)</a></p>
+            </div>
             {% endif %}
 
             <div class="action-buttons">
