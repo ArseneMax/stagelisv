@@ -135,6 +135,7 @@
                 color: #333;
                 font-size: 13px;
                 word-break: break-word;
+                flex: 1;
             }
 
             .info-value.email {
@@ -195,6 +196,61 @@
                 padding: 20px;
             }
 
+            /* Styles pour l'édition - copiés depuis index.html */
+            .editable {
+                cursor: pointer;
+                border-radius: 3px;
+                transition: background-color 0.2s ease;
+            }
+
+            .editable:hover {
+                background-color: #e9ecef;
+            }
+
+            .editing {
+                padding: 0 !important;
+            }
+
+            .editing input, .editing select, .editing textarea {
+                width: 100%;
+                padding: 4px;
+                box-sizing: border-box;
+                height: 100%;
+                border: 1px solid #005493;
+                border-radius: 3px;
+                font-size: 13px;
+            }
+
+            .editing textarea {
+                height: 60px;
+                resize: none;
+            }
+
+            .save-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px;
+                border-radius: 4px;
+                display: none;
+                z-index: 1000;
+            }
+
+            .save-all-button {
+                background-color: #28a745;
+                border-color: #28a745;
+                color: white;
+                font-weight: bold;
+            }
+
+            .save-all-button:hover {
+                background-color: #218838;
+                border-color: #218838;
+                color: white;
+            }
+
             @media (max-width: 768px) {
                 .members-grid {
                     grid-template-columns: 1fr;
@@ -203,7 +259,6 @@
                 .categories-container {
                     margin: 10px;
                     padding: 10px;
-
                 }
 
                 .info-row {
@@ -261,8 +316,13 @@
                 <button onclick="window.location.href='/categories-by-year'" class="nav-button2">
                      Catégories par année
                 </button>
+                {% if current_user.is_admin() %}
+                    <button id="saveAllButton" class="save-all-button">Sauvegarder toutes les modifications</button>
+                {% endif %}
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
             </div>
+
+            <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
             <div class="categories-container">
                 {% if selected_year %}
@@ -294,28 +354,31 @@
                     {% if categories.permanents %}
                         <div class="members-grid">
                             {% for membre in categories.permanents %}
-                                <div class="member-card">
+                                <div class="member-card"
+                                     data-nom="{{ membre.nom }}"
+                                     data-prenom="{{ membre.prenom }}"
+                                     data-date-arrivee-original="">
                                     <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
                                     <div class="member-info">
                                         <div class="info-row">
                                             <span class="info-label">Statut :</span>
-                                            <span class="info-value">{{ membre.statut }}</span>
+                                            <span class="info-value editable" data-column="Statut">{{ membre.statut }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Équipe :</span>
-                                            <span class="info-value">{{ membre.equipe }}</span>
+                                            <span class="info-value editable" data-column="Équipe">{{ membre.equipe }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Nom équipe :</span>
-                                            <span class="info-value">{{ membre.nom_equipe }}</span>
+                                            <span class="info-value editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Section disciplinaire :</span>
-                                            <span class="info-value">{{ membre.section_disciplinaire }}</span>
+                                            <span class="info-value editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Email :</span>
-                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -338,36 +401,39 @@
                     {% if categories.temporaires %}
                         <div class="members-grid">
                             {% for membre in categories.temporaires %}
-                                <div class="member-card">
+                                <div class="member-card"
+                                     data-nom="{{ membre.nom }}"
+                                     data-prenom="{{ membre.prenom }}"
+                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
                                     <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
                                     <div class="member-info">
                                         <div class="info-row">
                                             <span class="info-label">Statut :</span>
-                                            <span class="info-value">{{ membre.statut }}</span>
+                                            <span class="info-value editable" data-column="Statut">{{ membre.statut }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Équipe :</span>
-                                            <span class="info-value">{{ membre.equipe }}</span>
+                                            <span class="info-value editable" data-column="Équipe">{{ membre.equipe }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Nom équipe :</span>
-                                            <span class="info-value">{{ membre.nom_equipe }}</span>
+                                            <span class="info-value editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Section disciplinaire :</span>
-                                            <span class="info-value">{{ membre.section_disciplinaire }}</span>
+                                            <span class="info-value editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Date d'arrivée :</span>
-                                            <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                            <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Date de départ :</span>
-                                            <span class="info-value date">{{ membre.date_depart }}</span>
+                                            <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Email :</span>
-                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -382,7 +448,7 @@
                 <div class="category-section">
                     <div class="category-header">
                         <h2 class="category-title">
-                            <span class="category-icons">🎓</span> Doctorants
+                            <span class="category-icons"></span> Doctorants
                         </h2>
                         <span class="member-count">{{ categories.doctorants|length }} membre(s)</span>
                     </div>
@@ -390,58 +456,61 @@
                     {% if categories.doctorants %}
                         <div class="members-grid">
                             {% for membre in categories.doctorants %}
-                                <div class="member-card">
+                                <div class="member-card"
+                                     data-nom="{{ membre.nom }}"
+                                     data-prenom="{{ membre.prenom }}"
+                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
                                     <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
                                     <div class="member-info">
                                         <div class="info-row">
                                             <span class="info-label">Caution :</span>
-                                            <span class="info-value">{{ membre.caution }}</span>
+                                            <span class="info-value editable" data-column="Caution">{{ membre.caution }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Bureau :</span>
-                                            <span class="info-value">{{ membre.bureau }}</span>
+                                            <span class="info-value editable" data-column="Bureau">{{ membre.bureau }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Abandon :</span>
-                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %}">{{ membre.abandon }}</span>
+                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %} editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon }}</span>
                                         </div>
                                         {% if membre.date_abandon %}
                                         <div class="info-row">
                                             <span class="info-label">Date d'abandon :</span>
-                                            <span class="info-value date">{{ membre.date_abandon }}</span>
+                                            <span class="info-value date editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon }}</span>
                                         </div>
                                         {% endif %}
                                         <div class="info-row">
                                             <span class="info-label">Date soutenance :</span>
-                                            <span class="info-value date">{{ membre.date_soutenance }}</span>
+                                            <span class="info-value date editable" data-column="Date_Soutenance" data-type="date">{{ membre.date_soutenance }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Avis ZRR positif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_positif }}</span>
+                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_positif }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Avis ZRR négatif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_negatif }}</span>
+                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_négatif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_negatif }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Établissement :</span>
-                                            <span class="info-value">{{ membre.etablissement_origine }}</span>
+                                            <span class="info-value editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Diplôme préparé :</span>
-                                            <span class="info-value">{{ membre.diplome_prepare }}</span>
+                                            <span class="info-value editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Date d'arrivée :</span>
-                                            <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                            <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Date de départ :</span>
-                                            <span class="info-value date">{{ membre.date_depart }}</span>
+                                            <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Email :</span>
-                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -464,50 +533,53 @@
                     {% if categories.stagiaires %}
                         <div class="members-grid">
                             {% for membre in categories.stagiaires %}
-                                <div class="member-card">
+                                <div class="member-card"
+                                     data-nom="{{ membre.nom }}"
+                                     data-prenom="{{ membre.prenom }}"
+                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
                                     <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
                                     <div class="member-info">
                                         <div class="info-row">
                                             <span class="info-label">Abandon :</span>
-                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %}">{{ membre.abandon }}</span>
+                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %} editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon }}</span>
                                         </div>
                                         {% if membre.date_abandon %}
                                         <div class="info-row">
                                             <span class="info-label">Date d'abandon :</span>
-                                            <span class="info-value date">{{ membre.date_abandon }}</span>
+                                            <span class="info-value date editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon }}</span>
                                         </div>
                                         {% endif %}
                                         <div class="info-row">
                                             <span class="info-label">Avis ZRR positif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_positif }}</span>
+                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_positif }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Avis ZRR négatif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %}">{{ membre.avis_zrr_negatif }}</span>
+                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_négatif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_negatif }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Établissement :</span>
-                                            <span class="info-value">{{ membre.etablissement_origine }}</span>
+                                            <span class="info-value editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Diplôme préparé :</span>
-                                            <span class="info-value">{{ membre.diplome_prepare }}</span>
+                                            <span class="info-value editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Date d'arrivée :</span>
-                                            <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                            <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Date de départ :</span>
-                                            <span class="info-value date">{{ membre.date_depart }}</span>
+                                            <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Sujet de stage :</span>
-                                            <span class="info-value">{{ membre.sujet_stage }}</span>
+                                            <span class="info-value editable" data-column="Sujet_du_stage_de_la_visite_de_thèse" data-type="textarea">{{ membre.sujet_stage }}</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="info-label">Email :</span>
-                                            <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -530,32 +602,35 @@
 
                     <div class="members-grid">
                         {% for membre in categories.autres %}
-                            <div class="member-card">
+                            <div class="member-card"
+                                 data-nom="{{ membre.nom }}"
+                                 data-prenom="{{ membre.prenom }}"
+                                 data-date-arrivee-original="{{ membre.date_arrivee }}">
                                 <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
                                 <div class="member-info">
                                     <div class="info-row">
                                         <span class="info-label">Statut :</span>
-                                        <span class="info-value">{{ membre.statut }}</span>
+                                        <span class="info-value editable" data-column="Statut">{{ membre.statut }}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Nature contrat :</span>
-                                        <span class="info-value">{{ membre.nature_contrat }}</span>
+                                        <span class="info-value editable" data-column="Nature_du_contrat">{{ membre.nature_contrat }}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Équipe :</span>
-                                        <span class="info-value">{{ membre.equipe }}</span>
+                                        <span class="info-value editable" data-column="Équipe">{{ membre.equipe }}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Date d'arrivée :</span>
-                                        <span class="info-value date">{{ membre.date_arrivee }}</span>
+                                        <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Date de départ :</span>
-                                        <span class="info-value date">{{ membre.date_depart }}</span>
+                                        <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Email :</span>
-                                        <span class="info-value email">{{ membre.adresse_mail }}</span>
+                                        <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -579,5 +654,214 @@
                 </div>
             </div>
         </footer>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const editableCells = document.querySelectorAll('.editable');
+                const saveAllButton = document.getElementById('saveAllButton');
+                const notification = document.getElementById('saveNotification');
+                let changedCells = [];
+
+                {% if current_user.is_admin() %}
+                    function frDateToISO(frDate) {
+                        if (!frDate) return '';
+                        const parts = frDate.split('/');
+                        if (parts.length !== 3) return '';
+                        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    }
+
+                    function isoDateToFr(isoDate) {
+                        if (!isoDate) return '';
+                        const date = new Date(isoDate);
+                        return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                    }
+
+                    editableCells.forEach(cell => {
+                        cell.addEventListener('dblclick', function() {
+                            if (cell.classList.contains('editing')) return;
+
+                            const value = cell.textContent.trim();
+                            const dataType = cell.getAttribute('data-type') || 'text';
+                            const options = cell.getAttribute('data-options');
+                            cell.classList.add('editing');
+
+                            let inputElement;
+
+                            if (dataType === 'select' && options) {
+                                inputElement = document.createElement('select');
+                                const optionEmpty = document.createElement('option');
+                                optionEmpty.value = '';
+                                optionEmpty.textContent = '';
+                                inputElement.appendChild(optionEmpty);
+
+                                options.split(',').forEach(option => {
+                                    const optionElement = document.createElement('option');
+                                    optionElement.value = option.trim();
+                                    optionElement.textContent = option.trim();
+                                    inputElement.appendChild(optionElement);
+                                });
+
+                                inputElement.value = value;
+                            } else if (dataType === 'date') {
+                                inputElement = document.createElement('input');
+                                inputElement.type = 'date';
+                                if (value) {
+                                    inputElement.value = frDateToISO(value);
+                                }
+                            } else if (dataType === 'textarea') {
+                                inputElement = document.createElement('textarea');
+                                inputElement.value = value;
+                            } else {
+                                inputElement = document.createElement('input');
+                                inputElement.type = 'text';
+                                inputElement.value = value;
+                            }
+
+                            const oldContent = cell.innerHTML;
+                            cell.innerHTML = '';
+                            cell.appendChild(inputElement);
+                            inputElement.focus();
+
+                            inputElement.addEventListener('blur', finishEditing);
+                            inputElement.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter' && dataType !== 'textarea') {
+                                    finishEditing();
+                                } else if (e.key === 'Escape') {
+                                    cell.innerHTML = oldContent;
+                                    cell.classList.remove('editing');
+                                }
+                            });
+
+                            function finishEditing() {
+                                let newValue;
+
+                                if (dataType === 'date' && inputElement.value) {
+                                    newValue = isoDateToFr(inputElement.value);
+                                } else {
+                                    newValue = inputElement.value;
+                                }
+
+                                if (newValue !== value) {
+                                    // Récupérer les identifiants uniques de la carte membre
+                                    const memberCard = cell.closest('.member-card');
+                                    const nom = memberCard.getAttribute('data-nom');
+                                    const prenom = memberCard.getAttribute('data-prenom');
+                                    const dateArriveeOriginal = memberCard.getAttribute('data-date-arrivee-original');
+                                    const column = cell.getAttribute('data-column');
+
+                                    // Convertir la date d'arrivée au format ISO si nécessaire
+                                    let dateArriveeISO = null;
+                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
+                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
+                                    }
+
+                                    console.log('Identifiants:', {
+                                        nom: nom,
+                                        prenom: prenom,
+                                        dateArriveeOriginal: dateArriveeOriginal,
+                                        dateArriveeISO: dateArriveeISO,
+                                        column: column
+                                    });
+
+                                    const existingChange = changedCells.find(change =>
+                                        change.nom === nom && change.prenom === prenom &&
+                                        change.date_arrivee === dateArriveeISO && change.column === column
+                                    );
+
+                                    let dbValue;
+                                    if (dataType === 'date' && inputElement.value) {
+                                        dbValue = inputElement.value;
+                                    } else {
+                                        dbValue = newValue || null;
+                                    }
+
+                                    if (existingChange) {
+                                        existingChange.value = dbValue;
+                                    } else {
+                                        changedCells.push({
+                                            nom: nom,
+                                            prenom: prenom,
+                                            date_arrivee: dateArriveeISO,
+                                            column: column,
+                                            value: dbValue
+                                        });
+                                    }
+
+                                    // IMPORTANT: Mettre à jour les attributs data de la carte si on modifie le nom ou prénom
+                                    if (column === 'Nom') {
+                                        memberCard.setAttribute('data-nom', newValue);
+                                        console.log('Mise à jour data-nom vers:', newValue);
+                                        // Mettre à jour aussi le nom affiché
+                                        const memberNameElement = memberCard.querySelector('.member-name');
+                                        const currentText = memberNameElement.textContent;
+                                        const parts = currentText.split(' ');
+                                        if (parts.length >= 2) {
+                                            memberNameElement.textContent = `${parts[0]} ${newValue}`;
+                                        }
+                                    } else if (column === 'Prénom') {
+                                        memberCard.setAttribute('data-prenom', newValue);
+                                        console.log('Mise à jour data-prenom vers:', newValue);
+                                        // Mettre à jour aussi le prénom affiché
+                                        const memberNameElement = memberCard.querySelector('.member-name');
+                                        const currentText = memberNameElement.textContent;
+                                        const parts = currentText.split(' ');
+                                        if (parts.length >= 2) {
+                                            memberNameElement.textContent = `${newValue} ${parts.slice(1).join(' ')}`;
+                                        }
+                                    }
+                                }
+
+                                cell.innerHTML = newValue;
+                                cell.classList.remove('editing');
+                            }
+                        });
+                    });
+
+                    if (saveAllButton) {
+                        saveAllButton.addEventListener('click', function() {
+                            if (changedCells.length === 0) {
+                                alert('Aucune modification à sauvegarder');
+                                return;
+                            }
+
+                            console.log('Modifications à envoyer:', changedCells);
+
+                            fetch('/update_info', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ changes: changedCells })
+                            })
+                            .then(response => {
+                                console.log('Réponse reçue:', response);
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Données de réponse:', data);
+                                if (data.success) {
+                                    notification.style.display = 'block';
+                                    setTimeout(() => {
+                                        notification.style.display = 'none';
+                                    }, 3000);
+                                    changedCells = [];
+                                } else {
+                                    alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur fetch:', error);
+                                alert('Une erreur est survenue lors de la sauvegarde');
+                            });
+                        });
+                    }
+                {% else %}
+                    editableCells.forEach(cell => {
+                        cell.classList.remove('editable');
+                        cell.style.cursor = 'default';
+                    });
+                {% endif %}
+            });
+        </script>
     </body>
 </html>
