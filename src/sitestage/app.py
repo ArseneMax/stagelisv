@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category,get_membre_fields
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields
 from .decorators import admin_required
 
 # Chargement des variables d'environnement
@@ -23,9 +23,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'web_ui.login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_user(user_id)
+
 
 # Blueprint pour l'interface web
 web_ui = Blueprint('web_ui', __name__, url_prefix="/")
@@ -37,37 +39,29 @@ class LoginForm(FlaskForm):
     password = PasswordField("Mot de passe", validators=[DataRequired(), Length(min=3, max=50)])
     submit = SubmitField("Connexion")
 
+
 class SignupForm(FlaskForm):
     username = StringField("Nom d'utilisateur", validators=[DataRequired(), Length(min=3, max=50)])
     password = PasswordField("Mot de passe", validators=[DataRequired(), Length(min=3, max=50)])
     submit = SubmitField("S'inscrire")
 
+
 # Routes
 @web_ui.route('/')
 def index():
-    return render_template('index.html', infos=select_all_infos())
 
-
-@web_ui.route('/filter-by-year', methods=['GET', 'POST'])
-def filter_by_year_page():
-    if request.method == 'POST':
-        year = request.form.get('year', type=int)
-        if year:
-            return redirect(url_for('web_ui.year_view', year=year))
-
+    year = request.args.get('year', type=int)
     available_years = get_available_years()
-    return render_template('filter_year.html', available_years=available_years)
 
+    if year:
+        infos = select_infos_by_year(year)
+    else:
+        infos = select_all_infos()
 
-
-@web_ui.route('/year/<int:year>')
-def year_view(year):
-    infos = select_infos_by_year(year)
-    available_years = get_available_years()
-    return render_template('year_view.html',
+    return render_template('index.html',
                            infos=infos,
-                           year=year,
-                           available_years=available_years)
+                           available_years=available_years,
+                           selected_year=year)
 
 
 @web_ui.route('/categories')
@@ -92,18 +86,6 @@ def categories():
                            selected_year=year)
 
 
-
-@web_ui.route('/categories-by-year', methods=['GET', 'POST'])
-def categories_by_year_page():
-    if request.method == 'POST':
-        year = request.form.get('year', type=int)
-        if year:
-            return redirect(url_for('web_ui.categories', year=year))
-
-    available_years = get_available_years()
-    return render_template('categories_filter_year.html', available_years=available_years)
-
-
 @web_ui.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -119,11 +101,13 @@ def login():
         flash("Nom d'utilisateur ou mot de passe incorrect.")
     return render_template('login.html', form=form)
 
+
 @web_ui.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect('/login')
+
 
 @web_ui.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -143,6 +127,7 @@ def signup():
             return redirect('/signup')
     return render_template('signup.html', form=form)
 
+
 @web_ui.route('/update_info', methods=['POST'])
 def update_info():
     data = request.json
@@ -155,10 +140,12 @@ def update_info():
     success = update_db_info(conn, changes)
     return jsonify({'success': success})
 
+
 @web_ui.route('/admin/users', methods=['GET'])
 def admin_users():
     users = User.get_all_users()
     return render_template('admin_users.html', users=users, current_user_id=current_user.id)
+
 
 @web_ui.route('/admin/change_role/<int:user_id>', methods=['POST'])
 def change_role(user_id):
@@ -173,6 +160,7 @@ def change_role(user_id):
     flash('Rôle modifié avec succès.' if success else 'Erreur lors de la modification du rôle.')
     return redirect(url_for('web_ui.admin_users'))
 
+
 @web_ui.route('/admin/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
     if int(user_id) == int(current_user.id):
@@ -181,5 +169,6 @@ def delete_user(user_id):
     success = User.delete_user(user_id)
     flash('Utilisateur supprimé avec succès.' if success else 'Erreur lors de la suppression de l\'utilisateur.')
     return redirect(url_for('web_ui.admin_users'))
+
 
 app.register_blueprint(web_ui)

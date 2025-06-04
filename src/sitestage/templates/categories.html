@@ -48,6 +48,10 @@
                 border: 1px solid #005493;
             }
 
+            button:focus, button:active {
+                outline: 1px dotted #005493;
+            }
+
             .categories-container {
                 max-width: 1200px;
                 margin: 20px auto;
@@ -160,33 +164,12 @@
                 font-weight: bold;
             }
 
-            .navigation-buttons {
+            .action-buttons {
                 margin-bottom: 20px;
-                text-align: center;
-            }
-
-            .nav-button {
-                background-color: #6c757d;
-                border-color: #6c757d;
-                color: white;
-                margin: 0 10px;
-            }
-
-            .nav-button2 {
-                background-color: #28a745;
-                border-color: #28a745;
-                color: white;
-                margin: 0 10px;
-            }
-
-            .nav-button:hover {
-                background-color: #545b62;
-                border-color: #545b62;
-                color: white;
-            }
-
-            .category-icons {
-                font-size: 1.2em;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
             }
 
             .empty-category {
@@ -251,6 +234,86 @@
                 color: white;
             }
 
+            /* Styles pour le dropdown de sélection d'année */
+            .year-filter {
+                position: relative;
+                display: inline-block;
+            }
+
+            .year-filter select {
+                background-color: white;
+                color: #005493;
+                border: 1px solid #005493;
+                border-radius: 4px;
+                padding: 8px 12px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 14px;
+                min-width: 180px;
+                height: 40px;
+                width: auto;
+            }
+
+            .year-filter select:hover {
+                background-color: #f8f9fa;
+            }
+
+            .year-filter select:focus {
+                outline: 1px dotted #005493;
+                background-color: #005493;
+                color: white;
+            }
+
+            /* Styles pour la navigation - repris depuis index.html */
+            #menu_principal .menu_n1_desktop {
+                color: white !important;
+                text-decoration: none;
+                padding: 10px 15px;
+                border-radius: 0;
+                display: block;
+                transition: all 0.3s ease;
+            }
+
+            /* Style par défaut pour les liens inactifs */
+            #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop {
+                background-color: #4f8f00 !important;
+            }
+
+            /* Hover pour les liens inactifs */
+            #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop:hover {
+                color: #005493 !important;
+                background-color: #4f8f00 !important;
+            }
+
+            /* Style pour les liens actifs */
+            #menu_principal .menu_principal-actif .menu_n1_desktop,
+            #menu_principal .menu_principal-actif.UVSQNEWS > a,
+            #menu_principal .menu_principal-actif.UVSQNEWS > a span {
+                color: white !important;
+                background-color: #005493 !important;
+            }
+
+            /* Style pour l'information de l'année sélectionnée */
+            .year-info {
+                background-color: #d4edda;
+                border: 1px solid #c3e6cb;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .year-info h3 {
+                color: #155724;
+                margin: 0 0 10px 0;
+                font-size: 20px;
+            }
+
+            .year-info p {
+                color: #155724;
+                margin: 5px 0;
+            }
+
             @media (max-width: 768px) {
                 .members-grid {
                     grid-template-columns: 1fr;
@@ -267,6 +330,15 @@
 
                 .info-label {
                     min-width: auto;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .year-filter select {
+                    width: 100%;
                 }
             }
         </style>
@@ -300,46 +372,52 @@
         <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
             <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
                 <li class="close-button-main"></li>
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
+                        <span>Tableau</span>
+                    </a>
+                </li>
                 <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false" role="button">
-                        <span>Membres par catégories</span>
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/categories" aria-expanded="false" role="button">
+                        <span>Effectif</span>
                     </a>
                 </li>
             </ul>
         </nav>
 
         <main>
-            <div class="navigation-buttons">
-                <button onclick="window.location.href='/'" class="nav-button">
-                    ← Retour au tableau complet
-                </button>
-                <button onclick="window.location.href='/categories-by-year'" class="nav-button2">
-                     Catégories par année
-                </button>
+            {% if selected_year %}
+                <!-- Informations sur l'année filtrée -->
+                <div class="year-info">
+                    <h3>Membres par catégories - Année {{ selected_year }}</h3>
+                    <p><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
+                    <p><a href="/categories" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir toutes les catégories (toutes années)</a></p>
+                </div>
+            {% endif %}
 
-                    <button id="saveAllButton" class="save-all-button">Sauvegarder toutes les modifications</button>
-
+            <div class="action-buttons">
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
+
+                <button id="saveAllButton" class="save-all-button">Sauvegarder toutes les modifications</button>
+
+                <!-- Sélecteur d'année -->
+                <div class="year-filter">
+                    <select id="yearSelect" onchange="filterByYear()">
+                        <option value="">Toutes les années</option>
+                        {% if available_years %}
+                            {% for year in available_years[:5] %}
+                                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
             <div class="categories-container">
-                {% if selected_year %}
-                    <h1 style="text-align: center; margin-bottom: 30px;"> Membres du laboratoire par catégories - Année {{ selected_year }}</h1>
-
-                    <!-- Informations sur l'année filtrée -->
-                    <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin-bottom: 30px; text-align: center;">
-                        <h3 style="color: #155724; margin: 0 0 10px 0;"> Filtrage par année {{ selected_year }}</h3>
-                        <p style="color: #155724; margin: 5px 0;"><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
-                        <p style="margin: 10px 0;">
-                            <a href="{{ url_for('web_ui.categories') }}" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">
-                                Voir toutes les catégories (toutes années)
-                            </a>
-                        </p>
-                    </div>
-                {% else %}
-                    <h1 style="text-align: center; margin-bottom: 30px;"> Membres du laboratoire par catégories</h1>
+                {% if not selected_year %}
+                    <h1 style="text-align: center; margin-bottom: 30px;">Membres du laboratoire par catégories</h1>
                 {% endif %}
 
                 <!-- Membres permanents -->
@@ -656,210 +734,221 @@
         </footer>
 
         <script>
+            // Fonction pour filtrer par année
+            function filterByYear() {
+                const yearSelect = document.getElementById('yearSelect');
+                const selectedYear = yearSelect.value;
+
+                if (selectedYear) {
+                    window.location.href = `/categories?year=${selectedYear}`;
+                } else {
+                    window.location.href = '/categories';
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 const editableCells = document.querySelectorAll('.editable');
                 const saveAllButton = document.getElementById('saveAllButton');
                 const notification = document.getElementById('saveNotification');
                 let changedCells = [];
 
+                function frDateToISO(frDate) {
+                    if (!frDate) return '';
+                    const parts = frDate.split('/');
+                    if (parts.length !== 3) return '';
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
 
-                    function frDateToISO(frDate) {
-                        if (!frDate) return '';
-                        const parts = frDate.split('/');
-                        if (parts.length !== 3) return '';
-                        return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                    }
+                function isoDateToFr(isoDate) {
+                    if (!isoDate) return '';
+                    const date = new Date(isoDate);
+                    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                }
 
-                    function isoDateToFr(isoDate) {
-                        if (!isoDate) return '';
-                        const date = new Date(isoDate);
-                        return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-                    }
+                editableCells.forEach(cell => {
+                    cell.addEventListener('dblclick', function() {
+                        if (cell.classList.contains('editing')) return;
 
-                    editableCells.forEach(cell => {
-                        cell.addEventListener('dblclick', function() {
-                            if (cell.classList.contains('editing')) return;
+                        const value = cell.textContent.trim();
+                        const dataType = cell.getAttribute('data-type') || 'text';
+                        const options = cell.getAttribute('data-options');
+                        cell.classList.add('editing');
 
-                            const value = cell.textContent.trim();
-                            const dataType = cell.getAttribute('data-type') || 'text';
-                            const options = cell.getAttribute('data-options');
-                            cell.classList.add('editing');
+                        let inputElement;
 
-                            let inputElement;
+                        if (dataType === 'select' && options) {
+                            inputElement = document.createElement('select');
+                            const optionEmpty = document.createElement('option');
+                            optionEmpty.value = '';
+                            optionEmpty.textContent = '';
+                            inputElement.appendChild(optionEmpty);
 
-                            if (dataType === 'select' && options) {
-                                inputElement = document.createElement('select');
-                                const optionEmpty = document.createElement('option');
-                                optionEmpty.value = '';
-                                optionEmpty.textContent = '';
-                                inputElement.appendChild(optionEmpty);
-
-                                options.split(',').forEach(option => {
-                                    const optionElement = document.createElement('option');
-                                    optionElement.value = option.trim();
-                                    optionElement.textContent = option.trim();
-                                    inputElement.appendChild(optionElement);
-                                });
-
-                                inputElement.value = value;
-                            } else if (dataType === 'date') {
-                                inputElement = document.createElement('input');
-                                inputElement.type = 'date';
-                                if (value) {
-                                    inputElement.value = frDateToISO(value);
-                                }
-                            } else if (dataType === 'textarea') {
-                                inputElement = document.createElement('textarea');
-                                inputElement.value = value;
-                            } else {
-                                inputElement = document.createElement('input');
-                                inputElement.type = 'text';
-                                inputElement.value = value;
-                            }
-
-                            const oldContent = cell.innerHTML;
-                            cell.innerHTML = '';
-                            cell.appendChild(inputElement);
-                            inputElement.focus();
-
-                            inputElement.addEventListener('blur', finishEditing);
-                            inputElement.addEventListener('keydown', function(e) {
-                                if (e.key === 'Enter' && dataType !== 'textarea') {
-                                    finishEditing();
-                                } else if (e.key === 'Escape') {
-                                    cell.innerHTML = oldContent;
-                                    cell.classList.remove('editing');
-                                }
+                            options.split(',').forEach(option => {
+                                const optionElement = document.createElement('option');
+                                optionElement.value = option.trim();
+                                optionElement.textContent = option.trim();
+                                inputElement.appendChild(optionElement);
                             });
 
-                            function finishEditing() {
-                                let newValue;
+                            inputElement.value = value;
+                        } else if (dataType === 'date') {
+                            inputElement = document.createElement('input');
+                            inputElement.type = 'date';
+                            if (value) {
+                                inputElement.value = frDateToISO(value);
+                            }
+                        } else if (dataType === 'textarea') {
+                            inputElement = document.createElement('textarea');
+                            inputElement.value = value;
+                        } else {
+                            inputElement = document.createElement('input');
+                            inputElement.type = 'text';
+                            inputElement.value = value;
+                        }
 
-                                if (dataType === 'date' && inputElement.value) {
-                                    newValue = isoDateToFr(inputElement.value);
-                                } else {
-                                    newValue = inputElement.value;
-                                }
+                        const oldContent = cell.innerHTML;
+                        cell.innerHTML = '';
+                        cell.appendChild(inputElement);
+                        inputElement.focus();
 
-                                if (newValue !== value) {
-                                    // Récupérer les identifiants uniques de la carte membre
-                                    const memberCard = cell.closest('.member-card');
-                                    const nom = memberCard.getAttribute('data-nom');
-                                    const prenom = memberCard.getAttribute('data-prenom');
-                                    const dateArriveeOriginal = memberCard.getAttribute('data-date-arrivee-original');
-                                    const column = cell.getAttribute('data-column');
-
-                                    // Convertir la date d'arrivée au format ISO si nécessaire
-                                    let dateArriveeISO = null;
-                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
-                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
-                                    }
-
-                                    console.log('Identifiants:', {
-                                        nom: nom,
-                                        prenom: prenom,
-                                        dateArriveeOriginal: dateArriveeOriginal,
-                                        dateArriveeISO: dateArriveeISO,
-                                        column: column
-                                    });
-
-                                    const existingChange = changedCells.find(change =>
-                                        change.nom === nom && change.prenom === prenom &&
-                                        change.date_arrivee === dateArriveeISO && change.column === column
-                                    );
-
-                                    let dbValue;
-                                    if (dataType === 'date' && inputElement.value) {
-                                        dbValue = inputElement.value;
-                                    } else {
-                                        dbValue = newValue || null;
-                                    }
-
-                                    if (existingChange) {
-                                        existingChange.value = dbValue;
-                                    } else {
-                                        changedCells.push({
-                                            nom: nom,
-                                            prenom: prenom,
-                                            date_arrivee: dateArriveeISO,
-                                            column: column,
-                                            value: dbValue
-                                        });
-                                    }
-
-                                    // IMPORTANT: Mettre à jour les attributs data de la carte si on modifie le nom ou prénom
-                                    if (column === 'Nom') {
-                                        memberCard.setAttribute('data-nom', newValue);
-                                        console.log('Mise à jour data-nom vers:', newValue);
-                                        // Mettre à jour aussi le nom affiché
-                                        const memberNameElement = memberCard.querySelector('.member-name');
-                                        const currentText = memberNameElement.textContent;
-                                        const parts = currentText.split(' ');
-                                        if (parts.length >= 2) {
-                                            memberNameElement.textContent = `${parts[0]} ${newValue}`;
-                                        }
-                                    } else if (column === 'Prénom') {
-                                        memberCard.setAttribute('data-prenom', newValue);
-                                        console.log('Mise à jour data-prenom vers:', newValue);
-                                        // Mettre à jour aussi le prénom affiché
-                                        const memberNameElement = memberCard.querySelector('.member-name');
-                                        const currentText = memberNameElement.textContent;
-                                        const parts = currentText.split(' ');
-                                        if (parts.length >= 2) {
-                                            memberNameElement.textContent = `${newValue} ${parts.slice(1).join(' ')}`;
-                                        }
-                                    }
-                                }
-
-                                cell.innerHTML = newValue;
+                        inputElement.addEventListener('blur', finishEditing);
+                        inputElement.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter' && dataType !== 'textarea') {
+                                finishEditing();
+                            } else if (e.key === 'Escape') {
+                                cell.innerHTML = oldContent;
                                 cell.classList.remove('editing');
                             }
                         });
-                    });
 
-                    if (saveAllButton) {
-                        saveAllButton.addEventListener('click', function() {
-                            if (changedCells.length === 0) {
-                                alert('Aucune modification à sauvegarder');
-                                return;
+                        function finishEditing() {
+                            let newValue;
+
+                            if (dataType === 'date' && inputElement.value) {
+                                newValue = isoDateToFr(inputElement.value);
+                            } else {
+                                newValue = inputElement.value;
                             }
 
-                            console.log('Modifications à envoyer:', changedCells);
+                            if (newValue !== value) {
+                                // Récupérer les identifiants uniques de la carte membre
+                                const memberCard = cell.closest('.member-card');
+                                const nom = memberCard.getAttribute('data-nom');
+                                const prenom = memberCard.getAttribute('data-prenom');
+                                const dateArriveeOriginal = memberCard.getAttribute('data-date-arrivee-original');
+                                const column = cell.getAttribute('data-column');
 
-                            fetch('/update_info', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ changes: changedCells })
-                            })
-                            .then(response => {
-                                console.log('Réponse reçue:', response);
-                                return response.json();
-                            })
-                            .then(data => {
-                                console.log('Données de réponse:', data);
-                                if (data.success) {
-                                    notification.style.display = 'block';
-                                    setTimeout(() => {
-                                        notification.style.display = 'none';
-                                    }, 3000);
-                                    changedCells = [];
-                                } else {
-                                    alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
+                                // Convertir la date d'arrivée au format ISO si nécessaire
+                                let dateArriveeISO = null;
+                                if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
+                                    dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                 }
-                            })
-                            .catch(error => {
-                                console.error('Erreur fetch:', error);
-                                alert('Une erreur est survenue lors de la sauvegarde');
-                            });
-                        });
-                    }
 
-                    editableCells.forEach(cell => {
-                        cell.classList.remove('editable');
-                        cell.style.cursor = 'default';
+                                console.log('Identifiants:', {
+                                    nom: nom,
+                                    prenom: prenom,
+                                    dateArriveeOriginal: dateArriveeOriginal,
+                                    dateArriveeISO: dateArriveeISO,
+                                    column: column
+                                });
+
+                                const existingChange = changedCells.find(change =>
+                                    change.nom === nom && change.prenom === prenom &&
+                                    change.date_arrivee === dateArriveeISO && change.column === column
+                                );
+
+                                let dbValue;
+                                if (dataType === 'date' && inputElement.value) {
+                                    dbValue = inputElement.value;
+                                } else {
+                                    dbValue = newValue || null;
+                                }
+
+                                if (existingChange) {
+                                    existingChange.value = dbValue;
+                                } else {
+                                    changedCells.push({
+                                        nom: nom,
+                                        prenom: prenom,
+                                        date_arrivee: dateArriveeISO,
+                                        column: column,
+                                        value: dbValue
+                                    });
+                                }
+
+                                // IMPORTANT: Mettre à jour les attributs data de la carte si on modifie le nom ou prénom
+                                if (column === 'Nom') {
+                                    memberCard.setAttribute('data-nom', newValue);
+                                    console.log('Mise à jour data-nom vers:', newValue);
+                                    // Mettre à jour aussi le nom affiché
+                                    const memberNameElement = memberCard.querySelector('.member-name');
+                                    const currentText = memberNameElement.textContent;
+                                    const parts = currentText.split(' ');
+                                    if (parts.length >= 2) {
+                                        memberNameElement.textContent = `${parts[0]} ${newValue}`;
+                                    }
+                                } else if (column === 'Prénom') {
+                                    memberCard.setAttribute('data-prenom', newValue);
+                                    console.log('Mise à jour data-prenom vers:', newValue);
+                                    // Mettre à jour aussi le prénom affiché
+                                    const memberNameElement = memberCard.querySelector('.member-name');
+                                    const currentText = memberNameElement.textContent;
+                                    const parts = currentText.split(' ');
+                                    if (parts.length >= 2) {
+                                        memberNameElement.textContent = `${newValue} ${parts.slice(1).join(' ')}`;
+                                    }
+                                }
+                            }
+
+                            cell.innerHTML = newValue;
+                            cell.classList.remove('editing');
+                        }
                     });
+                });
+
+                if (saveAllButton) {
+                    saveAllButton.addEventListener('click', function() {
+                        if (changedCells.length === 0) {
+                            alert('Aucune modification à sauvegarder');
+                            return;
+                        }
+
+                        console.log('Modifications à envoyer:', changedCells);
+
+                        fetch('/update_info', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ changes: changedCells })
+                        })
+                        .then(response => {
+                            console.log('Réponse reçue:', response);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Données de réponse:', data);
+                            if (data.success) {
+                                notification.style.display = 'block';
+                                setTimeout(() => {
+                                    notification.style.display = 'none';
+                                }, 3000);
+                                changedCells = [];
+                            } else {
+                                alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur fetch:', error);
+                            alert('Une erreur est survenue lors de la sauvegarde');
+                        });
+                    });
+                }
+
+                editableCells.forEach(cell => {
+                    cell.classList.remove('editable');
+                    cell.style.cursor = 'default';
+                });
 
             });
         </script>
