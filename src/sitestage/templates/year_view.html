@@ -73,11 +73,46 @@
 
             .table-container {
                 overflow-x: auto;
+                overflow-y: visible;
                 max-width: 100%;
                 position: relative;
                 margin-bottom: 150px;
                 white-space: nowrap;
-                scrollbar-width: thin;
+
+
+                scrollbar-width: auto; /* Firefox */
+                scrollbar-color: #005493 #f1f1f1; /* Firefox */
+
+
+                overflow: auto;
+
+                /* Style pour Chrome/Safari/Edge */
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Styles pour les barres de scroll dans Chrome/Safari/Edge */
+            .table-container::-webkit-scrollbar {
+                height: 12px; /* Hauteur de la barre horizontale */
+                width: 12px;  /* Largeur de la barre verticale */
+            }
+
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb {
+                background: #005493;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
+
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #003d7a;
+            }
+
+            .table-container::-webkit-scrollbar-corner {
+                background: #f1f1f1;
             }
 
             html, body {
@@ -232,7 +267,7 @@
             <div class="year-info">
                 <h3> Personnel présent en {{ year }}</h3>
                 <p><strong>{{ infos|length }}</strong> employé(s) trouvé(s) pour cette année</p>
-                <p><em>Critères : Arrivés avant le 31/12/{{ year }} ET (non partis OU partis après le 01/01/{{ year }})</em></p>
+
             </div>
 
             <!-- Boutons de navigation -->
@@ -260,18 +295,17 @@
                 {% endif %}
             </div>
 
-            <!-- Boutons d'action (comme dans l'index original) -->
+
             <div class="action-buttons">
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
                 {% if current_user.is_admin() %}
                     <button id="saveAllButton">Sauvegarder toutes les modifications</button>
-                    <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
                 {% endif %}
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
-            <!-- Tableau des données (identique à l'index) -->
+
             <div class="table-container">
                 <table id="infoTable">
                     <thead>

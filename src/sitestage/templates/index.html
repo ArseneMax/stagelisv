@@ -72,11 +72,46 @@
 
             .table-container {
                 overflow-x: auto;
+                overflow-y: visible;
                 max-width: 100%;
                 position: relative;
                 margin-bottom: 150px;
                 white-space: nowrap;
-                scrollbar-width: thin;
+
+
+                scrollbar-width: auto; /* Firefox */
+                scrollbar-color: #005493 #f1f1f1; /* Firefox */
+
+
+                overflow: auto;
+
+                /* Style pour Chrome/Safari/Edge */
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Styles pour les barres de scroll dans Chrome/Safari/Edge */
+            .table-container::-webkit-scrollbar {
+                height: 12px;
+                width: 12px;
+            }
+
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb {
+                background: #005493;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
+
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #003d7a;
+            }
+
+            .table-container::-webkit-scrollbar-corner {
+                background: #f1f1f1;
             }
 
             html, body {
@@ -134,6 +169,18 @@
                 font-weight: bold;
             }
 
+            /* Style pour mobile */
+            @media (max-width: 768px) {
+                .table-container {
+                    /* Sur mobile, rendre les barres de scroll plus visibles */
+                    scrollbar-width: thin;
+                }
+
+                .table-container::-webkit-scrollbar {
+                    height: 16px;
+                    width: 16px;
+                }
+            }
         </style>
     </head>
 
@@ -183,17 +230,17 @@
                     <button onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
                 {% endif %}
 
-                <button onclick="window.location.href='/filter-by-year'" >
+                <button onclick="window.location.href='/filter-by-year'">
                      Filtrer par année
                 </button>
 
-                <button onclick="window.location.href='/categories'" >
+                <button onclick="window.location.href='/categories'">
                     Voir par catégories
                 </button>
 
-            <button onclick="window.location.href='/categories-by-year'" >
-                 Catégories par année
-            </button>
+                <button onclick="window.location.href='/categories-by-year'">
+                     Catégories par année
+                </button>
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
@@ -255,7 +302,7 @@
                         {% for info in infos %}
                         <tr data-nom="{{ info[0] if info[0] else '' }}"
                             data-prenom="{{ info[1] if info[1] else '' }}"
-                            data-date-arrivee="{{ info[16] if info[16] else '' }}">
+                            data-date-arrivee-original="{{ info[16] if info[16] else '' }}">
                             <!-- Informations personnelles -->
                             <td class="editable" data-column="Nom">{{ info[0] if info[0] else '' }}</td>
                             <td class="editable" data-column="Prénom">{{ info[1] if info[1] else '' }}</td>
@@ -463,46 +510,47 @@
                                 cell.innerHTML = newValue;
                                 cell.classList.remove('editing');
                             }
+                        });
+                    });
 
-                            // Et modifiez aussi le saveAllButton pour ajouter les logs :
-                            if (saveAllButton) {
-                                saveAllButton.addEventListener('click', function() {
-                                    if (changedCells.length === 0) {
-                                        alert('Aucune modification à sauvegarder');
-                                        return;
-                                    }
+                    if (saveAllButton) {
+                        saveAllButton.addEventListener('click', function() {
+                            if (changedCells.length === 0) {
+                                alert('Aucune modification à sauvegarder');
+                                return;
+                            }
 
-                                    console.log('Modifications à envoyer:', changedCells);  // Debug
+                            console.log('Modifications à envoyer:', changedCells);  // Debug
 
-                                    fetch('/update_info', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({ changes: changedCells })
-                                    })
-                                    .then(response => {
-                                        console.log('Réponse reçue:', response);  // Debug
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        console.log('Données de réponse:', data);  // Debug
-                                        if (data.success) {
-                                            notification.style.display = 'block';
-                                            setTimeout(() => {
-                                                notification.style.display = 'none';
-                                            }, 3000);
-                                            changedCells = [];
-                                        } else {
-                                            alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Erreur fetch:', error);
-                                        alert('Une erreur est survenue lors de la sauvegarde');
-                                    });
-                                });
-                            }});});
+                            fetch('/update_info', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ changes: changedCells })
+                            })
+                            .then(response => {
+                                console.log('Réponse reçue:', response);  // Debug
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Données de réponse:', data);  // Debug
+                                if (data.success) {
+                                    notification.style.display = 'block';
+                                    setTimeout(() => {
+                                        notification.style.display = 'none';
+                                    }, 3000);
+                                    changedCells = [];
+                                } else {
+                                    alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur fetch:', error);
+                                alert('Une erreur est survenue lors de la sauvegarde');
+                            });
+                        });
+                    }
                 {% else %}
                     editableCells.forEach(cell => {
                         cell.classList.remove('editable');
