@@ -44,13 +44,11 @@ class SignupForm(FlaskForm):
 
 # Routes
 @web_ui.route('/')
-@login_required
 def index():
     return render_template('index.html', infos=select_all_infos())
 
 
 @web_ui.route('/filter-by-year', methods=['GET', 'POST'])
-@login_required
 def filter_by_year_page():
     if request.method == 'POST':
         year = request.form.get('year', type=int)
@@ -63,7 +61,6 @@ def filter_by_year_page():
 
 
 @web_ui.route('/year/<int:year>')
-@login_required
 def year_view(year):
     infos = select_infos_by_year(year)
     available_years = get_available_years()
@@ -74,7 +71,6 @@ def year_view(year):
 
 
 @web_ui.route('/categories')
-@login_required
 def categories():
     """Route pour afficher les membres par catégories, avec filtrage optionnel par année"""
     year = request.args.get('year', type=int)
@@ -98,7 +94,6 @@ def categories():
 
 
 @web_ui.route('/categories-by-year', methods=['GET', 'POST'])
-@login_required
 def categories_by_year_page():
     if request.method == 'POST':
         year = request.form.get('year', type=int)
@@ -149,8 +144,6 @@ def signup():
     return render_template('signup.html', form=form)
 
 @web_ui.route('/update_info', methods=['POST'])
-@login_required
-@admin_required
 def update_info():
     data = request.json
     changes = data.get('changes', [])
@@ -163,15 +156,11 @@ def update_info():
     return jsonify({'success': success})
 
 @web_ui.route('/admin/users', methods=['GET'])
-@login_required
-@admin_required
 def admin_users():
     users = User.get_all_users()
     return render_template('admin_users.html', users=users, current_user_id=current_user.id)
 
 @web_ui.route('/admin/change_role/<int:user_id>', methods=['POST'])
-@login_required
-@admin_required
 def change_role(user_id):
     new_role = request.form.get('role')
     if int(user_id) == int(current_user.id) and new_role != 'admin':
@@ -185,8 +174,6 @@ def change_role(user_id):
     return redirect(url_for('web_ui.admin_users'))
 
 @web_ui.route('/admin/delete_user/<int:user_id>', methods=['POST'])
-@login_required
-@admin_required
 def delete_user(user_id):
     if int(user_id) == int(current_user.id):
         flash('Vous ne pouvez pas supprimer votre propre compte.')
