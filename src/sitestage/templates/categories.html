@@ -316,9 +316,9 @@
                 <button onclick="window.location.href='/categories-by-year'" class="nav-button2">
                      Catégories par année
                 </button>
-                {% if current_user.is_admin() %}
+
                     <button id="saveAllButton" class="save-all-button">Sauvegarder toutes les modifications</button>
-                {% endif %}
+
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
             </div>
 
@@ -662,7 +662,7 @@
                 const notification = document.getElementById('saveNotification');
                 let changedCells = [];
 
-                {% if current_user.is_admin() %}
+
                     function frDateToISO(frDate) {
                         if (!frDate) return '';
                         const parts = frDate.split('/');
@@ -855,12 +855,12 @@
                             });
                         });
                     }
-                {% else %}
+
                     editableCells.forEach(cell => {
                         cell.classList.remove('editable');
                         cell.style.cursor = 'default';
                     });
-                {% endif %}
+
             });
         </script>
     </body>

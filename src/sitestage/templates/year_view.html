@@ -298,9 +298,9 @@
 
             <div class="action-buttons">
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
-                {% if current_user.is_admin() %}
+
                     <button id="saveAllButton">Sauvegarder toutes les modifications</button>
-                {% endif %}
+
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
@@ -435,7 +435,7 @@
                 const notification = document.getElementById('saveNotification');
                 let changedCells = [];
 
-                {% if current_user.is_admin() %}
+
                     function frDateToISO(frDate) {
                         if (!frDate) return '';
                         const parts = frDate.split('/');
@@ -614,12 +614,12 @@
                             });
                         });
                     }
-                {% else %}
+
                     editableCells.forEach(cell => {
                         cell.classList.remove('editable');
                         cell.style.cursor = 'default';
                     });
-                {% endif %}
+
             });
         </script>
     </body>
