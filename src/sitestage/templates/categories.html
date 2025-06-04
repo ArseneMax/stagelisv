@@ -52,115 +52,106 @@
                 outline: 1px dotted #005493;
             }
 
+            /* Styles pour les tableaux - repris depuis index.html */
+            td, th {
+                text-align: center;
+                padding: 5px;
+                font-size: 12px;
+                min-width: 100px;
+                border: 1px solid #ddd;
+            }
+
+            thead {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 10;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                overflow-y: visible;
+                max-width: 100%;
+                position: relative;
+                margin-bottom: 20px;
+                white-space: nowrap;
+
+                scrollbar-width: auto; /* Firefox */
+                scrollbar-color: #005493 #f1f1f1; /* Firefox */
+
+                overflow: auto;
+
+                /* Style pour Chrome/Safari/Edge */
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Styles pour les barres de scroll dans Chrome/Safari/Edge */
+            .table-container::-webkit-scrollbar {
+                height: 12px;
+                width: 12px;
+            }
+
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb {
+                background: #005493;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
+
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #003d7a;
+            }
+
+            .table-container::-webkit-scrollbar-corner {
+                background: #f1f1f1;
+            }
+
+            html, body {
+                overflow-x: hidden;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
             .categories-container {
-                max-width: 1200px;
-                margin: 20px auto;
-                padding: 20px;
+                margin: 20px 0;
                 margin-bottom: 150px;
             }
 
             .category-section {
                 margin-bottom: 40px;
-                background-color: #f8f9fa;
-                border-radius: 8px;
-                padding: 20px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
 
             .category-header {
                 display: flex;
                 align-items: center;
+                justify-content: center;
+                padding: 15px;
+                background-color: #005493;
+                color: white;
                 margin-bottom: 20px;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #005493;
+                font-weight: bold;
             }
 
             .category-title {
                 font-size: 24px;
                 margin: 0;
                 margin-right: 15px;
+                color: white !important;
             }
 
             .member-count {
-                background-color: #005493;
+                background-color: rgba(255,255,255,0.2);
                 color: white;
                 padding: 5px 12px;
                 border-radius: 15px;
                 font-size: 14px;
-                font-weight: bold;
-            }
-
-            .members-grid {
-                display: grid;
-                gap: 20px;
-                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            }
-
-            .member-card {
-                background: white;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                padding: 15px;
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-            }
-
-            .member-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            }
-
-            .member-name {
-                font-size: 18px;
-                font-weight: bold;
-                color: #005493;
-                margin-bottom: 10px;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 5px;
-            }
-
-            .member-info {
-                display: grid;
-                gap: 5px;
-            }
-
-            .info-row {
-                display: flex;
-                padding: 3px 0;
-            }
-
-            .info-label {
-                font-weight: bold;
-                min-width: 140px;
-                color: #666;
-                font-size: 13px;
-            }
-
-            .info-value {
-                color: #333;
-                font-size: 13px;
-                word-break: break-word;
-                flex: 1;
-            }
-
-            .info-value.email {
-                color: #005493;
-                text-decoration: underline;
-            }
-
-            .info-value.date {
-                font-family: monospace;
-                background-color: #f8f9fa;
-                padding: 2px 4px;
-                border-radius: 3px;
-            }
-
-            .info-value.status-yes {
-                color: #28a745;
-                font-weight: bold;
-            }
-
-            .info-value.status-no {
-                color: #dc3545;
                 font-weight: bold;
             }
 
@@ -170,13 +161,6 @@
                 align-items: center;
                 gap: 10px;
                 flex-wrap: wrap;
-            }
-
-            .empty-category {
-                text-align: center;
-                color: #666;
-                font-style: italic;
-                padding: 20px;
             }
 
             /* Styles pour l'édition - copiés depuis index.html */
@@ -220,8 +204,6 @@
                 display: none;
                 z-index: 1000;
             }
-
-
 
             /* Styles pour le dropdown de sélection d'année */
             .year-filter {
@@ -303,22 +285,23 @@
                 margin: 5px 0;
             }
 
+            .empty-category {
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                padding: 20px;
+            }
+
+            /* Style pour mobile */
             @media (max-width: 768px) {
-                .members-grid {
-                    grid-template-columns: 1fr;
+                .table-container {
+                    /* Sur mobile, rendre les barres de scroll plus visibles */
+                    scrollbar-width: thin;
                 }
 
-                .categories-container {
-                    margin: 10px;
-                    padding: 10px;
-                }
-
-                .info-row {
-                    flex-direction: column;
-                }
-
-                .info-label {
-                    min-width: auto;
+                .table-container::-webkit-scrollbar {
+                    height: 16px;
+                    width: 16px;
                 }
 
                 .action-buttons {
@@ -328,6 +311,11 @@
 
                 .year-filter select {
                     width: 100%;
+                }
+
+                .categories-container {
+                    margin: 10px;
+                    padding: 10px;
                 }
             }
         </style>
@@ -389,7 +377,7 @@
             <div class="action-buttons">
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
 
-                <button id="saveAllButton" class="save-all-button">Sauvegarder toutes les modifications</button>
+                <button id="saveAllButton">Sauvegarder toutes les modifications</button>
 
                 <!-- Sélecteur d'année -->
                 <div class="year-filter">
@@ -412,300 +400,219 @@
                 {% endif %}
 
                 <!-- Membres permanents -->
+                {% if categories.permanents %}
                 <div class="category-section">
                     <div class="category-header">
-                        <h2 class="category-title">
-                            <span class="category-icons"></span> Membres permanents
-                        </h2>
+                        <h2 class="category-title">Membres permanents</h2>
                         <span class="member-count">{{ categories.permanents|length }} membre(s)</span>
                     </div>
 
-                    {% if categories.permanents %}
-                        <div class="members-grid">
-                            {% for membre in categories.permanents %}
-                                <div class="member-card"
-                                     data-nom="{{ membre.nom }}"
-                                     data-prenom="{{ membre.prenom }}"
-                                     data-date-arrivee-original="">
-                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
-                                    <div class="member-info">
-                                        <div class="info-row">
-                                            <span class="info-label">Statut :</span>
-                                            <span class="info-value editable" data-column="Statut">{{ membre.statut }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Équipe :</span>
-                                            <span class="info-value editable" data-column="Équipe">{{ membre.equipe }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Nom équipe :</span>
-                                            <span class="info-value editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Section disciplinaire :</span>
-                                            <span class="info-value editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Email :</span>
-                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="empty-category">Aucun membre permanent trouvé</div>
-                    {% endif %}
+                    <div class="table-container">
+                        <table>
+                            <tbody>
+                                {% for membre in categories.permanents %}
+                                <tr data-nom="{{ membre.nom }}"
+                                    data-prenom="{{ membre.prenom }}"
+                                    data-date-arrivee-original="">
+                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
+                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
+                                    <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
+                                    <td class="editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe if membre.nom_equipe else '' }}</td>
+                                    <td class="editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire if membre.section_disciplinaire else '' }}</td>
+                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                {% endif %}
 
                 <!-- Personnel temporaire -->
+                {% if categories.temporaires %}
                 <div class="category-section">
                     <div class="category-header">
-                        <h2 class="category-title">
-                            <span class="category-icons"></span> Personnel temporaire
-                        </h2>
+                        <h2 class="category-title">Personnel temporaire</h2>
                         <span class="member-count">{{ categories.temporaires|length }} membre(s)</span>
                     </div>
 
-                    {% if categories.temporaires %}
-                        <div class="members-grid">
-                            {% for membre in categories.temporaires %}
-                                <div class="member-card"
-                                     data-nom="{{ membre.nom }}"
-                                     data-prenom="{{ membre.prenom }}"
-                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
-                                    <div class="member-info">
-                                        <div class="info-row">
-                                            <span class="info-label">Statut :</span>
-                                            <span class="info-value editable" data-column="Statut">{{ membre.statut }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Équipe :</span>
-                                            <span class="info-value editable" data-column="Équipe">{{ membre.equipe }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Nom équipe :</span>
-                                            <span class="info-value editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Section disciplinaire :</span>
-                                            <span class="info-value editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Date d'arrivée :</span>
-                                            <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Date de départ :</span>
-                                            <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Email :</span>
-                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="empty-category">Aucun personnel temporaire trouvé</div>
-                    {% endif %}
+                    <div class="table-container">
+                        <table>
+                            <tbody>
+                                {% for membre in categories.temporaires %}
+                                <tr data-nom="{{ membre.nom }}"
+                                    data-prenom="{{ membre.prenom }}"
+                                    data-date-arrivee-original="{{ membre.date_arrivee }}">
+                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
+                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
+                                    <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
+                                    <td class="editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe if membre.nom_equipe else '' }}</td>
+                                    <td class="editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire if membre.section_disciplinaire else '' }}</td>
+                                    <td>
+                                        {% set date_range = [] %}
+                                        {% if membre.date_arrivee %}
+                                            {% set _ = date_range.append(membre.date_arrivee) %}
+                                        {% endif %}
+                                        {% if membre.date_depart %}
+                                            {% set _ = date_range.append(membre.date_depart) %}
+                                        {% endif %}
+                                        {{ date_range|join(' - ') if date_range else '' }}
+                                    </td>
+                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                {% endif %}
 
                 <!-- Doctorants -->
+                {% if categories.doctorants %}
                 <div class="category-section">
                     <div class="category-header">
-                        <h2 class="category-title">
-                            <span class="category-icons"></span> Doctorants
-                        </h2>
+                        <h2 class="category-title">Doctorants</h2>
                         <span class="member-count">{{ categories.doctorants|length }} membre(s)</span>
                     </div>
 
-                    {% if categories.doctorants %}
-                        <div class="members-grid">
-                            {% for membre in categories.doctorants %}
-                                <div class="member-card"
-                                     data-nom="{{ membre.nom }}"
-                                     data-prenom="{{ membre.prenom }}"
-                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
-                                    <div class="member-info">
-                                        <div class="info-row">
-                                            <span class="info-label">Caution :</span>
-                                            <span class="info-value editable" data-column="Caution">{{ membre.caution }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Bureau :</span>
-                                            <span class="info-value editable" data-column="Bureau">{{ membre.bureau }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Abandon :</span>
-                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %} editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon }}</span>
-                                        </div>
-                                        {% if membre.date_abandon %}
-                                        <div class="info-row">
-                                            <span class="info-label">Date d'abandon :</span>
-                                            <span class="info-value date editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon }}</span>
-                                        </div>
+                    <div class="table-container">
+                        <table>
+                            <tbody>
+                                {% for membre in categories.doctorants %}
+                                <tr data-nom="{{ membre.nom }}"
+                                    data-prenom="{{ membre.prenom }}"
+                                    data-date-arrivee-original="{{ membre.date_arrivee }}">
+                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
+                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable" data-column="Bureau">{{ membre.bureau if membre.bureau else '' }}</td>
+                                    <td class="editable" data-column="Caution">{{ membre.caution if membre.caution else '' }}</td>
+                                    <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon if membre.abandon else '' }}</td>
+                                    <td class="editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon if membre.date_abandon else '' }}</td>
+                                    <td class="editable" data-column="Date_Soutenance" data-type="date">{{ membre.date_soutenance if membre.date_soutenance else '' }}</td>
+                                    <td>
+                                        {% if membre.avis_zrr_positif == 'Oui' %}
+                                            Positif
+                                        {% elif membre.avis_zrr_negatif == 'Oui' %}
+                                            Négatif
+                                        {% else %}
+
                                         {% endif %}
-                                        <div class="info-row">
-                                            <span class="info-label">Date soutenance :</span>
-                                            <span class="info-value date editable" data-column="Date_Soutenance" data-type="date">{{ membre.date_soutenance }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Avis ZRR positif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_positif }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Avis ZRR négatif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_négatif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_negatif }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Établissement :</span>
-                                            <span class="info-value editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Diplôme préparé :</span>
-                                            <span class="info-value editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Date d'arrivée :</span>
-                                            <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Date de départ :</span>
-                                            <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Email :</span>
-                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="empty-category">Aucun doctorant trouvé</div>
-                    {% endif %}
+                                    </td>
+                                    <td class="editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine if membre.etablissement_origine else '' }}</td>
+                                    <td class="editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare if membre.diplome_prepare else '' }}</td>
+                                    <td>
+                                        {% set date_range = [] %}
+                                        {% if membre.date_arrivee %}
+                                            {% set _ = date_range.append(membre.date_arrivee) %}
+                                        {% endif %}
+                                        {% if membre.date_depart %}
+                                            {% set _ = date_range.append(membre.date_depart) %}
+                                        {% endif %}
+                                        {{ date_range|join(' - ') if date_range else '' }}
+                                    </td>
+                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                {% endif %}
 
                 <!-- Stagiaires -->
+                {% if categories.stagiaires %}
                 <div class="category-section">
                     <div class="category-header">
-                        <h2 class="category-title">
-                            <span class="category-icons"></span> Stagiaires
-                        </h2>
+                        <h2 class="category-title">Stagiaires</h2>
                         <span class="member-count">{{ categories.stagiaires|length }} membre(s)</span>
                     </div>
 
-                    {% if categories.stagiaires %}
-                        <div class="members-grid">
-                            {% for membre in categories.stagiaires %}
-                                <div class="member-card"
-                                     data-nom="{{ membre.nom }}"
-                                     data-prenom="{{ membre.prenom }}"
-                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
-                                    <div class="member-info">
-                                        <div class="info-row">
-                                            <span class="info-label">Abandon :</span>
-                                            <span class="info-value {% if membre.abandon == 'Oui' %}status-yes{% elif membre.abandon == 'Non' %}status-no{% endif %} editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon }}</span>
-                                        </div>
-                                        {% if membre.date_abandon %}
-                                        <div class="info-row">
-                                            <span class="info-label">Date d'abandon :</span>
-                                            <span class="info-value date editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon }}</span>
-                                        </div>
-                                        {% endif %}
-                                        <div class="info-row">
-                                            <span class="info-label">Avis ZRR positif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_positif == 'Oui' %}status-yes{% elif membre.avis_zrr_positif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_positif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_positif }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Avis ZRR négatif :</span>
-                                            <span class="info-value {% if membre.avis_zrr_negatif == 'Oui' %}status-yes{% elif membre.avis_zrr_negatif == 'Non' %}status-no{% endif %} editable" data-column="Avis_ZRR_négatif" data-type="select" data-options="Oui,Non">{{ membre.avis_zrr_negatif }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Établissement :</span>
-                                            <span class="info-value editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Diplôme préparé :</span>
-                                            <span class="info-value editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Date d'arrivée :</span>
-                                            <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Date de départ :</span>
-                                            <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Sujet de stage :</span>
-                                            <span class="info-value editable" data-column="Sujet_du_stage_de_la_visite_de_thèse" data-type="textarea">{{ membre.sujet_stage }}</span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="info-label">Email :</span>
-                                            <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="empty-category">Aucun stagiaire trouvé</div>
-                    {% endif %}
-                </div>
+                    <div class="table-container">
+                        <table>
+                            <tbody>
+                                {% for membre in categories.stagiaires %}
+                                <tr data-nom="{{ membre.nom }}"
+                                    data-prenom="{{ membre.prenom }}"
+                                    data-date-arrivee-original="{{ membre.date_arrivee }}">
+                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
+                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon if membre.abandon else '' }}</td>
+                                    <td class="editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon if membre.date_abandon else '' }}</td>
+                                    <td>
+                                        {% if membre.avis_zrr_positif == 'Oui' %}
+                                            Positif
+                                        {% elif membre.avis_zrr_negatif == 'Oui' %}
+                                            Négatif
+                                        {% else %}
 
-                <!-- Autres (statuts non classifiés) -->
+                                        {% endif %}
+                                    </td>
+                                    <td class="editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine if membre.etablissement_origine else '' }}</td>
+                                    <td class="editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare if membre.diplome_prepare else '' }}</td>
+                                    <td>
+                                        {% set date_range = [] %}
+                                        {% if membre.date_arrivee %}
+                                            {% set _ = date_range.append(membre.date_arrivee) %}
+                                        {% endif %}
+                                        {% if membre.date_depart %}
+                                            {% set _ = date_range.append(membre.date_depart) %}
+                                        {% endif %}
+                                        {{ date_range|join(' - ') if date_range else '' }}
+                                    </td>
+                                    <td class="editable" data-column="Sujet_du_stage_de_la_visite_de_thèse" data-type="textarea">{{ membre.sujet_stage if membre.sujet_stage else '' }}</td>
+                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Autres statuts -->
                 {% if categories.autres and categories.autres|length > 0 %}
                 <div class="category-section">
                     <div class="category-header">
-                        <h2 class="category-title">
-                            <span class="category-icons"></span> Autres statuts
-                        </h2>
+                        <h2 class="category-title">Autres statuts</h2>
                         <span class="member-count">{{ categories.autres|length }} membre(s)</span>
                     </div>
 
-                    <div class="members-grid">
-                        {% for membre in categories.autres %}
-                            <div class="member-card"
-                                 data-nom="{{ membre.nom }}"
-                                 data-prenom="{{ membre.prenom }}"
-                                 data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
-                                <div class="member-info">
-                                    <div class="info-row">
-                                        <span class="info-label">Statut :</span>
-                                        <span class="info-value editable" data-column="Statut">{{ membre.statut }}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">Nature contrat :</span>
-                                        <span class="info-value editable" data-column="Nature_du_contrat">{{ membre.nature_contrat }}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">Équipe :</span>
-                                        <span class="info-value editable" data-column="Équipe">{{ membre.equipe }}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">Date d'arrivée :</span>
-                                        <span class="info-value date editable" data-column="Date_d_arrivée_dans_l_unité" data-type="date">{{ membre.date_arrivee }}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">Date de départ :</span>
-                                        <span class="info-value date editable" data-column="Date_de_départ_de_l_unité" data-type="date">{{ membre.date_depart }}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">Email :</span>
-                                        <span class="info-value email editable" data-column="Adresse_mail">{{ membre.adresse_mail }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
+                    <div class="table-container">
+                        <table>
+                            <tbody>
+                                {% for membre in categories.autres %}
+                                <tr data-nom="{{ membre.nom }}"
+                                    data-prenom="{{ membre.prenom }}"
+                                    data-date-arrivee-original="{{ membre.date_arrivee }}">
+                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
+                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
+                                    <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
+                                    <td>
+                                        {% set date_range = [] %}
+                                        {% if membre.date_arrivee %}
+                                            {% set _ = date_range.append(membre.date_arrivee) %}
+                                        {% endif %}
+                                        {% if membre.date_depart %}
+                                            {% set _ = date_range.append(membre.date_depart) %}
+                                        {% endif %}
+                                        {{ date_range|join(' - ') if date_range else '' }}
+                                    </td>
+                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                    <td class="editable" data-column="Nature_du_contrat">{{ membre.nature_contrat if membre.nature_contrat else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+                {% endif %}
+
+                <!-- Message si aucune catégorie n'a de membres -->
+                {% if not (categories.permanents or categories.temporaires or categories.doctorants or categories.stagiaires or categories.autres) %}
+                <div class="empty-category">Aucun membre trouvé</div>
                 {% endif %}
             </div>
         </main>
@@ -759,6 +666,8 @@
                 editableCells.forEach(cell => {
                     cell.addEventListener('dblclick', function() {
                         if (cell.classList.contains('editing')) return;
+
+                        console.log('Double-clic détecté sur:', cell);
 
                         const value = cell.textContent.trim();
                         const dataType = cell.getAttribute('data-type') || 'text';
@@ -822,11 +731,11 @@
                             }
 
                             if (newValue !== value) {
-                                // Récupérer les identifiants uniques de la carte membre
-                                const memberCard = cell.closest('.member-card');
-                                const nom = memberCard.getAttribute('data-nom');
-                                const prenom = memberCard.getAttribute('data-prenom');
-                                const dateArriveeOriginal = memberCard.getAttribute('data-date-arrivee-original');
+                                // Récupérer les identifiants uniques de la ligne
+                                const row = cell.parentElement;
+                                const nom = row.getAttribute('data-nom');
+                                const prenom = row.getAttribute('data-prenom');
+                                const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
                                 const column = cell.getAttribute('data-column');
 
                                 // Convertir la date d'arrivée au format ISO si nécessaire
@@ -867,26 +776,18 @@
                                     });
                                 }
 
-                                // IMPORTANT: Mettre à jour les attributs data de la carte si on modifie le nom ou prénom
+                                // IMPORTANT: Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
                                 if (column === 'Nom') {
-                                    memberCard.setAttribute('data-nom', newValue);
+                                    row.setAttribute('data-nom', newValue);
                                     console.log('Mise à jour data-nom vers:', newValue);
-                                    // Mettre à jour aussi le nom affiché
-                                    const memberNameElement = memberCard.querySelector('.member-name');
-                                    const currentText = memberNameElement.textContent;
-                                    const parts = currentText.split(' ');
-                                    if (parts.length >= 2) {
-                                        memberNameElement.textContent = `${parts[0]} ${newValue}`;
-                                    }
                                 } else if (column === 'Prénom') {
-                                    memberCard.setAttribute('data-prenom', newValue);
+                                    row.setAttribute('data-prenom', newValue);
                                     console.log('Mise à jour data-prenom vers:', newValue);
-                                    // Mettre à jour aussi le prénom affiché
-                                    const memberNameElement = memberCard.querySelector('.member-name');
-                                    const currentText = memberNameElement.textContent;
-                                    const parts = currentText.split(' ');
-                                    if (parts.length >= 2) {
-                                        memberNameElement.textContent = `${newValue} ${parts.slice(1).join(' ')}`;
+                                } else if (column === 'Date_d_arrivée_dans_l_unité') {
+                                    // Mettre à jour aussi l'attribut data-date-arrivee-original si on modifie la date d'arrivée
+                                    if (dataType === 'date' && inputElement.value) {
+                                        row.setAttribute('data-date-arrivee-original', isoDateToFr(inputElement.value));
+                                        console.log('Mise à jour data-date-arrivee-original vers:', isoDateToFr(inputElement.value));
                                     }
                                 }
                             }
@@ -938,7 +839,7 @@
 
                 editableCells.forEach(cell => {
                     cell.classList.remove('editable');
-                    cell.style.cursor = 'default';
+                    cell.style.cursor = 'pointer';
                 });
 
             });
