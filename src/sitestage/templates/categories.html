@@ -52,36 +52,16 @@
                 outline: 1px dotted #005493;
             }
 
-            /* Styles pour les tableaux - repris depuis index.html */
-            td, th {
-                text-align: center;
-                padding: 5px;
-                font-size: 12px;
-                min-width: 100px;
-                border: 1px solid #ddd;
-            }
-
-            thead {
-                position: sticky;
-                top: 0;
-                background: white;
-                z-index: 10;
-            }
-
+            /* Styles pour les tableaux - version responsive améliorée */
             .table-container {
                 overflow-x: auto;
                 overflow-y: visible;
-                max-width: 100%;
+                max-width: 100vw; /* Limite à la largeur de l'écran */
                 position: relative;
                 margin-bottom: 20px;
-                white-space: nowrap;
 
                 scrollbar-width: auto; /* Firefox */
                 scrollbar-color: #005493 #f1f1f1; /* Firefox */
-
-                overflow: auto;
-
-                /* Style pour Chrome/Safari/Edge */
                 -webkit-overflow-scrolling: touch;
             }
 
@@ -117,6 +97,82 @@
             table {
                 border-collapse: collapse;
                 width: 100%;
+                min-width: 600px; /* Largeur minimale pour éviter une compression excessive */
+                table-layout: auto;
+            }
+
+            td, th {
+                text-align: left;
+                padding: 8px 6px;
+                font-size: 12px;
+                border: 1px solid #ddd;
+                word-wrap: break-word; /* Permet le retour à la ligne */
+                word-break: break-word; /* Force le retour à la ligne si nécessaire */
+                white-space: normal; /* Permet les retours à la ligne */
+                vertical-align: top;
+                max-width: 200px;
+                min-width: 100px;
+            }
+
+            /* Colonnes spécifiques avec des largeurs optimisées */
+
+            /* Colonnes courtes (noms, prénoms) */
+            td:nth-child(1), th:nth-child(1), /* Nom */
+            td:nth-child(2), th:nth-child(2)  /* Prénom */ {
+                max-width: 120px;
+                min-width: 100px; /* Maintenir le min-width à 100px */
+            }
+
+            /* Colonnes moyennes (statut, équipe) */
+            td:nth-child(3), th:nth-child(3), /* Statut */
+            td:nth-child(4), th:nth-child(4), /* Équipe */
+            td:nth-child(5), th:nth-child(5)  /* Nom équipe */ {
+                max-width: 150px;
+                min-width: 100px;
+            }
+
+            /* Colonnes de dates - gardent leur format pour les plages de dates */
+            td:nth-child(7), /* Colonne dates pour temporaires */
+            td:nth-child(11) /* Colonne dates pour doctorants */ {
+                max-width: 140px;
+                min-width: 120px;
+                white-space: nowrap; /* Les plages de dates ne se coupent pas */
+            }
+
+            /* Colonne email - dernière ou avant-dernière généralement */
+            td:last-child, th:last-child,
+            td:nth-last-child(2), th:nth-last-child(2) {
+                max-width: 180px;
+                min-width: 120px;
+                word-break: break-all; /* Pour les emails longs */
+            }
+
+            /* Colonnes de texte long (sujets et diplômes) */
+            td[data-column="Sujet_du_stage_de_la_visite_de_thèse"],
+            td[data-column="Diplôme_préparé"] {
+                max-width: 250px;
+                min-width: 150px;
+                line-height: 1.3;
+                word-wrap: break-word !important;
+                word-break: break-word !important;
+                white-space: normal !important;
+            }
+
+            /* En-têtes */
+            thead {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 10;
+            }
+
+            /* Amélioration de la lisibilité */
+            tbody tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+
+            tbody tr:hover {
+                background-color: #e3f2fd;
             }
 
             .categories-container {
@@ -163,7 +219,16 @@
                 flex-wrap: wrap;
             }
 
-            /* Styles pour l'édition - copiés depuis index.html */
+            .action-buttons button {
+                flex: none;
+                width: auto;
+            }
+
+            .year-filter {
+                flex: none;
+            }
+
+
             .editable {
                 cursor: pointer;
                 border-radius: 3px;
@@ -235,7 +300,7 @@
                 color: white;
             }
 
-            /* Styles pour la navigation - repris depuis index.html */
+            /* Styles pour la navigation */
             #menu_principal .menu_n1_desktop {
                 color: white !important;
                 text-decoration: none;
@@ -290,33 +355,6 @@
                 color: #666;
                 font-style: italic;
                 padding: 20px;
-            }
-
-            /* Style pour mobile */
-            @media (max-width: 768px) {
-                .table-container {
-                    /* Sur mobile, rendre les barres de scroll plus visibles */
-                    scrollbar-width: thin;
-                }
-
-                .table-container::-webkit-scrollbar {
-                    height: 16px;
-                    width: 16px;
-                }
-
-                .action-buttons {
-                    flex-direction: column;
-                    align-items: stretch;
-                }
-
-                .year-filter select {
-                    width: 100%;
-                }
-
-                .categories-container {
-                    margin: 10px;
-                    padding: 10px;
-                }
             }
         </style>
     </head>
