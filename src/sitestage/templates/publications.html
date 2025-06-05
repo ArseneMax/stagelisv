@@ -518,9 +518,12 @@
             {% if total_pages and total_pages > 1 %}
             <div class="pagination">
                 {% if current_page > 1 %}
-                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + (current_page-1)|string) }}">
-                        ← Précédent
-                    </a>
+                    {% set prev_url = request.url_root + 'publications?' %}
+                    {% if selected_year %}{% set prev_url = prev_url + 'year=' + selected_year|string + '&' %}{% endif %}
+                    {% if selected_author %}{% set prev_url = prev_url + 'author=' + selected_author|urlencode + '&' %}{% endif %}
+                    {% if selected_doc_type %}{% set prev_url = prev_url + 'doc_type=' + selected_doc_type|urlencode + '&' %}{% endif %}
+                    {% set prev_url = prev_url + 'page=' + (current_page-1)|string %}
+                    <a href="{{ prev_url }}">← Précédent</a>
                 {% else %}
                     <span class="disabled">← Précédent</span>
                 {% endif %}
@@ -529,7 +532,12 @@
                 {% set end_page = [total_pages, current_page + 2] | min %}
 
                 {% if start_page > 1 %}
-                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=1') }}">1</a>
+                    {% set page_url = request.url_root + 'publications?' %}
+                    {% if selected_year %}{% set page_url = page_url + 'year=' + selected_year|string + '&' %}{% endif %}
+                    {% if selected_author %}{% set page_url = page_url + 'author=' + selected_author|urlencode + '&' %}{% endif %}
+                    {% if selected_doc_type %}{% set page_url = page_url + 'doc_type=' + selected_doc_type|urlencode + '&' %}{% endif %}
+                    {% set page_url = page_url + 'page=1' %}
+                    <a href="{{ page_url }}">1</a>
                     {% if start_page > 2 %}
                         <span>...</span>
                     {% endif %}
@@ -539,9 +547,12 @@
                     {% if page_num == current_page %}
                         <span class="current">{{ page_num }}</span>
                     {% else %}
-                        <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + page_num|string) }}">
-                            {{ page_num }}
-                        </a>
+                        {% set page_url = request.url_root + 'publications?' %}
+                        {% if selected_year %}{% set page_url = page_url + 'year=' + selected_year|string + '&' %}{% endif %}
+                        {% if selected_author %}{% set page_url = page_url + 'author=' + selected_author|urlencode + '&' %}{% endif %}
+                        {% if selected_doc_type %}{% set page_url = page_url + 'doc_type=' + selected_doc_type|urlencode + '&' %}{% endif %}
+                        {% set page_url = page_url + 'page=' + page_num|string %}
+                        <a href="{{ page_url }}">{{ page_num }}</a>
                     {% endif %}
                 {% endfor %}
 
@@ -549,15 +560,21 @@
                     {% if end_page < total_pages - 1 %}
                         <span>...</span>
                     {% endif %}
-                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + total_pages|string) }}">
-                        {{ total_pages }}
-                    </a>
+                    {% set page_url = request.url_root + 'publications?' %}
+                    {% if selected_year %}{% set page_url = page_url + 'year=' + selected_year|string + '&' %}{% endif %}
+                    {% if selected_author %}{% set page_url = page_url + 'author=' + selected_author|urlencode + '&' %}{% endif %}
+                    {% if selected_doc_type %}{% set page_url = page_url + 'doc_type=' + selected_doc_type|urlencode + '&' %}{% endif %}
+                    {% set page_url = page_url + 'page=' + total_pages|string %}
+                    <a href="{{ page_url }}">{{ total_pages }}</a>
                 {% endif %}
 
                 {% if current_page < total_pages %}
-                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + (current_page+1)|string) }}">
-                        Suivant →
-                    </a>
+                    {% set next_url = request.url_root + 'publications?' %}
+                    {% if selected_year %}{% set next_url = next_url + 'year=' + selected_year|string + '&' %}{% endif %}
+                    {% if selected_author %}{% set next_url = next_url + 'author=' + selected_author|urlencode + '&' %}{% endif %}
+                    {% if selected_doc_type %}{% set next_url = next_url + 'doc_type=' + selected_doc_type|urlencode + '&' %}{% endif %}
+                    {% set next_url = next_url + 'page=' + (current_page+1)|string %}
+                    <a href="{{ next_url }}">Suivant →</a>
                 {% else %}
                     <span class="disabled">Suivant →</span>
                 {% endif %}
