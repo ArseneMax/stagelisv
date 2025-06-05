@@ -228,14 +228,15 @@ def update_db_info(conn, changes):
                 cursor.close()
                 return False
 
-            # Créer une clé unique pour cette personne
+            # Créer une clé unique pour cette personne basée sur les identifiants ORIGINAUX
+            # Ces identifiants ne changent jamais pendant le traitement
             person_key = f"{nom}|{prenom}|{date_arrivee or 'NULL'}"
 
             if person_key not in changes_by_person:
                 changes_by_person[person_key] = {
-                    'nom': nom,
-                    'prenom': prenom,
-                    'date_arrivee': date_arrivee,
+                    'nom_original': nom,  # Nom original pour identifier l'enregistrement
+                    'prenom_original': prenom,  # Prénom original pour identifier l'enregistrement
+                    'date_arrivee_original': date_arrivee,
                     'changes': []
                 }
 
@@ -248,17 +249,31 @@ def update_db_info(conn, changes):
 
         # Traiter chaque personne séparément
         for person_key, person_data in changes_by_person.items():
-            nom = person_data['nom']
-            prenom = person_data['prenom']
-            date_arrivee_originale = person_data['date_arrivee']
+            nom_original = person_data['nom_original']
+            prenom_original = person_data['prenom_original']
+            date_arrivee_originale = person_data['date_arrivee_original']
             person_changes = person_data['changes']
 
-            print(f"DEBUG: Traitement de {nom} {prenom} avec {len(person_changes)} modification(s)")
+            print(f"DEBUG: Traitement de {nom_original} {prenom_original} avec {len(person_changes)} modification(s)")
 
             # IMPORTANT : Trier les modifications pour traiter Date_d_arrivée_dans_l_unité en premier
-            person_changes.sort(key=lambda x: 0 if x['column'] == 'Date_d_arrivée_dans_l_unité' else 1)
+            # puis Nom et Prénom, puis le reste
+            def sort_priority(change):
+                column = change['column']
+                if column == 'Date_d_arrivée_dans_l_unité':
+                    return 0
+                elif column == 'Nom':
+                    return 1
+                elif column == 'Prénom':
+                    return 2
+                else:
+                    return 3
 
-            # Variable pour garder trace de la date d'arrivée actuelle
+            person_changes.sort(key=sort_priority)
+
+            # Variables pour garder trace des identifiants courants
+            nom_courant = nom_original
+            prenom_courant = prenom_original
             date_arrivee_courante = date_arrivee_originale
 
             # Appliquer toutes les modifications pour cette personne une par une
@@ -266,11 +281,11 @@ def update_db_info(conn, changes):
                 column_name = change_data['column']
                 value = change_data['value']
 
-                print(f"DEBUG: Modification {i+1}/{len(person_changes)} - Colonne: {column_name}")
+                print(f"DEBUG: Modification {i + 1}/{len(person_changes)} - Colonne: {column_name}")
 
-                # Construire la clause WHERE pour cette modification spécifique
+                # Construire la clause WHERE en utilisant les identifiants COURANTS
                 where_conditions = ["`Nom` = %s", "`Prénom` = %s"]
-                where_params = [nom, prenom]
+                where_params = [nom_courant, prenom_courant]
 
                 if date_arrivee_courante and date_arrivee_courante != 'null' and date_arrivee_courante != 'None':
                     where_conditions.append("`Date_d_arrivée_dans_l_unité` = %s")
@@ -282,18 +297,21 @@ def update_db_info(conn, changes):
 
                 where_clause = " AND ".join(where_conditions)
 
-                # Vérifier si l'enregistrement existe avec la date courante
+                # Vérifier si l'enregistrement existe avec les identifiants courants
                 check_query = f"SELECT COUNT(*) FROM info WHERE {where_clause}"
                 cursor.execute(check_query, where_params)
                 count = cursor.fetchone()[0]
-                print(f"DEBUG: Nombre d'enregistrements trouvés pour {nom} {prenom} avec date courante: {count}")
+                print(
+                    f"DEBUG: Nombre d'enregistrements trouvés pour {nom_courant} {prenom_courant} avec date courante: {count}")
 
                 if count == 0:
-                    print(f"ERROR: Aucun enregistrement trouvé pour {nom} {prenom} avec date_arrivee='{date_arrivee_courante}'")
+                    print(
+                        f"ERROR: Aucun enregistrement trouvé pour {nom_courant} {prenom_courant} avec date_arrivee='{date_arrivee_courante}'")
                     cursor.close()
                     return False
                 elif count > 1:
-                    print(f"WARNING: Plusieurs enregistrements trouvés pour {nom} {prenom} ({count}), mise à jour de tous")
+                    print(
+                        f"WARNING: Plusieurs enregistrements trouvés pour {nom_courant} {prenom_courant} ({count}), mise à jour de tous")
 
                 # Mapping des noms de colonnes
                 column_mapping = {
@@ -339,7 +357,7 @@ def update_db_info(conn, changes):
                 else:
                     db_column = column_name
 
-                print(f"DEBUG: Mapping colonne '{column_name}' -> '{db_column}' pour {nom} {prenom}")
+                print(f"DEBUG: Mapping colonne '{column_name}' -> '{db_column}' pour {nom_courant} {prenom_courant}")
 
                 # Traitement spécial pour les dates
                 date_columns = [
@@ -397,14 +415,20 @@ def update_db_info(conn, changes):
                 print(f"DEBUG: Lignes affectées pour {db_column}: {affected_rows}")
 
                 if affected_rows == 0:
-                    print(f"WARNING: Aucune ligne affectée pour {nom} {prenom} - {db_column}")
+                    print(f"WARNING: Aucune ligne affectée pour {nom_courant} {prenom_courant} - {db_column}")
                 else:
-                    print(f"SUCCESS: Mise à jour réussie pour {nom} {prenom} - {db_column}")
+                    print(f"SUCCESS: Mise à jour réussie pour {nom_courant} {prenom_courant} - {db_column}")
 
-                # IMPORTANT : Si on vient de modifier la date d'arrivée, mettre à jour la variable courante
+                # IMPORTANT : Mettre à jour les variables courantes après chaque modification
                 if db_column == 'Date_d_arrivée_dans_l_unité' and value is not None:
                     date_arrivee_courante = value.strftime('%Y-%m-%d')
                     print(f"DEBUG: Date d'arrivée courante mise à jour vers: {date_arrivee_courante}")
+                elif db_column == 'Nom' and value is not None:
+                    nom_courant = value
+                    print(f"DEBUG: Nom courant mis à jour vers: {nom_courant}")
+                elif db_column == 'Prénom' and value is not None:
+                    prenom_courant = value
+                    print(f"DEBUG: Prénom courant mis à jour vers: {prenom_courant}")
 
         conn.commit()
         cursor.close()
