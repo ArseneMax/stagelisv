@@ -251,6 +251,63 @@
                 margin: 5px 0;
             }
 
+            /* Styles pour les filtres de colonnes */
+            .filter-row {
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #005493;
+            }
+
+            .filter-row td {
+                padding: 5px 2px;
+                vertical-align: top;
+            }
+
+            .column-filter {
+                width: 100%;
+                padding: 3px;
+                font-size: 11px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: white;
+                color: #333;
+                max-width: 95px;
+            }
+
+            .column-filter:focus {
+                border-color: #005493;
+                outline: none;
+                box-shadow: 0 0 3px rgba(0, 84, 147, 0.3);
+            }
+
+            /* Filtres pour les colonnes plus larges */
+            .filter-row td:nth-child(15), /* Sujet stage/visite/thèse */
+            .filter-row td:nth-child(29), /* Adresse postale origine */
+            .filter-row td:nth-child(34), /* Adresse postale urgence */
+            .filter-row td:nth-child(35) /* Tél/mail urgence */ {
+                min-width: 150px;
+            }
+
+            .filter-row td:nth-child(15) .column-filter,
+            .filter-row td:nth-child(29) .column-filter,
+            .filter-row td:nth-child(34) .column-filter,
+            .filter-row td:nth-child(35) .column-filter {
+                max-width: 140px;
+            }
+
+            /* Bouton pour effacer tous les filtres */
+            .clear-filters-btn {
+                background-color: #dc3545;
+                color: white;
+                border: 1px solid #dc3545;
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .clear-filters-btn:hover {
+                background-color: #c82333;
+                border-color: #c82333;
+            }
+
             /* Style pour mobile */
             @media (max-width: 768px) {
                 .table-container {
@@ -271,6 +328,31 @@
                 .year-filter select {
                     width: 100%;
                 }
+
+                .column-filter {
+                    font-size: 10px;
+                    padding: 2px;
+                }
+            }
+
+            /* Ligne cachée pour les données filtrées */
+            .filtered-hidden {
+                display: none !important;
+            }
+
+            /* Indicateur de filtres actifs */
+            .filter-indicator {
+                background-color: #ffc107;
+                color: #333;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 10px;
+                font-size: 14px;
+                display: none;
+            }
+
+            .filter-indicator.active {
+                display: block;
             }
         </style>
     </head>
@@ -329,10 +411,8 @@
             {% endif %}
 
             <div class="action-buttons">
-
-
                 <button id="saveAllButton">Sauvegarder toutes les modifications</button>
-
+                <button class="clear-filters-btn" onclick="clearAllFilters()">Effacer tous les filtres</button>
 
                 <!-- Sélecteur d'année -->
                 <div class="year-filter">
@@ -345,6 +425,11 @@
                         {% endif %}
                     </select>
                 </div>
+            </div>
+
+            <!-- Indicateur de filtres actifs -->
+            <div id="filterIndicator" class="filter-indicator">
+                <strong>Filtres actifs:</strong> <span id="activeFiltersText">Aucun</span>
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
@@ -400,6 +485,44 @@
                             <th>Personne à prévenir urgence</th>
                             <th>Adresse postale urgence</th>
                             <th>Tél/mail urgence</th>
+                        </tr>
+                        <!-- Ligne de filtres -->
+                        <tr class="filter-row">
+                            <td><select class="column-filter" data-column="0"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="1"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="2"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="3"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="4"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="5"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="6"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="7"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="8"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="9"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="10"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="11"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="12"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="13"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="14"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="15"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="16"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="17"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="18"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="19"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="20"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="21"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="22"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="23"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="24"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="25"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="26"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="27"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="28"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="29"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="30"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="31"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="32"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="33"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="34"><option value="">Tous</option></select></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -470,6 +593,10 @@
         </footer>
 
         <script>
+            // Variables globales pour les filtres
+            let columnFilters = {};
+            let allRowsData = [];
+
             // Fonction pour filtrer par année
             function filterByYear() {
                 const yearSelect = document.getElementById('yearSelect');
@@ -482,7 +609,144 @@
                 }
             }
 
+            // Fonction pour effacer tous les filtres
+            function clearAllFilters() {
+                const filterSelects = document.querySelectorAll('.column-filter');
+                filterSelects.forEach(select => {
+                    select.value = '';
+                });
+                columnFilters = {};
+                applyFilters();
+                updateFilterIndicator();
+            }
+
+            // Fonction pour populer les filtres avec les valeurs distinctes
+            function populateFilters() {
+                const table = document.getElementById('infoTable');
+                const tbody = table.getElementsByTagName('tbody')[0];
+                const rows = tbody.getElementsByTagName('tr');
+
+                // Créer un objet pour stocker les valeurs uniques de chaque colonne
+                const columnValues = {};
+
+                // Parcourir toutes les lignes pour extraire les valeurs uniques
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    allRowsData.push(rows[i]); // Stocker référence à toutes les lignes
+
+                    for (let j = 0; j < cells.length; j++) {
+                        const cellValue = cells[j].textContent.trim();
+
+                        if (!columnValues[j]) {
+                            columnValues[j] = new Set();
+                        }
+
+                        // Ajouter la valeur si elle n'est pas vide
+                        if (cellValue !== '') {
+                            columnValues[j].add(cellValue);
+                        }
+                    }
+                }
+
+                // Populer chaque dropdown de filtre
+                const filterSelects = document.querySelectorAll('.column-filter');
+                filterSelects.forEach((select, index) => {
+                    const columnIndex = parseInt(select.getAttribute('data-column'));
+
+                    if (columnValues[columnIndex]) {
+                        // Convertir le Set en tableau et trier
+                        const sortedValues = Array.from(columnValues[columnIndex]).sort();
+
+                        // Ajouter les options au select
+                        sortedValues.forEach(value => {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = value.length > 30 ? value.substring(0, 30) + '...' : value;
+                            option.title = value; // Tooltip avec la valeur complète
+                            select.appendChild(option);
+                        });
+                    }
+
+                    // Ajouter un événement de changement pour ce filtre
+                    select.addEventListener('change', function() {
+                        const columnIndex = parseInt(this.getAttribute('data-column'));
+                        const filterValue = this.value;
+
+                        if (filterValue === '') {
+                            delete columnFilters[columnIndex];
+                        } else {
+                            columnFilters[columnIndex] = filterValue;
+                        }
+
+                        applyFilters();
+                        updateFilterIndicator();
+                    });
+                });
+            }
+
+            // Fonction pour appliquer les filtres
+            function applyFilters() {
+                const table = document.getElementById('infoTable');
+                const tbody = table.getElementsByTagName('tbody')[0];
+                const rows = tbody.getElementsByTagName('tr');
+
+                let visibleCount = 0;
+
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let shouldShow = true;
+
+                    // Vérifier chaque filtre actif
+                    for (const [columnIndex, filterValue] of Object.entries(columnFilters)) {
+                        const cellValue = cells[columnIndex].textContent.trim();
+
+                        if (cellValue !== filterValue) {
+                            shouldShow = false;
+                            break;
+                        }
+                    }
+
+                    // Afficher ou masquer la ligne
+                    if (shouldShow) {
+                        rows[i].classList.remove('filtered-hidden');
+                        visibleCount++;
+                    } else {
+                        rows[i].classList.add('filtered-hidden');
+                    }
+                }
+
+                console.log(`Filtres appliqués: ${visibleCount} ligne(s) visible(s)`);
+            }
+
+            // Fonction pour mettre à jour l'indicateur de filtres
+            function updateFilterIndicator() {
+                const indicator = document.getElementById('filterIndicator');
+                const activeFiltersText = document.getElementById('activeFiltersText');
+
+                const activeFilters = Object.keys(columnFilters);
+
+                if (activeFilters.length > 0) {
+                    indicator.classList.add('active');
+
+                    // Créer un texte descriptif des filtres actifs
+                    const filterDescriptions = activeFilters.map(columnIndex => {
+                        const headerCell = document.querySelector(`thead tr:nth-child(2) th:nth-child(${parseInt(columnIndex) + 1})`);
+                        const columnName = headerCell ? headerCell.textContent.trim() : `Colonne ${columnIndex}`;
+                        const filterValue = columnFilters[columnIndex];
+                        return `${columnName}: "${filterValue}"`;
+                    });
+
+                    activeFiltersText.textContent = filterDescriptions.join(', ');
+                } else {
+                    indicator.classList.remove('active');
+                    activeFiltersText.textContent = 'Aucun';
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
+                // Populer les filtres au chargement de la page
+                populateFilters();
+
                 const editableCells = document.querySelectorAll('.editable');
                 const saveAllButton = document.getElementById('saveAllButton');
                 const notification = document.getElementById('saveNotification');
@@ -620,6 +884,13 @@
                                     row.setAttribute('data-prenom', newValue);
                                     console.log('Mise à jour data-prenom vers:', newValue);
                                 }
+
+                                // Mettre à jour les filtres si nécessaire après modification
+                                const cellIndex = Array.from(cell.parentElement.children).indexOf(cell);
+                                if (columnFilters[cellIndex]) {
+                                    // Si cette colonne était filtrée et la valeur a changé, réappliquer les filtres
+                                    applyFilters();
+                                }
                             }
 
                             cell.innerHTML = newValue;
@@ -656,6 +927,11 @@
                                     notification.style.display = 'none';
                                 }, 3000);
                                 changedCells = [];
+
+                                // Recharger la page pour mettre à jour les filtres avec les nouvelles valeurs
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
                             } else {
                                 alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
                             }
