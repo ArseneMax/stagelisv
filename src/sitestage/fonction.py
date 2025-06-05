@@ -1,4 +1,7 @@
+from functools import lru_cache
+
 import pymysql
+import requests
 from flask_login import UserMixin
 from flask import flash
 import datetime
@@ -920,3 +923,313 @@ class User(UserMixin):
         finally:
             cursor.close()
             conn.close()
+
+
+@lru_cache(maxsize=50)
+@lru_cache(maxsize=50)
+def get_hal_publications(year=None, author=None, doc_type=None, limit=100, start=0):
+    """
+    Récupère les publications HAL du LISV avec cache
+
+    Args:
+        year (int): Année de publication
+        author (str): Nom d'auteur à rechercher
+        doc_type (str): Type de document (ART, COMM, THESE, etc.)
+        limit (int): Nombre de résultats max
+        start (int): Index de départ pour pagination
+
+    Returns:
+        dict: Données des publications avec métadonnées
+    """
+    url = "https://api.archives-ouvertes.fr/search/"
+
+    # Construction de la requête de base
+    filters = []
+
+    # Filtre par laboratoire - essayer plusieurs variantes du nom
+    lab_filters = [
+        'labStructName_s:"Laboratoire d\'Ingénierie des Systèmes de Versailles"',
+        'labStructName_s:"LISV"',
+        'labStructAcronym_s:"LISV"',
+        'labStructName_s:"Laboratoire d\'Ingenierie des Systemes de Versailles"'  # Sans accents
+    ]
+    filters.append(f"({' OR '.join(lab_filters)})")
+
+    # Filtre par année
+    if year:
+        filters.append(f'publicationDate_s:[{year}-01-01T00:00:00Z TO {year}-12-31T23:59:59Z]')
+
+    # Filtre par type de document
+    if doc_type and doc_type != 'ALL':
+        filters.append(f'docType_s:"{doc_type}"')
+
+    # Construction de la requête principale - SOLUTION BASÉE SUR LE DEBUG
+    query = '*:*'
+    if author:
+        author_clean = author.strip()
+
+        # Séparer les mots du nom
+        author_words = [word.strip() for word in author_clean.split() if word.strip()]
+
+        if len(author_words) == 1:
+            # Un seul mot : recherche simple
+            query = f'authFullName_s:*{author_words[0]}*'
+        else:
+            # Plusieurs mots : utiliser la stratégie AND qui fonctionne
+            # Chaque mot doit être présent dans authFullName_s
+            word_conditions = []
+            for word in author_words:
+                if len(word) > 1:  # Ignorer les mots d'une lettre
+                    word_conditions.append(f'authFullName_s:*{word}*')
+
+            if word_conditions:
+                query = ' AND '.join(word_conditions)
+            else:
+                # Fallback si tous les mots sont trop courts
+                query = f'authFullName_s:*{author_clean}*'
+
+    params = {
+        'q': query,
+        'fq': filters,
+        'wt': 'json',
+        'fl': 'title_s,authFullName_s,authLastName_s,authFirstName_s,publicationDate_s,doiId_s,uri_s,docType_s,abstract_s,keyword_s,journalTitle_s,conferenceTitle_s,fileMain_s,labStructName_s,halId_s,citationFull_s',
+        'rows': limit,
+        'start': start,
+        'sort': 'publicationDate_s desc'
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=15)
+
+        if response.status_code == 200:
+            data = response.json()
+            num_found = data.get('response', {}).get('numFound', 0)
+
+            return {
+                'docs': data.get('response', {}).get('docs', []),
+                'numFound': num_found,
+                'start': data.get('response', {}).get('start', 0)
+            }
+        else:
+            print(f"DEBUG HAL: Erreur HTTP {response.status_code}")
+            print(f"DEBUG HAL: Réponse: {response.text[:500]}")
+
+    except requests.RequestException as e:
+        print(f"Erreur API HAL: {e}")
+
+    return {'docs': [], 'numFound': 0, 'start': 0}
+
+
+def get_hal_statistics():
+    """Récupère des statistiques sur les publications HAL du LISV"""
+    try:
+        # Correction de l'erreur datetime
+        import datetime as dt
+        current_year = dt.datetime.now().year
+
+        # Publications par année (5 dernières années)
+        years_stats = {}
+
+        for year in range(current_year - 4, current_year + 1):
+            result = get_hal_publications(year=year, limit=1)
+            years_stats[year] = result['numFound']
+
+        # Publications par type de document
+        doc_types = ['ART', 'COMM', 'THESE', 'HDR', 'REPORT', 'COUV']
+        types_stats = {}
+
+        for doc_type in doc_types:
+            result = get_hal_publications(doc_type=doc_type, limit=1)
+            types_stats[doc_type] = result['numFound']
+
+        # Total général
+        total_result = get_hal_publications(limit=1)
+
+        return {
+            'years': years_stats,
+            'types': types_stats,
+            'total': total_result['numFound']
+        }
+
+    except Exception as e:
+        print(f"Erreur lors du calcul des statistiques HAL: {e}")
+        return {'years': {}, 'types': {}, 'total': 0}
+
+
+def format_publication_data(pub):
+    """Formate les données d'une publication pour l'affichage"""
+
+    # Fonction utilitaire pour gérer les champs qui peuvent être string ou liste
+    def get_field_value(field_data):
+        if isinstance(field_data, list) and field_data:
+            return field_data[0]
+        elif isinstance(field_data, str):
+            return field_data
+        return ''
+
+    # Formatage de la date
+    pub_date = get_field_value(pub.get('publicationDate_s', ''))
+    formatted_date = ''
+    if pub_date:
+        try:
+            from datetime import datetime as dt
+            date_obj = dt.strptime(pub_date, '%Y-%m-%d')
+            formatted_date = date_obj.strftime('%d/%m/%Y')
+        except ValueError:
+            try:
+                date_obj = dt.strptime(pub_date[:10], '%Y-%m-%d')
+                formatted_date = date_obj.strftime('%d/%m/%Y')
+            except ValueError:
+                formatted_date = pub_date
+
+    # Type de document avec libellé
+    doc_type = get_field_value(pub.get('docType_s', ''))
+    doc_type_labels = {
+        'ART': 'Article de revue',
+        'COMM': 'Communication',
+        'THESE': 'Thèse',
+        'HDR': 'HDR',
+        'REPORT': 'Rapport',
+        'COUV': 'Ouvrage',
+        'UNDEFINED': 'Non défini'
+    }
+    doc_type_label = doc_type_labels.get(doc_type, doc_type)
+
+    # Abstract tronqué pour l'affichage
+    abstract = get_field_value(pub.get('abstract_s', ''))
+    abstract_short = abstract[:300] + '...' if len(abstract) > 300 else abstract
+
+    # CORRECTION: Traitement correct des champs HAL (string ou liste)
+    hal_id_raw = get_field_value(pub.get('halId_s', ''))
+    uri_raw = get_field_value(pub.get('uri_s', ''))
+
+    clean_uri = ''
+    final_hal_id = ''
+
+    # Stratégie 1: Utiliser l'URI directement si elle est complète et valide
+    if uri_raw and uri_raw.startswith('http') and ('hal.science' in uri_raw or 'theses.hal.science' in uri_raw):
+        clean_uri = uri_raw
+        # Extraire l'ID de l'URI pour le hal_id
+        if '/tel-' in uri_raw:
+            final_hal_id = uri_raw.split('/tel-')[-1].split('v')[0].split('?')[0].split('#')[0]
+            final_hal_id = f"tel-{final_hal_id}"
+        elif '/hal-' in uri_raw:
+            final_hal_id = uri_raw.split('/hal-')[-1].split('v')[0].split('?')[0].split('#')[0]
+            final_hal_id = f"hal-{final_hal_id}"
+        elif uri_raw.endswith('/'):
+            final_hal_id = uri_raw.rstrip('/').split('/')[-1].split('v')[0]
+        else:
+            final_hal_id = uri_raw.split('/')[-1].split('v')[0].split('?')[0].split('#')[0]
+
+    # Stratégie 2: Utiliser halId_s si pas d'URI valide
+    elif hal_id_raw and len(hal_id_raw) > 5:  # Minimum 6 caractères pour un ID HAL valide
+        final_hal_id = hal_id_raw.strip()
+
+        # Construire l'URI selon le type d'ID
+        if final_hal_id.startswith('tel-'):
+            clean_uri = f"https://theses.hal.science/{final_hal_id}"
+        elif final_hal_id.startswith('hal-'):
+            clean_uri = f"https://hal.science/{final_hal_id}"
+        else:
+            # ID sans préfixe, ajouter hal- par défaut
+            final_hal_id = f"hal-{final_hal_id}"
+            clean_uri = f"https://hal.science/{final_hal_id}"
+
+    # Validation finale
+    if final_hal_id and len(final_hal_id) < 8:  # Un ID HAL valide fait au moins 8 caractères
+        clean_uri = ''
+        final_hal_id = ''
+
+    # Nettoyage du DOI
+    raw_doi = get_field_value(pub.get('doiId_s', ''))
+    clean_doi = ''
+    if raw_doi and '.' in raw_doi and len(raw_doi) > 5 and raw_doi not in ['1', '0', 'null', 'NULL']:
+        clean_doi = raw_doi
+
+    # Récupération de l'URL du fichier principal si disponible
+    file_url = ''
+    has_file = bool(pub.get('fileMain_s'))
+    if has_file:
+        file_main = get_field_value(pub.get('fileMain_s', ''))
+        if file_main:
+            # Construire l'URL complète du fichier
+            if file_main.startswith('http'):
+                file_url = file_main
+            elif final_hal_id:
+                # Construire l'URL basée sur l'ID HAL
+                if final_hal_id.startswith('tel-'):
+                    file_url = f"https://theses.hal.science/{final_hal_id}/document"
+                else:
+                    file_url = f"https://hal.science/{final_hal_id}/document"
+
+    # Récupération des autres champs avec la fonction utilitaire
+    title = get_field_value(pub.get('title_s', '')) or 'Titre non disponible'
+
+    # Pour les champs qui sont vraiment des listes
+    authors = pub.get('authFullName_s', [])
+    if not isinstance(authors, list):
+        authors = [authors] if authors else []
+
+    keywords = pub.get('keyword_s', [])
+    if not isinstance(keywords, list):
+        keywords = [keywords] if keywords else []
+
+    journal = get_field_value(pub.get('journalTitle_s', ''))
+    conference = get_field_value(pub.get('conferenceTitle_s', ''))
+    citation = get_field_value(pub.get('citationFull_s', ''))
+
+    return {
+        'title': title,
+        'authors': authors,
+        'publication_date': pub_date,
+        'publication_date_formatted': formatted_date,
+        'doc_type': doc_type,
+        'doc_type_label': doc_type_label,
+        'doi': clean_doi,
+        'uri': clean_uri,
+        'abstract': abstract,
+        'abstract_short': abstract_short,
+        'keywords': keywords,
+        'journal': journal,
+        'conference': conference,
+        'hal_id': final_hal_id,
+        'has_file': has_file,
+        'file_url': file_url,
+        'citation': citation,
+        'year': pub_date[:4] if pub_date and len(pub_date) >= 4 else ''
+    }
+
+
+def get_hal_doc_types():
+    """Retourne les types de documents HAL avec leurs libellés"""
+    return {
+        'ALL': 'Tous les types',
+        'ART': 'Articles de revues',
+        'COMM': 'Communications',
+        'THESE': 'Thèses',
+        'HDR': 'HDR',
+        'REPORT': 'Rapports',
+        'COUV': 'Ouvrages',
+        'UNDEFINED': 'Non défini'
+    }
+
+
+def clear_hal_cache():
+    """Vide le cache des publications HAL"""
+    get_hal_publications.cache_clear()
+    print("Cache HAL vidé")
+
+
+def test_hal_connection():
+    """Teste la connexion à l'API HAL"""
+    try:
+        result = get_hal_publications(limit=1)
+        if result['numFound'] > 0:
+            print(f" Connexion HAL OK - {result['numFound']} publications trouvées au total")
+            return True
+        else:
+            print("⚠️ Connexion HAL OK mais aucune publication trouvée")
+            return True
+    except Exception as e:
+        print(f" Erreur de connexion HAL: {e}")
+        return False

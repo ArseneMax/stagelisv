@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics,get_hal_publications,get_hal_doc_types,format_publication_data,test_hal_connection
 from .decorators import admin_required
 
 # Chargement des variables d'environnement
@@ -171,4 +171,75 @@ def delete_user(user_id):
     return redirect(url_for('web_ui.admin_users'))
 
 
+@web_ui.route('/publications')
+def publications():
+    """Route pour afficher les publications HAL du laboratoire"""
+    # Récupération des paramètres de filtre
+    year = request.args.get('year', type=int)
+    author = request.args.get('author', '').strip()
+    doc_type = request.args.get('doc_type', '').strip()
+    page = request.args.get('page', 1, type=int)
+
+    # Pagination
+    per_page = 20
+    start = (page - 1) * per_page
+
+    # Récupération des publications
+    try:
+        publications_data = get_hal_publications(
+            year=year,
+            author=author if author else None,
+            doc_type=doc_type if doc_type else None,
+            limit=per_page,
+            start=start
+        )
+
+        # Formatage des données pour l'affichage
+        formatted_publications = []
+        for pub in publications_data['docs']:
+            formatted_publications.append(format_publication_data(pub))
+
+        # Calcul de la pagination
+        total_publications = publications_data['numFound']
+        total_pages = (total_publications + per_page - 1) // per_page
+
+        # Récupération des statistiques
+        stats = get_hal_statistics()
+
+        # Types de documents disponibles pour le filtre
+        doc_types_labels = get_hal_doc_types()
+
+        return render_template('publications.html',
+                               publications=formatted_publications,
+                               total_publications=total_publications,
+                               current_page=page,
+                               total_pages=total_pages,
+                               per_page=per_page,
+                               selected_year=year,
+                               selected_author=author,
+                               selected_doc_type=doc_type,
+                               doc_types_labels=doc_types_labels,
+                               statistics=stats,
+                               available_years=get_available_years())
+
+    except Exception as e:
+        print(f"Erreur dans la route publications: {e}")
+        flash(f"Erreur lors de la récupération des publications: {str(e)}", "error")
+        return render_template('publications.html',
+                               publications=[],
+                               total_publications=0,
+                               doc_types_labels=get_hal_doc_types(),
+                               error="Erreur de connexion à l'API HAL")
+
+
+
+@web_ui.route('/test_hal')
+def test_hal():
+    """Route de test pour vérifier la connexion HAL"""
+    success = test_hal_connection()
+    if success:
+        flash("Connexion à l'API HAL réussie !", "success")
+    else:
+        flash("Erreur de connexion à l'API HAL", "error")
+    return redirect(url_for('web_ui.publications'))
 app.register_blueprint(web_ui)
