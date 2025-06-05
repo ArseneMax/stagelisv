@@ -193,8 +193,6 @@ def get_available_years():
     return sorted(years, reverse=True)  # Tri décroissant
 
 
-# REMPLACEZ complètement votre fonction update_db_info existante par celle-ci :
-
 def update_db_info(conn, changes):
     """
     Met à jour les informations dans la base de données.
@@ -252,42 +250,50 @@ def update_db_info(conn, changes):
         for person_key, person_data in changes_by_person.items():
             nom = person_data['nom']
             prenom = person_data['prenom']
-            date_arrivee = person_data['date_arrivee']
+            date_arrivee_originale = person_data['date_arrivee']
             person_changes = person_data['changes']
 
             print(f"DEBUG: Traitement de {nom} {prenom} avec {len(person_changes)} modification(s)")
 
-            # Construire la clause WHERE une seule fois pour cette personne
-            where_conditions = ["`Nom` = %s", "`Prénom` = %s"]
-            where_params = [nom, prenom]
+            # IMPORTANT : Trier les modifications pour traiter Date_d_arrivée_dans_l_unité en premier
+            person_changes.sort(key=lambda x: 0 if x['column'] == 'Date_d_arrivée_dans_l_unité' else 1)
 
-            if date_arrivee and date_arrivee != 'null' and date_arrivee != 'None':
-                where_conditions.append("`Date_d_arrivée_dans_l_unité` = %s")
-                where_params.append(date_arrivee)
-                print(f"DEBUG: Utilisation de la date d'arrivée: {date_arrivee}")
-            else:
-                where_conditions.append("`Date_d_arrivée_dans_l_unité` IS NULL")
-                print(f"DEBUG: Date d'arrivée NULL ou vide")
+            # Variable pour garder trace de la date d'arrivée actuelle
+            date_arrivee_courante = date_arrivee_originale
 
-            where_clause = " AND ".join(where_conditions)
-
-            # Vérifier d'abord si l'enregistrement existe
-            check_query = f"SELECT COUNT(*) FROM info WHERE {where_clause}"
-            cursor.execute(check_query, where_params)
-            count = cursor.fetchone()[0]
-            print(f"DEBUG: Nombre d'enregistrements trouvés pour {nom} {prenom}: {count}")
-
-            if count == 0:
-                print(f"ERROR: Aucun enregistrement trouvé pour {nom} {prenom} avec date_arrivee='{date_arrivee}'")
-                cursor.close()
-                return False
-            elif count > 1:
-                print(f"WARNING: Plusieurs enregistrements trouvés pour {nom} {prenom} ({count}), mise à jour de tous")
-
-            # Appliquer toutes les modifications pour cette personne
-            for change_data in person_changes:
+            # Appliquer toutes les modifications pour cette personne une par une
+            for i, change_data in enumerate(person_changes):
                 column_name = change_data['column']
                 value = change_data['value']
+
+                print(f"DEBUG: Modification {i+1}/{len(person_changes)} - Colonne: {column_name}")
+
+                # Construire la clause WHERE pour cette modification spécifique
+                where_conditions = ["`Nom` = %s", "`Prénom` = %s"]
+                where_params = [nom, prenom]
+
+                if date_arrivee_courante and date_arrivee_courante != 'null' and date_arrivee_courante != 'None':
+                    where_conditions.append("`Date_d_arrivée_dans_l_unité` = %s")
+                    where_params.append(date_arrivee_courante)
+                    print(f"DEBUG: Utilisation de la date d'arrivée courante: {date_arrivee_courante}")
+                else:
+                    where_conditions.append("`Date_d_arrivée_dans_l_unité` IS NULL")
+                    print(f"DEBUG: Date d'arrivée courante NULL ou vide")
+
+                where_clause = " AND ".join(where_conditions)
+
+                # Vérifier si l'enregistrement existe avec la date courante
+                check_query = f"SELECT COUNT(*) FROM info WHERE {where_clause}"
+                cursor.execute(check_query, where_params)
+                count = cursor.fetchone()[0]
+                print(f"DEBUG: Nombre d'enregistrements trouvés pour {nom} {prenom} avec date courante: {count}")
+
+                if count == 0:
+                    print(f"ERROR: Aucun enregistrement trouvé pour {nom} {prenom} avec date_arrivee='{date_arrivee_courante}'")
+                    cursor.close()
+                    return False
+                elif count > 1:
+                    print(f"WARNING: Plusieurs enregistrements trouvés pour {nom} {prenom} ({count}), mise à jour de tous")
 
                 # Mapping des noms de colonnes
                 column_mapping = {
@@ -392,6 +398,13 @@ def update_db_info(conn, changes):
 
                 if affected_rows == 0:
                     print(f"WARNING: Aucune ligne affectée pour {nom} {prenom} - {db_column}")
+                else:
+                    print(f"SUCCESS: Mise à jour réussie pour {nom} {prenom} - {db_column}")
+
+                # IMPORTANT : Si on vient de modifier la date d'arrivée, mettre à jour la variable courante
+                if db_column == 'Date_d_arrivée_dans_l_unité' and value is not None:
+                    date_arrivee_courante = value.strftime('%Y-%m-%d')
+                    print(f"DEBUG: Date d'arrivée courante mise à jour vers: {date_arrivee_courante}")
 
         conn.commit()
         cursor.close()

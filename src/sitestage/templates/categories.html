@@ -39,7 +39,6 @@
                 cursor: pointer;
                 font-family: 'Montserrat', sans-serif;
                 font-size: 14px;
-
             }
 
             button:hover {
@@ -56,16 +55,14 @@
             .table-container {
                 overflow-x: auto;
                 overflow-y: visible;
-                max-width: 100vw; /* Limite à la largeur de l'écran */
+                max-width: 100vw;
                 position: relative;
                 margin-bottom: 20px;
-
-                scrollbar-width: auto; /* Firefox */
-                scrollbar-color: #005493 #f1f1f1; /* Firefox */
+                scrollbar-width: auto;
+                scrollbar-color: #005493 #f1f1f1;
                 -webkit-overflow-scrolling: touch;
             }
 
-            /* Styles pour les barres de scroll dans Chrome/Safari/Edge */
             .table-container::-webkit-scrollbar {
                 height: 12px;
                 width: 12px;
@@ -97,7 +94,7 @@
             table {
                 border-collapse: collapse;
                 width: 100%;
-                min-width: 600px; /* Largeur minimale pour éviter une compression excessive */
+                min-width: 600px;
                 table-layout: auto;
             }
 
@@ -106,48 +103,41 @@
                 padding: 8px 6px;
                 font-size: 12px;
                 border: 1px solid #ddd;
-                word-wrap: break-word; /* Permet le retour à la ligne */
-                word-break: break-word; /* Force le retour à la ligne si nécessaire */
-                white-space: normal; /* Permet les retours à la ligne */
+                word-wrap: break-word;
+                word-break: break-word;
+                white-space: normal;
                 vertical-align: top;
                 max-width: 200px;
                 min-width: 100px;
             }
 
-            /* Colonnes spécifiques avec des largeurs optimisées */
-
-            /* Colonnes courtes (noms, prénoms) */
-            td:nth-child(1), th:nth-child(1), /* Nom */
-            td:nth-child(2), th:nth-child(2)  /* Prénom */ {
+            td:nth-child(1), th:nth-child(1),
+            td:nth-child(2), th:nth-child(2) {
                 max-width: 120px;
-                min-width: 100px; /* Maintenir le min-width à 100px */
+                min-width: 100px;
             }
 
-            /* Colonnes moyennes (statut, équipe) */
-            td:nth-child(3), th:nth-child(3), /* Statut */
-            td:nth-child(4), th:nth-child(4), /* Équipe */
-            td:nth-child(5), th:nth-child(5)  /* Nom équipe */ {
+            td:nth-child(3), th:nth-child(3),
+            td:nth-child(4), th:nth-child(4),
+            td:nth-child(5), th:nth-child(5) {
                 max-width: 150px;
                 min-width: 100px;
             }
 
-            /* Colonnes de dates - gardent leur format pour les plages de dates */
-            td:nth-child(7), /* Colonne dates pour temporaires */
-            td:nth-child(11) /* Colonne dates pour doctorants */ {
+            td:nth-child(7),
+            td:nth-child(11) {
                 max-width: 140px;
                 min-width: 120px;
-                white-space: nowrap; /* Les plages de dates ne se coupent pas */
+                white-space: nowrap;
             }
 
-            /* Colonne email - dernière ou avant-dernière généralement */
             td:last-child, th:last-child,
             td:nth-last-child(2), th:nth-last-child(2) {
                 max-width: 180px;
                 min-width: 120px;
-                word-break: break-all; /* Pour les emails longs */
+                word-break: break-all;
             }
 
-            /* Colonnes de texte long (sujets et diplômes) */
             td[data-column="Sujet_du_stage_de_la_visite_de_thèse"],
             td[data-column="Diplôme_préparé"] {
                 max-width: 250px;
@@ -158,7 +148,6 @@
                 white-space: normal !important;
             }
 
-            /* En-têtes */
             thead {
                 position: sticky;
                 top: 0;
@@ -166,7 +155,6 @@
                 z-index: 10;
             }
 
-            /* Amélioration de la lisibilité */
             tbody tr:nth-child(even) {
                 background-color: #f8f9fa;
             }
@@ -228,14 +216,13 @@
                 flex: none;
             }
 
-
-            .editable {
+            .editable, .editable-special {
                 cursor: pointer;
                 border-radius: 3px;
                 transition: background-color 0.2s ease;
             }
 
-            .editable:hover {
+            .editable:hover, .editable-special:hover {
                 background-color: #e9ecef;
             }
 
@@ -270,7 +257,6 @@
                 z-index: 1000;
             }
 
-            /* Styles pour le dropdown de sélection d'année */
             .year-filter {
                 position: relative;
                 display: inline-block;
@@ -300,7 +286,6 @@
                 color: white;
             }
 
-            /* Styles pour la navigation */
             #menu_principal .menu_n1_desktop {
                 color: white !important;
                 text-decoration: none;
@@ -310,18 +295,15 @@
                 transition: all 0.3s ease;
             }
 
-            /* Style par défaut pour les liens inactifs */
             #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop {
                 background-color: #4f8f00 !important;
             }
 
-            /* Hover pour les liens inactifs */
             #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop:hover {
                 color: #005493 !important;
                 background-color: #4f8f00 !important;
             }
 
-            /* Style pour les liens actifs */
             #menu_principal .menu_principal-actif .menu_n1_desktop,
             #menu_principal .menu_principal-actif.UVSQNEWS > a,
             #menu_principal .menu_principal-actif.UVSQNEWS > a span {
@@ -329,7 +311,6 @@
                 background-color: #005493 !important;
             }
 
-            /* Style pour l'information de l'année sélectionnée */
             .year-info {
                 background-color: #d4edda;
                 border: 1px solid #c3e6cb;
@@ -355,6 +336,43 @@
                 color: #666;
                 font-style: italic;
                 padding: 20px;
+            }
+
+            /* Styles pour l'interface de modification des données spéciales */
+            .special-edit-container {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                min-width: 200px;
+            }
+
+            .date-range-inputs {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .date-range-inputs label {
+                font-size: 10px;
+                font-weight: bold;
+                color: #005493;
+            }
+
+            .date-range-inputs input {
+                padding: 2px;
+                font-size: 11px;
+            }
+
+            .avis-zrr-inputs {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .avis-zrr-inputs label {
+                font-size: 10px;
+                font-weight: bold;
+                color: #005493;
             }
         </style>
     </head>
@@ -404,7 +422,6 @@
             <br>
 
             {% if selected_year %}
-            <!-- Informations sur l'année filtrée -->
             <div class="year-info">
                 <h3>Membres par catégories - Année {{ selected_year }}</h3>
                 <p><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
@@ -414,10 +431,8 @@
 
             <div class="action-buttons">
                 <button onclick="window.location.href='/logout'">Déconnexion</button>
-
                 <button id="saveAllButton">Sauvegarder toutes les modifications</button>
 
-                <!-- Sélecteur d'année -->
                 <div class="year-filter">
                     <select id="yearSelect" onchange="filterByYear()">
                         <option value="">Toutes les années</option>
@@ -488,7 +503,9 @@
                                     <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
                                     <td class="editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe if membre.nom_equipe else '' }}</td>
                                     <td class="editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire if membre.section_disciplinaire else '' }}</td>
-                                    <td>
+                                    <td class="editable-special" data-special-type="date-range"
+                                        data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
+                                        data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
                                         {% if membre.date_arrivee %}
                                             {% set _ = date_range.append(membre.date_arrivee) %}
@@ -529,7 +546,9 @@
                                     <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon if membre.abandon else '' }}</td>
                                     <td class="editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon if membre.date_abandon else '' }}</td>
                                     <td class="editable" data-column="Date_Soutenance" data-type="date">{{ membre.date_soutenance if membre.date_soutenance else '' }}</td>
-                                    <td>
+                                    <td class="editable-special" data-special-type="avis-zrr"
+                                        data-avis-positif="{{ membre.avis_zrr_positif if membre.avis_zrr_positif else '' }}"
+                                        data-avis-negatif="{{ membre.avis_zrr_negatif if membre.avis_zrr_negatif else '' }}">
                                         {% if membre.avis_zrr_positif == 'Oui' %}
                                             Positif
                                         {% elif membre.avis_zrr_negatif == 'Oui' %}
@@ -540,7 +559,9 @@
                                     </td>
                                     <td class="editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine if membre.etablissement_origine else '' }}</td>
                                     <td class="editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare if membre.diplome_prepare else '' }}</td>
-                                    <td>
+                                    <td class="editable-special" data-special-type="date-range"
+                                        data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
+                                        data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
                                         {% if membre.date_arrivee %}
                                             {% set _ = date_range.append(membre.date_arrivee) %}
@@ -578,7 +599,9 @@
                                     <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
                                     <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon if membre.abandon else '' }}</td>
                                     <td class="editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon if membre.date_abandon else '' }}</td>
-                                    <td>
+                                    <td class="editable-special" data-special-type="avis-zrr"
+                                        data-avis-positif="{{ membre.avis_zrr_positif if membre.avis_zrr_positif else '' }}"
+                                        data-avis-negatif="{{ membre.avis_zrr_negatif if membre.avis_zrr_negatif else '' }}">
                                         {% if membre.avis_zrr_positif == 'Oui' %}
                                             Positif
                                         {% elif membre.avis_zrr_negatif == 'Oui' %}
@@ -589,7 +612,9 @@
                                     </td>
                                     <td class="editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine if membre.etablissement_origine else '' }}</td>
                                     <td class="editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare if membre.diplome_prepare else '' }}</td>
-                                    <td>
+                                    <td class="editable-special" data-special-type="date-range"
+                                        data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
+                                        data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
                                         {% if membre.date_arrivee %}
                                             {% set _ = date_range.append(membre.date_arrivee) %}
@@ -628,7 +653,9 @@
                                     <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
                                     <td class="editable" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
                                     <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
-                                    <td>
+                                    <td class="editable-special" data-special-type="date-range"
+                                        data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
+                                        data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
                                         {% if membre.date_arrivee %}
                                             {% set _ = date_range.append(membre.date_arrivee) %}
@@ -683,7 +710,7 @@
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                const editableCells = document.querySelectorAll('.editable');
+                const editableCells = document.querySelectorAll('.editable, .editable-special');
                 const saveAllButton = document.getElementById('saveAllButton');
                 const notification = document.getElementById('saveNotification');
                 let changedCells = [];
@@ -701,137 +728,455 @@
                     return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
                 }
 
+                // Fonction pour créer l'interface d'édition des plages de dates
+                function createDateRangeEditor(cell) {
+                    const dateArrivee = cell.getAttribute('data-date-arrivee') || '';
+                    const dateDepart = cell.getAttribute('data-date-depart') || '';
+
+                    const container = document.createElement('div');
+                    container.className = 'special-edit-container';
+
+                    const dateRangeDiv = document.createElement('div');
+                    dateRangeDiv.className = 'date-range-inputs';
+
+                    // Date d'arrivée
+                    const labelArrivee = document.createElement('label');
+                    labelArrivee.textContent = 'Arrivée:';
+                    const inputArrivee = document.createElement('input');
+                    inputArrivee.type = 'date';
+                    inputArrivee.value = dateArrivee ? frDateToISO(dateArrivee) : '';
+                    inputArrivee.name = 'date_arrivee';
+
+                    // Date de départ
+                    const labelDepart = document.createElement('label');
+                    labelDepart.textContent = 'Départ:';
+                    const inputDepart = document.createElement('input');
+                    inputDepart.type = 'date';
+                    inputDepart.value = dateDepart ? frDateToISO(dateDepart) : '';
+                    inputDepart.name = 'date_depart';
+
+                    // Bouton de validation
+                    const validateButton = document.createElement('button');
+                    validateButton.textContent = 'Valider';
+                    validateButton.type = 'button';
+                    validateButton.style.marginTop = '5px';
+                    validateButton.style.fontSize = '11px';
+                    validateButton.style.padding = '2px 8px';
+
+                    dateRangeDiv.appendChild(labelArrivee);
+                    dateRangeDiv.appendChild(inputArrivee);
+                    dateRangeDiv.appendChild(labelDepart);
+                    dateRangeDiv.appendChild(inputDepart);
+                    dateRangeDiv.appendChild(validateButton);
+
+                    container.appendChild(dateRangeDiv);
+
+                    return {
+                        container: container,
+                        inputs: {
+                            arrivee: inputArrivee,
+                            depart: inputDepart
+                        },
+                        validateButton: validateButton
+                    };
+                }
+
+                // Fonction pour créer l'interface d'édition des avis ZRR
+                function createAvisZRREditor(cell) {
+                    const avisPositif = cell.getAttribute('data-avis-positif') || '';
+                    const avisNegatif = cell.getAttribute('data-avis-negatif') || '';
+
+                    const container = document.createElement('div');
+                    container.className = 'special-edit-container';
+
+                    const avisDiv = document.createElement('div');
+                    avisDiv.className = 'avis-zrr-inputs';
+
+                    // Avis ZRR positif
+                    const labelPositif = document.createElement('label');
+                    labelPositif.textContent = 'Avis positif:';
+                    const selectPositif = document.createElement('select');
+                    selectPositif.name = 'avis_positif';
+
+                    const optionsPositif = ['', 'Oui', 'Non'];
+                    optionsPositif.forEach(option => {
+                        const optElement = document.createElement('option');
+                        optElement.value = option;
+                        optElement.textContent = option;
+                        if (option === avisPositif) optElement.selected = true;
+                        selectPositif.appendChild(optElement);
+                    });
+
+                    // Avis ZRR négatif
+                    const labelNegatif = document.createElement('label');
+                    labelNegatif.textContent = 'Avis négatif:';
+                    const selectNegatif = document.createElement('select');
+                    selectNegatif.name = 'avis_negatif';
+
+                    const optionsNegatif = ['', 'Oui', 'Non'];
+                    optionsNegatif.forEach(option => {
+                        const optElement = document.createElement('option');
+                        optElement.value = option;
+                        optElement.textContent = option;
+                        if (option === avisNegatif) optElement.selected = true;
+                        selectNegatif.appendChild(optElement);
+                    });
+
+                    // Bouton de validation
+                    const validateButton = document.createElement('button');
+                    validateButton.textContent = 'Valider';
+                    validateButton.type = 'button';
+                    validateButton.style.marginTop = '5px';
+                    validateButton.style.fontSize = '11px';
+                    validateButton.style.padding = '2px 8px';
+
+                    avisDiv.appendChild(labelPositif);
+                    avisDiv.appendChild(selectPositif);
+                    avisDiv.appendChild(labelNegatif);
+                    avisDiv.appendChild(selectNegatif);
+                    avisDiv.appendChild(validateButton);
+
+                    container.appendChild(avisDiv);
+
+                    return {
+                        container: container,
+                        inputs: {
+                            positif: selectPositif,
+                            negatif: selectNegatif
+                        },
+                        validateButton: validateButton
+                    };
+                }
+
                 editableCells.forEach(cell => {
                     cell.addEventListener('dblclick', function() {
                         if (cell.classList.contains('editing')) return;
 
                         console.log('Double-clic détecté sur:', cell);
 
-                        const value = cell.textContent.trim();
-                        const dataType = cell.getAttribute('data-type') || 'text';
-                        const options = cell.getAttribute('data-options');
                         cell.classList.add('editing');
-
-                        let inputElement;
-
-                        if (dataType === 'select' && options) {
-                            inputElement = document.createElement('select');
-                            const optionEmpty = document.createElement('option');
-                            optionEmpty.value = '';
-                            optionEmpty.textContent = '';
-                            inputElement.appendChild(optionEmpty);
-
-                            options.split(',').forEach(option => {
-                                const optionElement = document.createElement('option');
-                                optionElement.value = option.trim();
-                                optionElement.textContent = option.trim();
-                                inputElement.appendChild(optionElement);
-                            });
-
-                            inputElement.value = value;
-                        } else if (dataType === 'date') {
-                            inputElement = document.createElement('input');
-                            inputElement.type = 'date';
-                            if (value) {
-                                inputElement.value = frDateToISO(value);
-                            }
-                        } else if (dataType === 'textarea') {
-                            inputElement = document.createElement('textarea');
-                            inputElement.value = value;
-                        } else {
-                            inputElement = document.createElement('input');
-                            inputElement.type = 'text';
-                            inputElement.value = value;
-                        }
-
                         const oldContent = cell.innerHTML;
-                        cell.innerHTML = '';
-                        cell.appendChild(inputElement);
-                        inputElement.focus();
 
-                        inputElement.addEventListener('blur', finishEditing);
-                        inputElement.addEventListener('keydown', function(e) {
-                            if (e.key === 'Enter' && dataType !== 'textarea') {
-                                finishEditing();
-                            } else if (e.key === 'Escape') {
-                                cell.innerHTML = oldContent;
-                                cell.classList.remove('editing');
-                            }
-                        });
+                        // Traitement spécial pour les cellules editable-special
+                        if (cell.classList.contains('editable-special')) {
+                            const specialType = cell.getAttribute('data-special-type');
 
-                        function finishEditing() {
-                            let newValue;
+                            if (specialType === 'date-range') {
+                                const editor = createDateRangeEditor(cell);
+                                cell.innerHTML = '';
+                                cell.appendChild(editor.container);
+                                editor.inputs.arrivee.focus();
 
-                            if (dataType === 'date' && inputElement.value) {
-                                newValue = isoDateToFr(inputElement.value);
-                            } else {
-                                newValue = inputElement.value;
-                            }
+                                const finishSpecialEditing = () => {
+                                    const newDateArrivee = editor.inputs.arrivee.value ? isoDateToFr(editor.inputs.arrivee.value) : '';
+                                    const newDateDepart = editor.inputs.depart.value ? isoDateToFr(editor.inputs.depart.value) : '';
 
-                            if (newValue !== value) {
-                                // Récupérer les identifiants uniques de la ligne
-                                const row = cell.parentElement;
-                                const nom = row.getAttribute('data-nom');
-                                const prenom = row.getAttribute('data-prenom');
-                                const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
-                                const column = cell.getAttribute('data-column');
+                                    // Récupérer les valeurs originales
+                                    const originalArrivee = cell.getAttribute('data-date-arrivee') || '';
+                                    const originalDepart = cell.getAttribute('data-date-depart') || '';
 
-                                // Convertir la date d'arrivée au format ISO si nécessaire
-                                let dateArriveeISO = null;
-                                if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
-                                    dateArriveeISO = frDateToISO(dateArriveeOriginal);
-                                }
+                                    const row = cell.parentElement;
+                                    const nom = row.getAttribute('data-nom');
+                                    const prenom = row.getAttribute('data-prenom');
+                                    const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
 
-                                console.log('Identifiants:', {
-                                    nom: nom,
-                                    prenom: prenom,
-                                    dateArriveeOriginal: dateArriveeOriginal,
-                                    dateArriveeISO: dateArriveeISO,
-                                    column: column
+                                    let dateArriveeISO = null;
+                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
+                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
+                                    }
+
+                                    console.log('Date range editing - Original:', originalArrivee, originalDepart);
+                                    console.log('Date range editing - New:', newDateArrivee, newDateDepart);
+
+                                    // Ajouter les modifications pour date d'arrivée
+                                    const existingChangeArrivee = changedCells.find(change =>
+                                        change.nom === nom && change.prenom === prenom &&
+                                        change.date_arrivee === dateArriveeISO && change.column === 'Date_d_arrivée_dans_l_unité'
+                                    );
+
+                                    const dbValueArrivee = editor.inputs.arrivee.value || null;
+
+                                    if (existingChangeArrivee) {
+                                        existingChangeArrivee.value = dbValueArrivee;
+                                    } else {
+                                        changedCells.push({
+                                            nom: nom,
+                                            prenom: prenom,
+                                            date_arrivee: dateArriveeISO,
+                                            column: 'Date_d_arrivée_dans_l_unité',
+                                            value: dbValueArrivee
+                                        });
+                                    }
+
+                                    // Ajouter les modifications pour date de départ
+                                    const existingChangeDepart = changedCells.find(change =>
+                                        change.nom === nom && change.prenom === prenom &&
+                                        change.date_arrivee === dateArriveeISO && change.column === 'Date_de_départ_de_l_unité'
+                                    );
+
+                                    const dbValueDepart = editor.inputs.depart.value || null;
+
+                                    if (existingChangeDepart) {
+                                        existingChangeDepart.value = dbValueDepart;
+                                    } else {
+                                        changedCells.push({
+                                            nom: nom,
+                                            prenom: prenom,
+                                            date_arrivee: dateArriveeISO,
+                                            column: 'Date_de_départ_de_l_unité',
+                                            value: dbValueDepart
+                                        });
+                                    }
+
+                                    // Mettre à jour les attributs data
+                                    cell.setAttribute('data-date-arrivee', newDateArrivee);
+                                    cell.setAttribute('data-date-depart', newDateDepart);
+
+                                    // Afficher le résultat
+                                    const dateRange = [];
+                                    if (newDateArrivee) dateRange.push(newDateArrivee);
+                                    if (newDateDepart) dateRange.push(newDateDepart);
+                                    cell.innerHTML = dateRange.join(' - ');
+                                    cell.classList.remove('editing');
+
+                                    console.log('Updated changedCells:', changedCells);
+                                };
+
+                                // Validation uniquement par le bouton ou Escape
+                                editor.validateButton.addEventListener('click', finishSpecialEditing);
+
+                                editor.inputs.arrivee.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Escape') {
+                                        cell.innerHTML = oldContent;
+                                        cell.classList.remove('editing');
+                                    }
+                                });
+                                editor.inputs.depart.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Escape') {
+                                        cell.innerHTML = oldContent;
+                                        cell.classList.remove('editing');
+                                    }
                                 });
 
-                                const existingChange = changedCells.find(change =>
-                                    change.nom === nom && change.prenom === prenom &&
-                                    change.date_arrivee === dateArriveeISO && change.column === column
-                                );
+                            } else if (specialType === 'avis-zrr') {
+                                const editor = createAvisZRREditor(cell);
+                                cell.innerHTML = '';
+                                cell.appendChild(editor.container);
+                                editor.inputs.positif.focus();
 
-                                let dbValue;
-                                if (dataType === 'date' && inputElement.value) {
-                                    dbValue = inputElement.value;
-                                } else {
-                                    dbValue = newValue || null;
-                                }
+                                const finishAvisEditing = () => {
+                                    const newAvisPositif = editor.inputs.positif.value;
+                                    const newAvisNegatif = editor.inputs.negatif.value;
 
-                                if (existingChange) {
-                                    existingChange.value = dbValue;
-                                } else {
-                                    changedCells.push({
-                                        nom: nom,
-                                        prenom: prenom,
-                                        date_arrivee: dateArriveeISO,
-                                        column: column,
-                                        value: dbValue
-                                    });
-                                }
+                                    const row = cell.parentElement;
+                                    const nom = row.getAttribute('data-nom');
+                                    const prenom = row.getAttribute('data-prenom');
+                                    const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
 
-                                // IMPORTANT: Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
-                                if (column === 'Nom') {
-                                    row.setAttribute('data-nom', newValue);
-                                    console.log('Mise à jour data-nom vers:', newValue);
-                                } else if (column === 'Prénom') {
-                                    row.setAttribute('data-prenom', newValue);
-                                    console.log('Mise à jour data-prenom vers:', newValue);
-                                } else if (column === 'Date_d_arrivée_dans_l_unité') {
-                                    // Mettre à jour aussi l'attribut data-date-arrivee-original si on modifie la date d'arrivée
-                                    if (dataType === 'date' && inputElement.value) {
-                                        row.setAttribute('data-date-arrivee-original', isoDateToFr(inputElement.value));
-                                        console.log('Mise à jour data-date-arrivee-original vers:', isoDateToFr(inputElement.value));
+                                    let dateArriveeISO = null;
+                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
+                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                     }
-                                }
+
+                                    console.log('Avis ZRR editing:', { newAvisPositif, newAvisNegatif, nom, prenom, dateArriveeISO });
+
+                                    // Ajouter les modifications pour avis positif
+                                    const existingChangePositif = changedCells.find(change =>
+                                        change.nom === nom && change.prenom === prenom &&
+                                        change.date_arrivee === dateArriveeISO && change.column === 'Avis_ZRR_positif'
+                                    );
+
+                                    if (existingChangePositif) {
+                                        existingChangePositif.value = newAvisPositif || null;
+                                    } else {
+                                        changedCells.push({
+                                            nom: nom,
+                                            prenom: prenom,
+                                            date_arrivee: dateArriveeISO,
+                                            column: 'Avis_ZRR_positif',
+                                            value: newAvisPositif || null
+                                        });
+                                    }
+
+                                    // Ajouter les modifications pour avis négatif
+                                    const existingChangeNegatif = changedCells.find(change =>
+                                        change.nom === nom && change.prenom === prenom &&
+                                        change.date_arrivee === dateArriveeISO && change.column === 'Avis_ZRR_négatif'
+                                    );
+
+                                    if (existingChangeNegatif) {
+                                        existingChangeNegatif.value = newAvisNegatif || null;
+                                    } else {
+                                        changedCells.push({
+                                            nom: nom,
+                                            prenom: prenom,
+                                            date_arrivee: dateArriveeISO,
+                                            column: 'Avis_ZRR_négatif',
+                                            value: newAvisNegatif || null
+                                        });
+                                    }
+
+                                    console.log('ChangedCells after avis update:', changedCells);
+
+                                    // Mettre à jour les attributs data
+                                    cell.setAttribute('data-avis-positif', newAvisPositif);
+                                    cell.setAttribute('data-avis-negatif', newAvisNegatif);
+
+                                    // Afficher le résultat
+                                    let displayText = '';
+                                    if (newAvisPositif === 'Oui') {
+                                        displayText = 'Positif';
+                                    } else if (newAvisNegatif === 'Oui') {
+                                        displayText = 'Négatif';
+                                    }
+
+                                    cell.innerHTML = displayText;
+                                    cell.classList.remove('editing');
+                                };
+
+                                // Validation uniquement par le bouton ou Escape
+                                editor.validateButton.addEventListener('click', finishAvisEditing);
+
+                                editor.inputs.positif.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Escape') {
+                                        cell.innerHTML = oldContent;
+                                        cell.classList.remove('editing');
+                                    }
+                                });
+                                editor.inputs.negatif.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Escape') {
+                                        cell.innerHTML = oldContent;
+                                        cell.classList.remove('editing');
+                                    }
+                                });
                             }
 
-                            cell.innerHTML = newValue;
-                            cell.classList.remove('editing');
+                        } else {
+                            // Traitement normal pour les cellules editable standard
+                            const value = cell.textContent.trim();
+                            const dataType = cell.getAttribute('data-type') || 'text';
+                            const options = cell.getAttribute('data-options');
+
+                            let inputElement;
+
+                            if (dataType === 'select' && options) {
+                                inputElement = document.createElement('select');
+                                const optionEmpty = document.createElement('option');
+                                optionEmpty.value = '';
+                                optionEmpty.textContent = '';
+                                inputElement.appendChild(optionEmpty);
+
+                                options.split(',').forEach(option => {
+                                    const optionElement = document.createElement('option');
+                                    optionElement.value = option.trim();
+                                    optionElement.textContent = option.trim();
+                                    inputElement.appendChild(optionElement);
+                                });
+
+                                inputElement.value = value;
+                            } else if (dataType === 'date') {
+                                inputElement = document.createElement('input');
+                                inputElement.type = 'date';
+                                if (value) {
+                                    inputElement.value = frDateToISO(value);
+                                }
+                            } else if (dataType === 'textarea') {
+                                inputElement = document.createElement('textarea');
+                                inputElement.value = value;
+                            } else {
+                                inputElement = document.createElement('input');
+                                inputElement.type = 'text';
+                                inputElement.value = value;
+                            }
+
+                            cell.innerHTML = '';
+                            cell.appendChild(inputElement);
+                            inputElement.focus();
+
+                            inputElement.addEventListener('blur', finishEditing);
+                            inputElement.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter' && dataType !== 'textarea') {
+                                    finishEditing();
+                                } else if (e.key === 'Escape') {
+                                    cell.innerHTML = oldContent;
+                                    cell.classList.remove('editing');
+                                }
+                            });
+
+                            function finishEditing() {
+                                let newValue;
+
+                                if (dataType === 'date' && inputElement.value) {
+                                    newValue = isoDateToFr(inputElement.value);
+                                } else {
+                                    newValue = inputElement.value;
+                                }
+
+                                if (newValue !== value) {
+                                    // Récupérer les identifiants uniques de la ligne
+                                    const row = cell.parentElement;
+                                    const nom = row.getAttribute('data-nom');
+                                    const prenom = row.getAttribute('data-prenom');
+                                    const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
+                                    const column = cell.getAttribute('data-column');
+
+                                    // Convertir la date d'arrivée au format ISO si nécessaire
+                                    let dateArriveeISO = null;
+                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
+                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
+                                    }
+
+                                    console.log('Identifiants:', {
+                                        nom: nom,
+                                        prenom: prenom,
+                                        dateArriveeOriginal: dateArriveeOriginal,
+                                        dateArriveeISO: dateArriveeISO,
+                                        column: column
+                                    });
+
+                                    const existingChange = changedCells.find(change =>
+                                        change.nom === nom && change.prenom === prenom &&
+                                        change.date_arrivee === dateArriveeISO && change.column === column
+                                    );
+
+                                    let dbValue;
+                                    if (dataType === 'date' && inputElement.value) {
+                                        dbValue = inputElement.value;
+                                    } else {
+                                        dbValue = newValue || null;
+                                    }
+
+                                    if (existingChange) {
+                                        existingChange.value = dbValue;
+                                    } else {
+                                        changedCells.push({
+                                            nom: nom,
+                                            prenom: prenom,
+                                            date_arrivee: dateArriveeISO,
+                                            column: column,
+                                            value: dbValue
+                                        });
+                                    }
+
+                                    // IMPORTANT: Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
+                                    if (column === 'Nom') {
+                                        row.setAttribute('data-nom', newValue);
+                                        console.log('Mise à jour data-nom vers:', newValue);
+                                    } else if (column === 'Prénom') {
+                                        row.setAttribute('data-prenom', newValue);
+                                        console.log('Mise à jour data-prenom vers:', newValue);
+                                    } else if (column === 'Date_d_arrivée_dans_l_unité') {
+                                        // Mettre à jour aussi l'attribut data-date-arrivee-original si on modifie la date d'arrivée
+                                        if (dataType === 'date' && inputElement.value) {
+                                            row.setAttribute('data-date-arrivee-original', isoDateToFr(inputElement.value));
+                                            console.log('Mise à jour data-date-arrivee-original vers:', isoDateToFr(inputElement.value));
+                                        }
+                                    }
+                                }
+
+                                cell.innerHTML = newValue;
+                                cell.classList.remove('editing');
+                            }
                         }
                     });
                 });
@@ -874,12 +1219,6 @@
                         });
                     });
                 }
-
-                editableCells.forEach(cell => {
-                    cell.classList.remove('editable');
-                    cell.style.cursor = 'pointer';
-                });
-
             });
         </script>
     </body>
