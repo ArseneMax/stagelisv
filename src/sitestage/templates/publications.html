@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta property="og:image" content="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Publications HAL - LISV</title>
+    <link rel="icon" type="image/png" href="https://www.lisv.uvsq.fr/jsp/images/favicon.png" />
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style media="screen, print">
+        #pied_page_complement, #pied_page_complement a {
+            color: white;
+            background: #7f7f7f;
+            position: fixed;
+            bottom:0;
+            width: 100%;
+        }
+
+        #menu {
+            background: #4f8f00;
+        }
+
+        a, a:active, a:focus, a:visited {
+            color: #005493;
+        }
+
+        h1, h2, h3 {
+            color: #005493;
+        }
+
+        button {
+            background-color: white;
+            color: #005493;
+            border: 1px solid #005493;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #005493;
+            color: white;
+            border: 1px solid #005493;
+        }
+
+        .content-container {
+            margin: 20px;
+            margin-bottom: 200px;
+        }
+
+        /* Styles pour les filtres */
+        .filters-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+        }
+
+        .filters-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .filter-group input, .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background-color: white;
+            height: 38px;
+            box-sizing: border-box;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            border-color: #005493;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 84, 147, 0.3);
+        }
+
+        .filter-group select {
+            cursor: pointer;
+        }
+
+        /* Styles pour les statistiques */
+        .statistics-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background-color: #005493;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Styles pour les publications */
+        .publications-list {
+            margin-bottom: 30px;
+        }
+
+        .publication-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .publication-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .publication-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #005493;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .publication-authors {
+            color: #666;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .publication-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .publication-meta span {
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+
+        .publication-abstract {
+            margin-top: 15px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .publication-links {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .publication-link {
+            background-color: #005493;
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .publication-link:hover {
+            background-color: #003d7a;
+            color: white !important;
+        }
+
+        .publication-link.doi {
+            background-color: #28a745;
+        }
+
+        .publication-link.doi:hover {
+            background-color: #218838;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            border: 1px solid #005493;
+            color: #005493;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #005493;
+            color: white;
+        }
+
+        .pagination .current {
+            background-color: #005493;
+            color: white;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Navigation */
+        #menu_principal .menu_n1_desktop {
+            color: white !important;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 0;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop {
+            background-color: #4f8f00 !important;
+        }
+
+        #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop:hover {
+            color: #005493 !important;
+            background-color: #4f8f00 !important;
+        }
+
+        #menu_principal .menu_principal-actif .menu_n1_desktop,
+        #menu_principal .menu_principal-actif.UVSQNEWS > a,
+        #menu_principal .menu_principal-actif.UVSQNEWS > a span {
+            color: white !important;
+            background-color: #005493 !important;
+        }
+
+        /* Message d'erreur */
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 20px;
+        }
+
+        /* Aucun résultat */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #005493;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cartouche">
+        <div>
+            <div class="banniere clearfix" role="banner">
+                <div class="banniere__logos banniere__logos__1">
+                    <div class="banniere__logo banniere__logo__desktop">
+                        <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
+                            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                        </a>
+                    </div>
+                    <div class="banniere__logo banniere__logo__mobile"></div>
+                    <div class="banniere__logo banniere__logo__desktop"></div>
+                    <div class="banniere__logo banniere__logo__desktop"></div>
+                </div>
+
+                <div class="banniere_baseline_reseaux">
+                    <div class="banniere__baselines">
+                        <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)</div>
+                        <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
+        <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+            <li class="close-button-main"></li>
+            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
+                    <span>Tableau</span>
+                </a>
+            </li>
+            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/categories" aria-expanded="false" role="button">
+                    <span>Effectif</span>
+                </a>
+            </li>
+            <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/publications" aria-expanded="false" role="button">
+                    <span>Publications HAL</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="content-container">
+            <h1>Publications HAL du LISV</h1>
+
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <!-- Section des statistiques -->
+            {% if statistics and statistics.total > 0 %}
+            <div class="statistics-section">
+                <div class="stat-card">
+                    <div class="stat-number">{{ statistics.total }}</div>
+                    <div class="stat-label">Publications totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ statistics.years.values() | list | last if statistics.years else 0 }}</div>
+                    <div class="stat-label">Publications cette année</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ statistics.types.ART or 0 }}</div>
+                    <div class="stat-label">Articles de revue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ statistics.types.COMM or 0 }}</div>
+                    <div class="stat-label">Communications</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Section des filtres -->
+            <div class="filters-section">
+                <h3>Filtres de recherche</h3>
+                <form method="GET" class="filters-form">
+                    <div class="filter-group">
+                        <label for="author">Auteur :</label>
+                        <input type="text" id="author" name="author"
+                               placeholder="Nom d'auteur"
+                               value="{{ selected_author or '' }}">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="year">Année :</label>
+                        <select id="year" name="year">
+                            <option value="">Toutes les années</option>
+                            {% if available_years %}
+                                {% for year in available_years %}
+                                    <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>
+                                        {{ year }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="doc_type">Type de document :</label>
+                        <select id="doc_type" name="doc_type">
+                            {% for value, label in doc_types_labels.items() %}
+                                <option value="{{ value if value != 'ALL' else '' }}"
+                                        {% if selected_doc_type == value or (not selected_doc_type and value == 'ALL') %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <button type="submit">Filtrer</button>
+                    </div>
+
+                    <div class="filter-group">
+                        <a href="/publications" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; height: 38px; display: flex; align-items: center; box-sizing: border-box;">
+                            Réinitialiser
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Résultats -->
+            {% if total_publications is defined %}
+            <div style="margin-bottom: 20px;">
+                <strong>{{ total_publications }}</strong> publication(s) trouvée(s)
+                {% if selected_author or selected_year or selected_doc_type %}
+                    avec les filtres appliqués
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Liste des publications -->
+            {% if publications %}
+            <div class="publications-list">
+                {% for pub in publications %}
+                <div class="publication-item">
+                    <div class="publication-title">{{ pub.title }}</div>
+
+                    {% if pub.authors %}
+                    <div class="publication-authors">
+                        <strong>Auteurs :</strong> {{ pub.authors | join(', ') }}
+                    </div>
+                    {% endif %}
+
+                    <div class="publication-meta">
+                        {% if pub.publication_date_formatted %}
+                        <span><strong>Date :</strong> {{ pub.publication_date_formatted }}</span>
+                        {% endif %}
+
+                        {% if pub.doc_type_label %}
+                        <span><strong>Type :</strong> {{ pub.doc_type_label }}</span>
+                        {% endif %}
+
+                        {% if pub.journal %}
+                        <span><strong>Revue :</strong> {{ pub.journal }}</span>
+                        {% elif pub.conference %}
+                        <span><strong>Conférence :</strong> {{ pub.conference }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if pub.abstract_short %}
+                    <div class="publication-abstract">
+                        <strong>Résumé :</strong> {{ pub.abstract_short }}
+                    </div>
+                    {% endif %}
+
+                    {% if pub.keywords %}
+                    <div style="margin-top: 10px;">
+                        <strong>Mots-clés :</strong> {{ pub.keywords | join(', ') }}
+                    </div>
+                    {% endif %}
+
+                    <div class="publication-links">
+                        {% if pub.uri and pub.uri != '' %}
+                        <a href="{{ pub.uri }}" target="_blank" class="publication-link" rel="noopener noreferrer">
+                            Voir sur HAL
+                        </a>
+                        {% elif pub.hal_id and pub.hal_id != '' %}
+                        <a href="https://hal.science/{{ pub.hal_id }}" target="_blank" class="publication-link" rel="noopener noreferrer">
+                            Voir sur HAL
+                        </a>
+                        {% endif %}
+
+                        {% if pub.doi and pub.doi != '' %}
+                        <a href="https://doi.org/{{ pub.doi }}" target="_blank" class="publication-link doi" rel="noopener noreferrer">
+                            DOI: {{ pub.doi[:25] }}{% if pub.doi|length > 25 %}...{% endif %}
+                        </a>
+                        {% endif %}
+
+                        {% if pub.has_file %}
+                            {% if pub.file_url %}
+                            <a href="{{ pub.file_url }}" target="_blank" class="publication-link" style="background-color: #28a745;" rel="noopener noreferrer">
+                                📄 Télécharger PDF
+                            </a>
+                            {% else %}
+                            <span style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;" title="Un fichier PDF est disponible sur la page HAL de cette publication">
+                                📄 Fichier PDF disponible
+                            </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if total_pages and total_pages > 1 %}
+            <div class="pagination">
+                {% if current_page > 1 %}
+                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + (current_page-1)|string) }}">
+                        ← Précédent
+                    </a>
+                {% else %}
+                    <span class="disabled">← Précédent</span>
+                {% endif %}
+
+                {% set start_page = [1, current_page - 2] | max %}
+                {% set end_page = [total_pages, current_page + 2] | min %}
+
+                {% if start_page > 1 %}
+                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=1') }}">1</a>
+                    {% if start_page > 2 %}
+                        <span>...</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for page_num in range(start_page, end_page + 1) %}
+                    {% if page_num == current_page %}
+                        <span class="current">{{ page_num }}</span>
+                    {% else %}
+                        <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + page_num|string) }}">
+                            {{ page_num }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if end_page < total_pages %}
+                    {% if end_page < total_pages - 1 %}
+                        <span>...</span>
+                    {% endif %}
+                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + total_pages|string) }}">
+                        {{ total_pages }}
+                    </a>
+                {% endif %}
+
+                {% if current_page < total_pages %}
+                    <a href="?{{ request.query_string.decode() | replace('page=' + current_page|string, 'page=' + (current_page+1)|string) }}">
+                        Suivant →
+                    </a>
+                {% else %}
+                    <span class="disabled">Suivant →</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="no-results">
+                {% if selected_author or selected_year or selected_doc_type %}
+                    Aucune publication trouvée avec les critères sélectionnés.
+                {% else %}
+                    Aucune publication trouvée pour le moment.
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <footer>
+        <div id="pied_page_complement">
+            <div class="pied_page_complement__contenu clearifx">
+                <ul>
+                    <li class="adresse">LISV<br />
+                        Bâtiment Boucher<br />
+                        Pôle scientifique et technologique de Vélizy<br />
+                        10-12 avenue de l'Europe<br />
+                        78140 Vélizy</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-soumission du formulaire lors du changement de sélection
+        document.getElementById('year').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        document.getElementById('doc_type').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        // Message de chargement lors de la soumission
+        document.querySelector('.filters-form').addEventListener('submit', function() {
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.textContent = 'Recherche en cours...';
+            submitButton.disabled = true;
+        });
+    </script>
+</body>
+</html>
