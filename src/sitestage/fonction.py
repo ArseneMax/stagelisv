@@ -926,7 +926,6 @@ class User(UserMixin):
 
 
 @lru_cache(maxsize=50)
-@lru_cache(maxsize=50)
 def get_hal_publications(year=None, author=None, doc_type=None, limit=100, start=0):
     """
     Récupère les publications HAL du LISV avec cache

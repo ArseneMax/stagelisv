@@ -300,7 +300,6 @@
                 color: white;
                 border: 1px solid #dc3545;
                 font-size: 12px;
-                padding: 6px 10px;
             }
 
             .clear-filters-btn:hover {
@@ -354,10 +353,48 @@
             .filter-indicator.active {
                 display: block;
             }
+
+            /* Masquer les éléments d'édition pour les non-admins */
+            .not-admin .editable {
+                cursor: default !important;
+            }
+
+            .not-admin .editable:hover {
+                background-color: transparent !important;
+            }
+
+            .not-admin .action-buttons .save-buttons {
+                display: none !important;
+            }
+
+            /* Style pour l'indicateur admin */
+            .admin-indicator {
+                background-color: #28a745;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .user-indicator {
+                background-color: #6c757d;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+
+            .save-buttons {
+                display: flex;
+                gap: 10px;
+            }
         </style>
     </head>
 
-    <body>
+    <body class="{% if not current_user.is_authenticated or not current_user.is_admin() %}not-admin{% endif %}">
         <div class="cartouche">
             <div>
                 <div class="banniere clearfix" role="banner">
@@ -385,13 +422,8 @@
         <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
             <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
                 <li class="close-button-main"></li>
-                <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
-                        <span>Tableau</span>
-                    </a>
-                </li>
                 <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/categories" aria-expanded="false" role="button">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
                         <span>Effectif</span>
                     </a>
                 </li>
@@ -400,24 +432,49 @@
                         <span>Publications HAL</span>
                     </a>
                 </li>
+                <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
+                        <span>Tableau</span>
+                    </a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/logout" aria-expanded="false" role="button">
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </nav>
 
         <main>
             <br>
 
+            <!-- Indicateur de statut utilisateur -->
+            {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="admin-indicator">
+                    🔧 Mode administrateur - Modifications autorisées
+                </div>
+            {% endif %}
+
             {% if selected_year %}
             <!-- Informations sur l'année filtrée -->
             <div class="year-info">
                 <h3>Personnel présent en {{ selected_year }}</h3>
                 <p><strong>{{ infos|length }}</strong> employé(s) trouvé(s) pour cette année</p>
-                <p><a href="/" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Afficher toutes les années</a></p>
+                <p><a href="/tableau" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Afficher toutes les années</a></p>
             </div>
             {% endif %}
 
             <div class="action-buttons">
-                <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="save-buttons">
+                    <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+                    <button class="clear-filters-btn" onclick="clearAllFilters()">Effacer tous les filtres</button>
+                </div>
+                {% else %}
                 <button class="clear-filters-btn" onclick="clearAllFilters()">Effacer tous les filtres</button>
+                {% endif %}
 
                 <!-- Sélecteur d'année -->
                 <div class="year-filter">
@@ -608,9 +665,9 @@
                 const selectedYear = yearSelect.value;
 
                 if (selectedYear) {
-                    window.location.href = `/?year=${selectedYear}`;
+                    window.location.href = `/tableau?year=${selectedYear}`;
                 } else {
-                    window.location.href = '/';
+                    window.location.href = '/tableau';
                 }
             }
 
@@ -751,6 +808,15 @@
             document.addEventListener('DOMContentLoaded', function() {
                 // Populer les filtres au chargement de la page
                 populateFilters();
+
+                // Vérifier si l'utilisateur est admin
+                const isAdmin = !document.body.classList.contains('not-admin');
+
+                if (!isAdmin) {
+                    // Si pas admin, désactiver toutes les fonctionnalités d'édition
+                    console.log('Mode consultation uniquement - utilisateur non admin');
+                    return;
+                }
 
                 const editableCells = document.querySelectorAll('.editable');
                 const saveAllButton = document.getElementById('saveAllButton');
@@ -947,12 +1013,6 @@
                         });
                     });
                 }
-
-                editableCells.forEach(cell => {
-                    cell.classList.remove('editable');
-                    cell.style.cursor = 'default';
-                });
-
             });
         </script>
     </body>

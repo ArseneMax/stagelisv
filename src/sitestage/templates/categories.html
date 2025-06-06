@@ -374,10 +374,46 @@
                 font-weight: bold;
                 color: #005493;
             }
+
+            /* Masquer les éléments d'édition pour les non-admins */
+            .not-admin .editable,
+            .not-admin .editable-special {
+                cursor: default !important;
+                pointer-events: none !important;
+            }
+
+            .not-admin .editable:hover,
+            .not-admin .editable-special:hover {
+                background-color: transparent !important;
+            }
+
+            .not-admin #saveAllButton {
+                display: none !important;
+            }
+
+            /* Style pour l'indicateur admin */
+            .admin-indicator {
+                background-color: #28a745;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .user-indicator {
+                background-color: #6c757d;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
         </style>
     </head>
 
-    <body>
+    <body class="{% if not (current_user.is_authenticated and current_user.is_admin()) %}not-admin{% endif %}">
         <div class="cartouche">
             <div>
                 <div class="banniere clearfix" role="banner">
@@ -405,13 +441,8 @@
         <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
             <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
                 <li class="close-button-main"></li>
-                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
-                        <span>Tableau</span>
-                    </a>
-                </li>
                 <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/categories" aria-expanded="false" role="button">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
                         <span>Effectif</span>
                     </a>
                 </li>
@@ -420,22 +451,47 @@
                         <span>Publications HAL</span>
                     </a>
                 </li>
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
+                        <span>Tableau</span>
+                    </a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/logout" aria-expanded="false" role="button">
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </nav>
 
         <main>
             <br>
 
+            <!-- Indicateur de statut utilisateur -->
+            {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="admin-indicator">
+                    🔧 Mode administrateur - Modifications autorisées
+                </div>
+            {% endif %}
+
             {% if selected_year %}
             <div class="year-info">
                 <h3>Membres par catégories - Année {{ selected_year }}</h3>
                 <p><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
-                <p><a href="/categories" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir toutes les catégories (toutes années)</a></p>
+                <p><a href="/" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir toutes les catégories (toutes années)</a></p>
             </div>
             {% endif %}
 
+            {% if not selected_year %}
+                <h1 style="text-align: center; margin-bottom: 30px;">Membres du laboratoire par catégories</h1>
+            {% endif %}
+
             <div class="action-buttons">
+                {% if current_user.is_authenticated and current_user.is_admin() %}
                 <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+                {% endif %}
 
                 <div class="year-filter">
                     <select id="yearSelect" onchange="filterByYear()">
@@ -452,9 +508,7 @@
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
             <div class="categories-container">
-                {% if not selected_year %}
-                    <h1 style="text-align: center; margin-bottom: 30px;">Membres du laboratoire par catégories</h1>
-                {% endif %}
+
 
                 <!-- Membres permanents -->
                 {% if categories.permanents %}
@@ -707,13 +761,47 @@
                 const selectedYear = yearSelect.value;
 
                 if (selectedYear) {
-                    window.location.href = `/categories?year=${selectedYear}`;
+                    window.location.href = `/?year=${selectedYear}`;
                 } else {
-                    window.location.href = '/categories';
+                    window.location.href = '/';
                 }
             }
 
             document.addEventListener('DOMContentLoaded', function() {
+                // Vérifier si l'utilisateur est admin de manière plus robuste
+                const bodyClassList = document.body.classList;
+                const isAdmin = !bodyClassList.contains('not-admin');
+
+                console.log('Admin status:', isAdmin);
+                console.log('Body class list:', bodyClassList.toString());
+                console.log('Current user admin check from template');
+
+                // Test supplémentaire : vérifier si les boutons d'admin sont présents
+                const saveButton = document.getElementById('saveAllButton');
+                const adminIndicator = document.querySelector('.admin-indicator');
+
+                console.log('Save button exists:', !!saveButton);
+                console.log('Admin indicator exists:', !!adminIndicator);
+
+                // Si pas admin OU pas de bouton de sauvegarde, désactiver l'édition
+                if (!isAdmin || !saveButton) {
+                    console.log('Mode consultation uniquement - utilisateur non admin ou pas de bouton de sauvegarde');
+
+                    // Désactiver complètement les événements de double-clic
+                    const allEditableCells = document.querySelectorAll('.editable, .editable-special');
+                    allEditableCells.forEach(cell => {
+                        cell.style.pointerEvents = 'none';
+                        cell.style.cursor = 'default';
+                        cell.removeAttribute('title');
+                        // Enlever complètement les classes d'édition
+                        cell.classList.remove('editable', 'editable-special');
+                    });
+
+                    return; // Arrêter ici pour les non-admins
+                }
+
+                console.log('Mode administrateur activé - édition autorisée');
+
                 const editableCells = document.querySelectorAll('.editable, .editable-special');
                 const saveAllButton = document.getElementById('saveAllButton');
                 const notification = document.getElementById('saveNotification');
@@ -875,10 +963,6 @@
                                     const newDateArrivee = editor.inputs.arrivee.value ? isoDateToFr(editor.inputs.arrivee.value) : '';
                                     const newDateDepart = editor.inputs.depart.value ? isoDateToFr(editor.inputs.depart.value) : '';
 
-                                    // Récupérer les valeurs originales
-                                    const originalArrivee = cell.getAttribute('data-date-arrivee') || '';
-                                    const originalDepart = cell.getAttribute('data-date-depart') || '';
-
                                     const row = cell.parentElement;
                                     const nom = row.getAttribute('data-nom');
                                     const prenom = row.getAttribute('data-prenom');
@@ -888,9 +972,6 @@
                                     if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
                                         dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                     }
-
-                                    console.log('Date range editing - Original:', originalArrivee, originalDepart);
-                                    console.log('Date range editing - New:', newDateArrivee, newDateDepart);
 
                                     // Ajouter les modifications pour date d'arrivée
                                     const existingChangeArrivee = changedCells.find(change =>
@@ -942,11 +1023,8 @@
                                     if (newDateDepart) dateRange.push(newDateDepart);
                                     cell.innerHTML = dateRange.join(' - ');
                                     cell.classList.remove('editing');
-
-                                    console.log('Updated changedCells:', changedCells);
                                 };
 
-                                // Validation uniquement par le bouton ou Escape
                                 editor.validateButton.addEventListener('click', finishSpecialEditing);
 
                                 editor.inputs.arrivee.addEventListener('keydown', function(e) {
@@ -981,8 +1059,6 @@
                                     if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
                                         dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                     }
-
-                                    console.log('Avis ZRR editing:', { newAvisPositif, newAvisNegatif, nom, prenom, dateArriveeISO });
 
                                     // Ajouter les modifications pour avis positif
                                     const existingChangePositif = changedCells.find(change =>
@@ -1020,8 +1096,6 @@
                                         });
                                     }
 
-                                    console.log('ChangedCells after avis update:', changedCells);
-
                                     // Mettre à jour les attributs data
                                     cell.setAttribute('data-avis-positif', newAvisPositif);
                                     cell.setAttribute('data-avis-negatif', newAvisNegatif);
@@ -1038,7 +1112,6 @@
                                     cell.classList.remove('editing');
                                 };
 
-                                // Validation uniquement par le bouton ou Escape
                                 editor.validateButton.addEventListener('click', finishAvisEditing);
 
                                 editor.inputs.positif.addEventListener('keydown', function(e) {
@@ -1130,14 +1203,6 @@
                                         dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                     }
 
-                                    console.log('Identifiants:', {
-                                        nom: nom,
-                                        prenom: prenom,
-                                        dateArriveeOriginal: dateArriveeOriginal,
-                                        dateArriveeISO: dateArriveeISO,
-                                        column: column
-                                    });
-
                                     const existingChange = changedCells.find(change =>
                                         change.nom === nom && change.prenom === prenom &&
                                         change.date_arrivee === dateArriveeISO && change.column === column
@@ -1162,18 +1227,14 @@
                                         });
                                     }
 
-                                    // IMPORTANT: Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
+                                    // Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
                                     if (column === 'Nom') {
                                         row.setAttribute('data-nom', newValue);
-                                        console.log('Mise à jour data-nom vers:', newValue);
                                     } else if (column === 'Prénom') {
                                         row.setAttribute('data-prenom', newValue);
-                                        console.log('Mise à jour data-prenom vers:', newValue);
                                     } else if (column === 'Date_d_arrivée_dans_l_unité') {
-                                        // Mettre à jour aussi l'attribut data-date-arrivee-original si on modifie la date d'arrivée
                                         if (dataType === 'date' && inputElement.value) {
                                             row.setAttribute('data-date-arrivee-original', isoDateToFr(inputElement.value));
-                                            console.log('Mise à jour data-date-arrivee-original vers:', isoDateToFr(inputElement.value));
                                         }
                                     }
                                 }

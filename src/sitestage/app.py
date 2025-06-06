@@ -49,24 +49,7 @@ class SignupForm(FlaskForm):
 # Routes
 @web_ui.route('/')
 def index():
-
-    year = request.args.get('year', type=int)
-    available_years = get_available_years()
-
-    if year:
-        infos = select_infos_by_year(year)
-    else:
-        infos = select_all_infos()
-
-    return render_template('index.html',
-                           infos=infos,
-                           available_years=available_years,
-                           selected_year=year)
-
-
-@web_ui.route('/categories')
-def categories():
-    """Route pour afficher les membres par catégories, avec filtrage optionnel par année"""
+    """Route principale - affiche les membres par catégories (anciennes 'categories')"""
     year = request.args.get('year', type=int)
     available_years = get_available_years()
 
@@ -86,6 +69,31 @@ def categories():
                            selected_year=year)
 
 
+@web_ui.route('/tableau')
+@login_required
+@admin_required
+def tableau():
+    """Route pour afficher le tableau complet (ancien index) - nécessite une connexion"""
+    year = request.args.get('year', type=int)
+    available_years = get_available_years()
+
+    if year:
+        infos = select_infos_by_year(year)
+    else:
+        infos = select_all_infos()
+
+    return render_template('index.html',
+                           infos=infos,
+                           available_years=available_years,
+                           selected_year=year)
+
+
+@web_ui.route('/categories')
+def categories():
+    """Route de redirection vers la page principale pour compatibilité"""
+    return redirect(url_for('web_ui.index'))
+
+
 @web_ui.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -97,7 +105,9 @@ def login():
             if user[1] == username and user[2] == password:
                 user_obj = User(user[0], user[1], user[2])
                 login_user(user_obj)
-                return redirect('/')
+                # Rediriger vers la page demandée ou vers la page principale
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect('/')
         flash("Nom d'utilisateur ou mot de passe incorrect.")
     return render_template('login.html', form=form)
 
@@ -106,7 +116,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect('/login')
+    return redirect('/')
 
 
 @web_ui.route('/signup', methods=['GET', 'POST'])
@@ -129,7 +139,9 @@ def signup():
 
 
 @web_ui.route('/update_info', methods=['POST'])
+@admin_required
 def update_info():
+    """Route pour mettre à jour les informations - nécessite d'être admin"""
     data = request.json
     changes = data.get('changes', [])
     if not changes:
@@ -142,12 +154,14 @@ def update_info():
 
 
 @web_ui.route('/admin/users', methods=['GET'])
+@admin_required
 def admin_users():
     users = User.get_all_users()
     return render_template('admin_users.html', users=users, current_user_id=current_user.id)
 
 
 @web_ui.route('/admin/change_role/<int:user_id>', methods=['POST'])
+@admin_required
 def change_role(user_id):
     new_role = request.form.get('role')
     if int(user_id) == int(current_user.id) and new_role != 'admin':
@@ -162,6 +176,7 @@ def change_role(user_id):
 
 
 @web_ui.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+@admin_required
 def delete_user(user_id):
     if int(user_id) == int(current_user.id):
         flash('Vous ne pouvez pas supprimer votre propre compte.')
@@ -242,4 +257,5 @@ def test_hal():
     else:
         flash("Erreur de connexion à l'API HAL", "error")
     return redirect(url_for('web_ui.publications'))
+
 app.register_blueprint(web_ui)

@@ -2,154 +2,175 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Connexion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - LISV</title>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f5f7fa;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
         }
 
-        .form-container {
-            background-color: white;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
         }
 
-        h2 {
-            margin-bottom: 20px;
-            color: #005493;
+        .logo {
             text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #005493;
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .logo p {
+            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #333;
-            font-weight: 600;
+            font-weight: bold;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             font-size: 14px;
             box-sizing: border-box;
         }
 
-        .error {
-            color: red;
-            font-size: 12px;
-            margin-top: -10px;
-            margin-bottom: 10px;
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #005493;
+            box-shadow: 0 0 5px rgba(0, 84, 147, 0.3);
         }
 
-        button {
+        .submit-btn {
+            width: 100%;
             background-color: #005493;
             color: white;
-            padding: 10px 20px;
+            padding: 12px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
-        button:hover {
-                background-color: #005493;
-                color: #005493;
-                border: 1px solid #005493;
-            }
-
-        .signup-btn {
-            display: inline-block;
-            background-color: #0078d7;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+        .submit-btn:hover {
+            background-color: #003d7a;
         }
 
-        .signup-btn:hover {
-            background-color: #005a9e;
-        }
-
-        .flashes {
-            list-style: none;
-            padding: 0;
+        .flash-messages {
             margin-bottom: 20px;
         }
 
-        .flashes li {
-            background-color: #ffe0e0;
-            color: #a94442;
+        .flash-message {
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 4px;
             margin-bottom: 10px;
-            border: 1px solid #f5c6cb;
-            font-weight: bold;
-            text-align: center;
         }
 
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
 
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
 
+        .links a {
+            color: #005493;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .access-note {
+            background-color: #e7f3ff;
+            border: 1px solid #b8daff;
+            color: #004085;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-
-<div class="form-container">
-    <h2>Connexion</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class="flashes">
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    <form method="POST">
-        {{ form.hidden_tag() }}
-
-        <div>
-            {{ form.username.label }}
-            {{ form.username(size=32) }}
-            {% for error in form.username.errors %}
-                <div class="error">{{ error }}</div>
-            {% endfor %}
+    <div class="login-container">
+        <div class="logo">
+            <h1>LISV</h1>
+            <p>Laboratoire d'Ingénierie des Systèmes de Versailles</p>
         </div>
 
-        <div>
-            {{ form.password.label }}
-            {{ form.password(size=32) }}
-            {% for error in form.password.errors %}
-                <div class="error">{{ error }}</div>
-            {% endfor %}
+        <div class="access-note">
+            <strong>Note :</strong> L'accès au tableau complet nécessite des privilèges administrateur.
         </div>
 
-        <div>
-            {{ form.submit(class="btn") }}
-        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message flash-error">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <div style="margin-top: 10px; text-align: center;">
-            <a href="/signup" class="signup-btn">S'inscrire</a>
-        </div>
-    </form>
-</div>
+        <form method="POST">
+            {{ form.hidden_tag() }}
 
+            <div class="form-group">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class="submit-btn") }}
+            </div>
+        </form>
+
+        <div class="links">
+            <a href="/">Retour à l'accueil</a>
+        </div>
+    </div>
 </body>
 </html>
