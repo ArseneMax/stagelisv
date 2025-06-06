@@ -329,25 +329,32 @@
     </div>
 
     <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
-        <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
-            <li class="close-button-main"></li>
-            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/categories" aria-expanded="false" role="button">
-                    <span>Effectif</span>
-                </a>
-            </li>
-            <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
-                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/publications" aria-expanded="false" role="button">
-                    <span>Publications HAL</span>
-                </a>
-            </li>
-            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
-                    <span>Tableau</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+        <li class="close-button-main"></li>
+        <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
+                <span>Effectif</span>
+            </a>
+        </li>
+        <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/publications" aria-expanded="false" role="button">
+                <span>Publications HAL</span>
+            </a>
+        </li>
+        <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
+                <span>Tableau</span>
+            </a>
+        </li>
+        {% if current_user.is_authenticated %}
+        <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/logout" aria-expanded="false" role="button">
+                <span>Déconnexion</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
 
     <main>
         <div class="content-container">
