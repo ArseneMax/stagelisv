@@ -105,109 +105,140 @@
             table {
                 border-collapse: collapse;
                 width: 100%;
-                min-width: 600px;
+                max-width: 1000px;
+                margin: 0 auto;
                 table-layout: auto;
+                border: none;
             }
 
             td, th {
                 text-align: left;
-                padding: 8px 6px;
-                font-size: 12px;
-                border: 1px solid #ddd;
+                padding: 12px 25px;
+                font-size: 15px;
+                border: none;
                 word-wrap: break-word;
                 word-break: break-word;
                 white-space: normal;
-                vertical-align: top;
-                max-width: 200px;
-                min-width: 100px;
+                vertical-align: middle;
+                background: transparent;
             }
 
-            td:nth-child(1), th:nth-child(1),
-            td:nth-child(2), th:nth-child(2) {
-                max-width: 120px;
-                min-width: 100px;
-            }
-
-            td:nth-child(3), th:nth-child(3),
-            td:nth-child(4), th:nth-child(4),
-            td:nth-child(5), th:nth-child(5) {
-                max-width: 150px;
-                min-width: 100px;
-            }
-
-            td:nth-child(7),
-            td:nth-child(11) {
-                max-width: 140px;
-                min-width: 120px;
-                white-space: nowrap;
-            }
-
-            td:last-child, th:last-child,
-            td:nth-last-child(2), th:nth-last-child(2) {
-                max-width: 180px;
-                min-width: 120px;
-                word-break: break-all;
-            }
-
-            td[data-column="Sujet_du_stage_de_la_visite_de_thèse"],
-            td[data-column="Diplôme_préparé"] {
-                max-width: 250px;
-                min-width: 150px;
-                line-height: 1.3;
-                word-wrap: break-word !important;
-                word-break: break-word !important;
-                white-space: normal !important;
-            }
-
-            thead {
-                position: sticky;
-                top: 0;
+            /* Style pour ressembler à la photo */
+            .member-row {
+                display: flex;
+                align-items: center;
+                padding: 10px 15px;
+                border-bottom: 1px solid #eee;
                 background: white;
-                z-index: 10;
             }
 
-            tbody tr:nth-child(even) {
+            .member-row:hover {
                 background-color: #f8f9fa;
             }
 
+            .member-name {
+                font-weight: 500;
+                min-width: 280px;
+                margin-right: 40px;
+                color: #333;
+            }
+
+            .member-role {
+                min-width: 200px;
+                margin-right: 40px;
+                color: #666;
+                font-size: 14px;
+            }
+
+            .member-contact {
+                margin-right: 40px;
+                color: #005493;
+                font-size: 14px;
+                min-width: 220px;
+            }
+
+            .member-email {
+                color: #005493;
+                text-decoration: none;
+                word-break: break-all;
+            }
+
+            .member-email:hover {
+                text-decoration: underline;
+            }
+
+            .member-period {
+                font-style: italic;
+                color: #666;
+                min-width: 180px;
+                font-size: 14px;
+                margin-right: 40px;
+            }
+
+            tbody tr {
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            tbody tr:last-child {
+                border-bottom: none;
+            }
+
             tbody tr:hover {
-                background-color: #e3f2fd;
+                background-color: #fafafa;
+            }
+
+            thead {
+                display: none;
             }
 
             .categories-container {
-                margin: 20px 0;
+                margin: 20px auto;
                 margin-bottom: 150px;
+                max-width: 1200px;
+                padding: 0 20px;
             }
 
             .category-section {
-                margin-bottom: 40px;
+                margin-bottom: 60px;
             }
 
             .category-header {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 15px;
-                background-color: #005493;
-                color: white;
-                margin-bottom: 20px;
-                font-weight: bold;
+                text-align: center;
+                margin-bottom: 30px;
+                border-bottom: none;
+                background: none;
+                padding: 0;
             }
 
             .category-title {
-                font-size: 24px;
-                margin: 0;
-                margin-right: 15px;
-                color: white !important;
+                font-size: 28px;
+                margin: 0 0 10px 0;
+                color: #333 !important;
+                font-weight: normal;
+                position: relative;
+                display: inline-block;
+            }
+
+            .category-title:after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background-color: #4f8f00;
+                border-radius: 2px;
             }
 
             .member-count {
-                background-color: rgba(255,255,255,0.2);
-                color: white;
-                padding: 5px 12px;
-                border-radius: 15px;
-                font-size: 14px;
-                font-weight: bold;
+                background-color: transparent;
+                color: #666;
+                padding: 0;
+                border-radius: 0;
+                font-size: 16px;
+                font-weight: normal;
+                display: block;
+                margin-top: 8px;
             }
 
             .action-buttons {
@@ -550,13 +581,13 @@
                                 <tr data-nom="{{ membre.nom }}"
                                     data-prenom="{{ membre.prenom }}"
                                     data-date-arrivee-original="">
-                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
-                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
-                                    <td class="editable" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
-                                    <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
-                                    <td class="editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe if membre.nom_equipe else '' }}</td>
-                                    <td class="editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire if membre.section_disciplinaire else '' }}</td>
-                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                    <td class="editable member-name" data-column="Nom" data-nom="{{ membre.nom if membre.nom else '' }}" data-prenom="{{ membre.prenom if membre.prenom else '' }}">{{ membre.nom if membre.nom else '' }} {{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable member-role" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
+                                    <td class="editable member-contact" data-column="Adresse_mail">
+                                        {% if membre.adresse_mail %}
+                                            <a href="mailto:{{ membre.adresse_mail }}" class="member-email">{{ membre.adresse_mail }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -580,13 +611,9 @@
                                 <tr data-nom="{{ membre.nom }}"
                                     data-prenom="{{ membre.prenom }}"
                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
-                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
-                                    <td class="editable" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
-                                    <td class="editable" data-column="Équipe">{{ membre.equipe if membre.equipe else '' }}</td>
-                                    <td class="editable" data-column="Nom_de_l_équipe_en_interne">{{ membre.nom_equipe if membre.nom_equipe else '' }}</td>
-                                    <td class="editable" data-column="Sections_disciplinaires">{{ membre.section_disciplinaire if membre.section_disciplinaire else '' }}</td>
-                                    <td class="editable-special" data-special-type="date-range"
+                                    <td class="editable member-name" data-column="Nom" data-nom="{{ membre.nom if membre.nom else '' }}" data-prenom="{{ membre.prenom if membre.prenom else '' }}">{{ membre.nom if membre.nom else '' }} {{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable member-role" data-column="Statut">{{ membre.statut if membre.statut else '' }}</td>
+                                    <td class="editable-special member-period" data-special-type="date-range"
                                         data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
                                         data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
@@ -598,7 +625,11 @@
                                         {% endif %}
                                         {{ date_range|join(' - ') if date_range else '' }}
                                     </td>
-                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                    <td class="editable member-contact" data-column="Adresse_mail">
+                                        {% if membre.adresse_mail %}
+                                            <a href="mailto:{{ membre.adresse_mail }}" class="member-email">{{ membre.adresse_mail }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -622,27 +653,8 @@
                                 <tr data-nom="{{ membre.nom }}"
                                     data-prenom="{{ membre.prenom }}"
                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
-                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
-                                    <td class="editable" data-column="Bureau">{{ membre.bureau if membre.bureau else '' }}</td>
-                                    <td class="editable" data-column="Caution">{{ membre.caution if membre.caution else '' }}</td>
-                                    <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon if membre.abandon else '' }}</td>
-                                    <td class="editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon if membre.date_abandon else '' }}</td>
-                                    <td class="editable" data-column="Date_Soutenance" data-type="date">{{ membre.date_soutenance if membre.date_soutenance else '' }}</td>
-                                    <td class="editable-special" data-special-type="avis-zrr"
-                                        data-avis-positif="{{ membre.avis_zrr_positif if membre.avis_zrr_positif else '' }}"
-                                        data-avis-negatif="{{ membre.avis_zrr_negatif if membre.avis_zrr_negatif else '' }}">
-                                        {% if membre.avis_zrr_positif == 'Oui' %}
-                                            Positif
-                                        {% elif membre.avis_zrr_negatif == 'Oui' %}
-                                            Négatif
-                                        {% else %}
-
-                                        {% endif %}
-                                    </td>
-                                    <td class="editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine if membre.etablissement_origine else '' }}</td>
-                                    <td class="editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare if membre.diplome_prepare else '' }}</td>
-                                    <td class="editable-special" data-special-type="date-range"
+                                    <td class="editable member-name" data-column="Nom" data-nom="{{ membre.nom if membre.nom else '' }}" data-prenom="{{ membre.prenom if membre.prenom else '' }}">{{ membre.nom if membre.nom else '' }} {{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable-special member-period" data-special-type="date-range"
                                         data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
                                         data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
@@ -654,7 +666,11 @@
                                         {% endif %}
                                         {{ date_range|join(' - ') if date_range else '' }}
                                     </td>
-                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                    <td class="editable member-contact" data-column="Adresse_mail">
+                                        {% if membre.adresse_mail %}
+                                            <a href="mailto:{{ membre.adresse_mail }}" class="member-email">{{ membre.adresse_mail }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -678,24 +694,8 @@
                                 <tr data-nom="{{ membre.nom }}"
                                     data-prenom="{{ membre.prenom }}"
                                     data-date-arrivee-original="{{ membre.date_arrivee }}">
-                                    <td class="editable" data-column="Nom">{{ membre.nom if membre.nom else '' }}</td>
-                                    <td class="editable" data-column="Prénom">{{ membre.prenom if membre.prenom else '' }}</td>
-                                    <td class="editable" data-column="Abandon" data-type="select" data-options="Oui,Non">{{ membre.abandon if membre.abandon else '' }}</td>
-                                    <td class="editable" data-column="Date_Abandon" data-type="date">{{ membre.date_abandon if membre.date_abandon else '' }}</td>
-                                    <td class="editable-special" data-special-type="avis-zrr"
-                                        data-avis-positif="{{ membre.avis_zrr_positif if membre.avis_zrr_positif else '' }}"
-                                        data-avis-negatif="{{ membre.avis_zrr_negatif if membre.avis_zrr_negatif else '' }}">
-                                        {% if membre.avis_zrr_positif == 'Oui' %}
-                                            Positif
-                                        {% elif membre.avis_zrr_negatif == 'Oui' %}
-                                            Négatif
-                                        {% else %}
-
-                                        {% endif %}
-                                    </td>
-                                    <td class="editable" data-column="Établissement_d_origine">{{ membre.etablissement_origine if membre.etablissement_origine else '' }}</td>
-                                    <td class="editable" data-column="Diplôme_préparé">{{ membre.diplome_prepare if membre.diplome_prepare else '' }}</td>
-                                    <td class="editable-special" data-special-type="date-range"
+                                    <td class="editable member-name" data-column="Nom" data-nom="{{ membre.nom if membre.nom else '' }}" data-prenom="{{ membre.prenom if membre.prenom else '' }}">{{ membre.nom if membre.nom else '' }} {{ membre.prenom if membre.prenom else '' }}</td>
+                                    <td class="editable-special member-period" data-special-type="date-range"
                                         data-date-arrivee="{{ membre.date_arrivee if membre.date_arrivee else '' }}"
                                         data-date-depart="{{ membre.date_depart if membre.date_depart else '' }}">
                                         {% set date_range = [] %}
@@ -707,8 +707,11 @@
                                         {% endif %}
                                         {{ date_range|join(' - ') if date_range else '' }}
                                     </td>
-                                    <td class="editable" data-column="Sujet_du_stage_de_la_visite_de_thèse" data-type="textarea">{{ membre.sujet_stage if membre.sujet_stage else '' }}</td>
-                                    <td class="editable" data-column="Adresse_mail">{{ membre.adresse_mail if membre.adresse_mail else '' }}</td>
+                                    <td class="editable member-contact" data-column="Adresse_mail">
+                                        {% if membre.adresse_mail %}
+                                            <a href="mailto:{{ membre.adresse_mail }}" class="member-email">{{ membre.adresse_mail }}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -1189,8 +1192,145 @@
                             const value = cell.textContent.trim();
                             const dataType = cell.getAttribute('data-type') || 'text';
                             const options = cell.getAttribute('data-options');
+                            const column = cell.getAttribute('data-column');
 
                             let inputElement;
+
+                            // Traitement spécial pour la cellule nom/prénom combinée
+                            if (column === 'Nom' && cell.classList.contains('member-name')) {
+                                // Créer deux champs pour nom et prénom
+                                const nomActuel = cell.getAttribute('data-nom') || '';
+                                const prenomActuel = cell.getAttribute('data-prenom') || '';
+
+                                const container = document.createElement('div');
+                                container.style.display = 'flex';
+                                container.style.gap = '5px';
+                                container.style.flexDirection = 'column';
+
+                                const nomInput = document.createElement('input');
+                                nomInput.type = 'text';
+                                nomInput.placeholder = 'Nom';
+                                nomInput.value = nomActuel;
+                                nomInput.style.marginBottom = '3px';
+
+                                const prenomInput = document.createElement('input');
+                                prenomInput.type = 'text';
+                                prenomInput.placeholder = 'Prénom';
+                                prenomInput.value = prenomActuel;
+
+                                container.appendChild(nomInput);
+                                container.appendChild(prenomInput);
+
+                                cell.innerHTML = '';
+                                cell.appendChild(container);
+                                nomInput.focus();
+
+                                const finishNameEditing = () => {
+                                    const newNom = nomInput.value.trim();
+                                    const newPrenom = prenomInput.value.trim();
+
+                                    // Mettre à jour les attributs data
+                                    cell.setAttribute('data-nom', newNom);
+                                    cell.setAttribute('data-prenom', newPrenom);
+
+                                    // Mettre à jour l'affichage
+                                    cell.innerHTML = `${newNom} ${newPrenom}`;
+
+                                    // Récupérer les identifiants de la ligne
+                                    const row = cell.parentElement;
+                                    const nomOriginal = row.getAttribute('data-nom');
+                                    const prenomOriginal = row.getAttribute('data-prenom');
+                                    const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
+
+                                    let dateArriveeISO = null;
+                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
+                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
+                                    }
+
+                                    // Ajouter les modifications pour le nom si changé
+                                    if (newNom !== nomActuel) {
+                                        const existingChangeNom = changedCells.find(change =>
+                                            change.nom === nomOriginal && change.prenom === prenomOriginal &&
+                                            change.date_arrivee === dateArriveeISO && change.column === 'Nom'
+                                        );
+
+                                        if (existingChangeNom) {
+                                            existingChangeNom.value = newNom || null;
+                                        } else {
+                                            changedCells.push({
+                                                nom: nomOriginal,
+                                                prenom: prenomOriginal,
+                                                date_arrivee: dateArriveeISO,
+                                                column: 'Nom',
+                                                value: newNom || null
+                                            });
+                                        }
+                                    }
+
+                                    // Ajouter les modifications pour le prénom si changé
+                                    if (newPrenom !== prenomActuel) {
+                                        const existingChangePrenom = changedCells.find(change =>
+                                            change.nom === nomOriginal && change.prenom === prenomOriginal &&
+                                            change.date_arrivee === dateArriveeISO && change.column === 'Prénom'
+                                        );
+
+                                        if (existingChangePrenom) {
+                                            existingChangePrenom.value = newPrenom || null;
+                                        } else {
+                                            changedCells.push({
+                                                nom: nomOriginal,
+                                                prenom: prenomOriginal,
+                                                date_arrivee: dateArriveeISO,
+                                                column: 'Prénom',
+                                                value: newPrenom || null
+                                            });
+                                        }
+                                    }
+
+                                    // Mettre à jour les attributs data de la ligne pour les prochaines modifications
+                                    row.setAttribute('data-nom', newNom);
+                                    row.setAttribute('data-prenom', newPrenom);
+
+                                    cell.classList.remove('editing');
+                                };
+
+                                nomInput.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Enter') {
+                                        prenomInput.focus();
+                                    } else if (e.key === 'Escape') {
+                                        cell.innerHTML = oldContent;
+                                        cell.classList.remove('editing');
+                                    }
+                                });
+
+                                prenomInput.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Enter') {
+                                        finishNameEditing();
+                                    } else if (e.key === 'Escape') {
+                                        cell.innerHTML = oldContent;
+                                        cell.classList.remove('editing');
+                                    }
+                                });
+
+                                nomInput.addEventListener('blur', function() {
+                                    // Délai pour permettre le focus sur le deuxième champ
+                                    setTimeout(() => {
+                                        if (!prenomInput.matches(':focus')) {
+                                            finishNameEditing();
+                                        }
+                                    }, 100);
+                                });
+
+                                prenomInput.addEventListener('blur', function() {
+                                    setTimeout(() => {
+                                        if (!nomInput.matches(':focus')) {
+                                            finishNameEditing();
+                                        }
+                                    }, 100);
+                                });
+
+                                return; // Sortir de la fonction pour éviter le traitement standard
+                            }
 
                             if (dataType === 'select' && options) {
                                 inputElement = document.createElement('select');
