@@ -545,6 +545,9 @@
 
                 {% if current_user.is_authenticated %}
                 <button type="button" onclick="window.location.href='/logout'">Déconnexion</button>
+                    {% if current_user.is_admin() %}
+                    <button type="button" onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
+                    {% endif %}
                 {% endif %}
 
                 <div class="year-filter">
