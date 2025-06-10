@@ -30,6 +30,17 @@
                 color: #005493;
             }
 
+            /* Style pour la sélection de texte */
+            ::selection {
+                background-color: #005493;
+                color: white;
+            }
+
+            ::-moz-selection {
+                background-color: #005493;
+                color: white;
+            }
+
             button {
                 background-color: white;
                 color: #005493;
@@ -361,6 +372,19 @@
             .date-range-inputs input {
                 padding: 2px;
                 font-size: 11px;
+                cursor: text;
+            }
+
+            /* Amélioration pour les champs de date */
+            .date-range-inputs input[type="date"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 20px;
+                height: auto;
+                background: transparent;
             }
 
             .avis-zrr-inputs {
@@ -410,6 +434,8 @@
                 margin-bottom: 15px;
                 text-align: center;
             }
+
+            /* Styles pour le bouton de déconnexion */
         </style>
     </head>
 
@@ -453,16 +479,9 @@
                 </li>
                 <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
                     <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
-                        <span>Tableau</span>
+                        <span>Tableau de données</span>
                     </a>
                 </li>
-                {% if current_user.is_authenticated %}
-                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/logout" aria-expanded="false" role="button">
-                        <span>Déconnexion</span>
-                    </a>
-                </li>
-                {% endif %}
             </ul>
         </nav>
 
@@ -493,22 +512,28 @@
                 <button id="saveAllButton">Sauvegarder toutes les modifications</button>
                 {% endif %}
 
+                {% if current_user.is_authenticated %}
+                <button type="button" onclick="window.location.href='/logout'">Déconnexion</button>
+                {% endif %}
+
                 <div class="year-filter">
-                    <select id="yearSelect" onchange="filterByYear()">
-                        <option value="">Toutes les années</option>
+                    <input type="text" id="yearSelect" list="years-list"
+                           placeholder="Tapez ou sélectionnez une année"
+                           value="{{ selected_year or '' }}"
+                           style="background-color: white; color: #005493; border: 1px solid #005493; border-radius: 4px; padding: 8px 12px; cursor: text; font-family: 'Montserrat', sans-serif; font-size: 14px; min-width: 180px; height: 40px; width: auto; background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e'); background-position: right 8px center; background-repeat: no-repeat; background-size: 16px; padding-right: 32px;">
+                    <datalist id="years-list">
                         {% if available_years %}
                             {% for year in available_years[:5] %}
-                                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                                <option value="{{ year }}">{{ year }}</option>
                             {% endfor %}
                         {% endif %}
-                    </select>
+                    </datalist>
                 </div>
             </div>
 
             <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
             <div class="categories-container">
-
 
                 <!-- Membres permanents -->
                 {% if categories.permanents %}
@@ -757,17 +782,48 @@
         <script>
             // Fonction pour filtrer par année
             function filterByYear() {
-                const yearSelect = document.getElementById('yearSelect');
-                const selectedYear = yearSelect.value;
+                const yearInput = document.getElementById('yearSelect');
+                let selectedYear = yearInput.value;
 
-                if (selectedYear) {
+                // Validation : seuls les chiffres
+                selectedYear = selectedYear.replace(/[^0-9]/g, '');
+                yearInput.value = selectedYear;
+
+                if (selectedYear && selectedYear.length === 4) {
                     window.location.href = `/?year=${selectedYear}`;
-                } else {
+                } else if (selectedYear === '') {
                     window.location.href = '/';
                 }
             }
 
             document.addEventListener('DOMContentLoaded', function() {
+                // Ajouter les événements pour le filtre année
+                const yearInput = document.getElementById('yearSelect');
+
+                // Validation en temps réel
+                yearInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+
+                // Filtrage sur Enter ou perte de focus
+                yearInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        filterByYear();
+                    }
+                });
+
+                yearInput.addEventListener('blur', function() {
+                    if (this.value.length === 4 || this.value === '') {
+                        filterByYear();
+                    }
+                });
+
+                // Gestion de la sélection dans le datalist
+                yearInput.addEventListener('change', function() {
+                    if (this.value.length === 4) {
+                        filterByYear();
+                    }
+                });
                 // Vérifier si l'utilisateur est admin de manière plus robuste
                 const bodyClassList = document.body.classList;
                 const isAdmin = !bodyClassList.contains('not-admin');

@@ -30,6 +30,17 @@
                 color: #005493;
             }
 
+            /* Style pour la sélection de texte */
+            ::selection {
+                background-color: #005493;
+                color: white;
+            }
+
+            ::-moz-selection {
+                background-color: #005493;
+                color: white;
+            }
+
             button {
                 background-color: white;
                 color: #005493;
@@ -138,6 +149,23 @@
             .editing textarea {
                 height: 60px;
                 resize: none;
+            }
+
+            /* Amélioration pour les champs de date */
+            .editing input[type="date"] {
+                cursor: text;
+                position: relative;
+            }
+
+            .editing input[type="date"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 20px;
+                height: auto;
+                background: transparent;
             }
 
             .save-notification {
@@ -391,6 +419,8 @@
                 display: flex;
                 gap: 10px;
             }
+
+            /* Styles pour le bouton de déconnexion */
         </style>
     </head>
 
@@ -434,16 +464,9 @@
                 </li>
                 <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
                     <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
-                        <span>Tableau</span>
+                        <span>Tableau de données</span>
                     </a>
                 </li>
-                {% if current_user.is_authenticated %}
-                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/logout" aria-expanded="false" role="button">
-                        <span>Déconnexion</span>
-                    </a>
-                </li>
-                {% endif %}
             </ul>
         </nav>
 
@@ -476,16 +499,23 @@
                 <button class="clear-filters-btn" onclick="clearAllFilters()">Effacer tous les filtres</button>
                 {% endif %}
 
+                {% if current_user.is_authenticated %}
+                <button type="button" onclick="window.location.href='/logout'">Déconnexion</button>
+                {% endif %}
+
                 <!-- Sélecteur d'année -->
                 <div class="year-filter">
-                    <select id="yearSelect" onchange="filterByYear()">
-                        <option value="">Toutes les années</option>
+                    <input type="text" id="yearSelect" list="years-list"
+                           placeholder="Tapez ou sélectionnez une année"
+                           value="{{ selected_year or '' }}"
+                           style="background-color: white; color: #005493; border: 1px solid #005493; border-radius: 4px; padding: 8px 12px; cursor: text; font-family: 'Montserrat', sans-serif; font-size: 14px; min-width: 180px; height: 40px; width: auto; background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e'); background-position: right 8px center; background-repeat: no-repeat; background-size: 16px; padding-right: 32px;">
+                    <datalist id="years-list">
                         {% if available_years %}
                             {% for year in available_years[:5] %}
-                                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                                <option value="{{ year }}">{{ year }}</option>
                             {% endfor %}
                         {% endif %}
-                    </select>
+                    </datalist>
                 </div>
             </div>
 
@@ -661,12 +691,16 @@
 
             // Fonction pour filtrer par année
             function filterByYear() {
-                const yearSelect = document.getElementById('yearSelect');
-                const selectedYear = yearSelect.value;
+                const yearInput = document.getElementById('yearSelect');
+                let selectedYear = yearInput.value;
 
-                if (selectedYear) {
+                // Validation : seuls les chiffres
+                selectedYear = selectedYear.replace(/[^0-9]/g, '');
+                yearInput.value = selectedYear;
+
+                if (selectedYear && selectedYear.length === 4) {
                     window.location.href = `/tableau?year=${selectedYear}`;
-                } else {
+                } else if (selectedYear === '') {
                     window.location.href = '/tableau';
                 }
             }

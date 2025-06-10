@@ -30,6 +30,17 @@
             color: #005493;
         }
 
+        /* Style pour la sélection de texte */
+        ::selection {
+            background-color: #005493;
+            color: white;
+        }
+
+        ::-moz-selection {
+            background-color: #005493;
+            color: white;
+        }
+
         button {
             background-color: white;
             color: #005493;
@@ -93,14 +104,26 @@
             box-sizing: border-box;
         }
 
-        .filter-group input:focus, .filter-group select:focus {
+        /* Select modifiable au clavier */
+        .filter-group input[list] {
+            cursor: text;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 32px;
+        }
+
+        .filter-group input:focus {
             border-color: #005493;
             outline: none;
             box-shadow: 0 0 5px rgba(0, 84, 147, 0.3);
         }
 
-        .filter-group select {
-            cursor: pointer;
+        .filter-group select:focus {
+            border-color: #005493;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 84, 147, 0.3);
         }
 
         /* Styles pour les statistiques */
@@ -300,6 +323,15 @@
             padding: 40px;
             color: #005493;
         }
+
+        /* Styles pour les boutons d'action et déconnexion */
+        .action-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 
@@ -343,16 +375,9 @@
         </li>
         <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
             <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
-                <span>Tableau</span>
+                <span>Tableau de données</span>
             </a>
         </li>
-        {% if current_user.is_authenticated %}
-        <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
-            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/logout" aria-expanded="false" role="button">
-                <span>Déconnexion</span>
-            </a>
-        </li>
-        {% endif %}
     </ul>
 </nav>
 
@@ -365,6 +390,13 @@
                 {{ error }}
             </div>
             {% endif %}
+
+            <!-- Boutons d'action avec déconnexion -->
+            <div class="action-buttons">
+                {% if current_user.is_authenticated %}
+                <button type="button" onclick="window.location.href='/logout'">Déconnexion</button>
+                {% endif %}
+            </div>
 
             <!-- Section des statistiques -->
             {% if statistics and statistics.total > 0 %}
@@ -401,16 +433,16 @@
 
                     <div class="filter-group">
                         <label for="year">Année :</label>
-                        <select id="year" name="year">
-                            <option value="">Toutes les années</option>
+                        <input type="text" id="year" name="year" list="years-list"
+                               placeholder="Tapez ou sélectionnez une année"
+                               value="{{ selected_year or '' }}">
+                        <datalist id="years-list">
                             {% if available_years %}
-                                {% for year in available_years %}
-                                    <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>
-                                        {{ year }}
-                                    </option>
+                                {% for year in available_years[:5] %}
+                                    <option value="{{ year }}">{{ year }}</option>
                                 {% endfor %}
                             {% endif %}
-                        </select>
+                        </datalist>
                     </div>
 
                     <div class="filter-group">
@@ -617,8 +649,22 @@
 
     <script>
         // Auto-soumission du formulaire lors du changement de sélection
-        document.getElementById('year').addEventListener('change', function() {
-            this.form.submit();
+        document.getElementById('year').addEventListener('input', function() {
+            // Validation : seuls les chiffres sont autorisés
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Soumission seulement sur Enter ou perte de focus
+        document.getElementById('year').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                this.form.submit();
+            }
+        });
+
+        document.getElementById('year').addEventListener('blur', function() {
+            if (this.value.length === 4 || this.value === '') {
+                this.form.submit();
+            }
         });
 
         document.getElementById('doc_type').addEventListener('change', function() {
