@@ -74,53 +74,70 @@
                 border: 1px solid #ddd;
             }
 
-            thead {
-                position: sticky;
-                top: 0;
-                background: white;
-                z-index: 10;
-            }
-
+            /* EN-TETE FIXE AVEC BARRE DE SCROLL (VERSION QUI MARCHE) */
             .table-container {
                 overflow-x: auto;
-                overflow-y: visible;
+                overflow-y: auto;
                 max-width: 100%;
+                max-height: 80vh; /* Force le scroll vertical pour activer sticky */
                 position: relative;
                 margin-bottom: 150px;
                 white-space: nowrap;
 
-                scrollbar-width: auto; /* Firefox */
-                scrollbar-color: #005493 #f1f1f1; /* Firefox */
-
-                overflow: auto;
-
-                /* Style pour Chrome/Safari/Edge */
+                scrollbar-width: auto;
+                scrollbar-color: #005493 #f1f1f1;
                 -webkit-overflow-scrolling: touch;
             }
 
-            /* Styles pour les barres de scroll dans Chrome/Safari/Edge */
-            .table-container::-webkit-scrollbar {
-                height: 12px;
-                width: 12px;
+            table {
+                border-collapse: collapse;
+                width: 100%;
             }
 
-            .table-container::-webkit-scrollbar-track {
-                background: #f1f1f1;
-                border-radius: 6px;
+            /* En-tête fixe dans le conteneur */
+            thead {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
 
-            .table-container::-webkit-scrollbar-thumb {
-                background: #005493;
-                border-radius: 6px;
-                border: 2px solid #f1f1f1;
+            /* En-têtes de sections */
+            .section-header {
+                background-color: #005493;
+                color: white;
+                font-weight: bold;
+                position: sticky;
+                top: 0;
+                z-index: 102;
             }
 
-            .table-container::-webkit-scrollbar-thumb:hover {
-                background: #003d7a;
+            /* En-têtes de colonnes collants */
+            thead tr:nth-child(2) th {
+                background-color: white;
+                color: #333;
+                font-weight: bold;
+                position: sticky;
+                top: 40px;
+                z-index: 101;
+                border-bottom: 2px solid #005493;
+                padding: 8px 5px;
             }
 
-            .table-container::-webkit-scrollbar-corner {
-                background: #f1f1f1;
+            /* Ligne de filtres collante */
+            .filter-row {
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #005493;
+                position: sticky;
+                top: 80px;
+                z-index: 100;
+            }
+
+            .filter-row td {
+                padding: 5px 2px;
+                vertical-align: top;
+                background-color: #f8f9fa;
             }
 
             html, body {
@@ -186,17 +203,6 @@
                 align-items: center;
                 gap: 10px;
                 flex-wrap: wrap;
-            }
-
-            table {
-                border-collapse: collapse;
-                width: 100%;
-            }
-
-            .section-header {
-                background-color: #005493;
-                color: white;
-                font-weight: bold;
             }
 
             /* Styles pour le dropdown de sélection d'année */
@@ -279,15 +285,25 @@
                 margin: 5px 0;
             }
 
-            /* Styles pour les filtres de colonnes */
-            .filter-row {
-                background-color: #f8f9fa;
-                border-bottom: 2px solid #005493;
+            /* Barres de scroll personnalisées pour le tableau */
+            .table-container::-webkit-scrollbar {
+                height: 12px;
+                width: 12px;
             }
 
-            .filter-row td {
-                padding: 5px 2px;
-                vertical-align: top;
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb {
+                background: #005493;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
+
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #003d7a;
             }
 
             .column-filter {
@@ -338,7 +354,7 @@
             /* Style pour mobile */
             @media (max-width: 768px) {
                 .table-container {
-                    /* Sur mobile, rendre les barres de scroll plus visibles */
+                    max-height: 70vh; /* Ajuster pour mobile */
                     scrollbar-width: thin;
                 }
 
@@ -359,6 +375,15 @@
                 .column-filter {
                     font-size: 10px;
                     padding: 2px;
+                }
+
+                /* Ajustement des positions sticky pour mobile */
+                thead tr:nth-child(2) th {
+                    top: 35px; /* Réduire pour mobile */
+                }
+
+                .filter-row {
+                    top: 70px; /* Ajuster en conséquence */
                 }
             }
 
@@ -419,8 +444,6 @@
                 display: flex;
                 gap: 10px;
             }
-
-            /* Styles pour le bouton de déconnexion */
         </style>
     </head>
 
@@ -431,7 +454,7 @@
                     <div class="banniere__logos banniere__logos__1">
                         <div class="banniere__logo banniere__logo__desktop">
                             <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
-                                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                                <img src="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
                             </a>
                         </div>
                         <div class="banniere__logo banniere__logo__mobile"></div>
@@ -617,6 +640,7 @@
                             <td><select class="column-filter" data-column="34"><option value="">Tous</option></select></td>
                         </tr>
                     </thead>
+                <br>
                     <tbody>
                         {% for info in infos %}
                         <tr data-nom="{{ info[0] if info[0] else '' }}"
