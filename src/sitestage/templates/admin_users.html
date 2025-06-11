@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
 
     <style media="screen, print">
-        /* Styles communs avec index.html */
+        /* Styles communs harmonisés avec les autres pages */
         #pied_page_complement, #pied_page_complement a {
             color: white;
             background: #7f7f7f;
@@ -26,8 +26,19 @@
             color: #005493;
         }
 
-        h1 {
+        h1, h2, h3 {
             color: #005493;
+        }
+
+        /* Style pour la sélection de texte */
+        ::selection {
+            background-color: #005493;
+            color: white;
+        }
+
+        ::-moz-selection {
+            background-color: #005493;
+            color: white;
         }
 
         button {
@@ -43,38 +54,13 @@
         }
 
         button:hover {
-                background-color: #005493;
-                color: #005493;
-                border: 1px solid #005493;
-            }
+            background-color: #005493;
+            color: white;
+            border: 1px solid #005493;
+        }
 
         button:focus, button:active {
             outline: 1px dotted #005493;
-        }
-
-        /* Styles spécifiques à admin_users.html */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .action-buttons {
-            margin: 20px 0;
         }
 
         button:disabled {
@@ -82,46 +68,313 @@
             cursor: not-allowed;
         }
 
-        .delete-btn {
-            background-color: #ff5555;
-            color: white;
-            border: 1px solid #ff0000;
+        /* Styles pour la navigation - cohérent avec les autres pages */
+        #menu_principal .menu_n1_desktop {
+            color: white !important;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 0;
+            display: block;
+            transition: all 0.3s ease;
         }
 
-        .delete-btn:hover {
-            background-color: #ff3333;
-            color: white;
-            border: 1px solid #ff0000;
+        #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop {
+            background-color: #4f8f00 !important;
         }
 
-        .user-form {
+        #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop:hover {
+            color: #005493 !important;
+            background-color: #4f8f00 !important;
+        }
+
+        #menu_principal .menu_principal-actif .menu_n1_desktop,
+        #menu_principal .menu_principal-actif.UVSQNEWS > a,
+        #menu_principal .menu_principal-actif.UVSQNEWS > a span {
+            color: white !important;
+            background-color: #005493 !important;
+        }
+
+        /* Styles spécifiques à la page d'administration */
+        main {
+            margin-bottom: 150px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            margin: 0 0 15px 0;
+            position: relative;
             display: inline-block;
-            margin-right: 5px;
+        }
+
+        .admin-header h1:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #4f8f00;
+            border-radius: 2px;
+        }
+
+        .admin-indicator {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-buttons button {
+            margin-right: 0;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-card h3 {
+            margin: 0 0 10px 0;
+            color: #005493;
+            font-size: 18px;
+        }
+
+        .stats-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4f8f00;
+            margin: 10px 0;
+        }
+
+        .create-user-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 1px solid #2196f3;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .create-user-btn {
+            background-color: #4f8f00 !important;
+            color: white !important;
+            border: 1px solid #4f8f00 !important;
+            font-size: 16px;
+            padding: 12px 24px;
+            font-weight: bold;
+        }
+
+        .create-user-btn:hover {
+            background-color: #3d6b00 !important;
+            border-color: #3d6b00 !important;
         }
 
         .alerts {
-            margin: 15px 0;
+            margin: 20px 0;
         }
 
         .alert {
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+            border-left: 4px solid #dc3545;
         }
 
-        .stats {
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #e9ecef;
+        /* Table moderne */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 25px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #005493 0%, #003d7a 100%);
+            color: white;
+            font-weight: bold;
+            padding: 18px 15px;
+            text-align: left;
+            font-size: 15px;
+            border: none;
+        }
+
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-id {
+            font-weight: bold;
+            color: #6c757d;
+            font-family: monospace;
+        }
+
+        .username {
+            font-weight: 500;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .role-user {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .user-form {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 10px;
+        }
+
+        .user-form select {
+            background-color: white;
+            color: #005493;
+            border: 1px solid #005493;
             border-radius: 4px;
+            padding: 6px 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
         }
 
-        /* Ajustement pour que le contenu principal ne soit pas caché par le pied de page fixe */
-        main {
-            margin-bottom: 150px;
+        .user-form select:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 84, 147, 0.3);
+        }
+
+        .user-form button {
+            margin-right: 0;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .delete-btn {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border: 1px solid #dc3545 !important;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333 !important;
+            border-color: #c82333 !important;
+        }
+
+        .actions-cell {
+            min-width: 280px;
+        }
+
+        /* Messages d'information */
+        .info-message {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .user-form {
+                flex-direction: column;
+                gap: 5px;
+                margin-bottom: 10px;
+            }
+
+            .actions-cell {
+                min-width: 200px;
+            }
+        }
+
+        /* Animation pour les changements */
+        .table-container {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -147,79 +400,116 @@
     </div>
 
     <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
+        <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+            <li class="close-button-main"></li>
+            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
+                    <span>Effectif</span>
+                </a>
+            </li>
+            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/publications" aria-expanded="false" role="button">
+                    <span>Publications HAL</span>
+                </a>
+            </li>
+            <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
+                    <span>Tableau de données</span>
+                </a>
+            </li>
 
-            <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
-                <li class="close-button-main"></li>
-                <li class="menu_principal-actif  UVSQNEWS
-                                    mobile-menu__item js-mobile-menu__item menu__level--0
-                                    mobile-menu__item--UVSQNEWS">
-                            <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" aria-expanded="false"
-                               role="button"><span>Users</span></a>
-                </li>
-            </ul>
-
-        </nav>
+        </ul>
+    </nav>
 
     <main>
+        <br>
+
+        <div class="admin-indicator">
+            Mode administrateur - Gestion des utilisateurs
+        </div>
+
+        <div class="admin-header">
+            <h1>Gestion des utilisateurs</h1>
+        </div>
+
         <div class="action-buttons">
             <button onclick="window.location.href='/'">Retour au tableau</button>
             <button onclick="window.location.href='/logout'">Déconnexion</button>
         </div>
 
-        <h1>Gestion des utilisateurs</h1>
-
-        <div class="stats">
-            <p>Nombre total d'utilisateurs: <strong>{{ users|length }}</strong></p>
+        <div class="stats-card">
+            <h3>Statistiques des utilisateurs</h3>
+            <div class="stats-number">{{ users|length }}</div>
+            <p>utilisateur(s) total</p>
         </div>
 
-        <div class="action-buttons">
-            <button onclick="window.location.href='/signup'">Créer un nouvel utilisateur</button>
+        <div class="create-user-section">
+            <h3 style="margin-top: 0; color: #1976d2;">Ajouter un nouvel utilisateur</h3>
+            <p style="margin-bottom: 20px; color: #555;">Créez un nouveau compte utilisateur pour accéder au système</p>
+            <button class="create-user-btn" onclick="window.location.href='/signup'">
+                Créer un nouvel utilisateur
+            </button>
         </div>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="alerts">
                     {% for message in messages %}
-                        <div class="alert">{{ message }}</div>
+                        <div class="alert">
+                            <strong>Information :</strong> {{ message }}
+                        </div>
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nom d'utilisateur</th>
-                    <th>Rôle actuel</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user[0] }}</td>
-                    <td>{{ user[1] }}</td>
-                    <td>{{ user[3] if user|length > 3 else 'user' }}</td>
-                    <td>
-                        <form class="user-form" action="{{ url_for('web_ui.change_role', user_id=user[0]) }}" method="post">
-                            <select name="role" {% if user[0] == current_user_id and (user|length > 3 and user[3] == 'admin') %}disabled{% endif %}>
-                                <option value="user" {% if user|length <= 3 or user[3] == 'user' %}selected{% endif %}>Utilisateur</option>
-                                <option value="admin" {% if user|length > 3 and user[3] == 'admin' %}selected{% endif %}>Administrateur</option>
-                            </select>
-                            <button type="submit" {% if user[0] == current_user_id and (user|length > 3 and user[3] == 'admin') %}title="Vous ne pouvez pas vous retirer votre propre rôle d'administrateur" disabled{% endif %}>Changer le rôle</button>
-                        </form>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom d'utilisateur</th>
+                        <th>Rôle actuel</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td class="user-id">#{{ user[0] }}</td>
+                        <td class="username">{{ user[1] }}</td>
+                        <td>
+                            {% set user_role = user[3] if user|length > 3 else 'user' %}
+                            <span class="role-badge {% if user_role == 'admin' %}role-admin{% else %}role-user{% endif %}">
+                                {% if user_role == 'admin' %}Administrateur{% else %}Utilisateur{% endif %}
+                            </span>
+                        </td>
+                        <td class="actions-cell">
+                            <form class="user-form" action="{{ url_for('web_ui.change_role', user_id=user[0]) }}" method="post">
+                                <select name="role" {% if user[0] == current_user_id and (user|length > 3 and user[3] == 'admin') %}disabled{% endif %}>
+                                    <option value="user" {% if user|length <= 3 or user[3] == 'user' %}selected{% endif %}>Utilisateur</option>
+                                    <option value="admin" {% if user|length > 3 and user[3] == 'admin' %}selected{% endif %}>Administrateur</option>
+                                </select>
+                                <button type="submit" {% if user[0] == current_user_id and (user|length > 3 and user[3] == 'admin') %}title="Vous ne pouvez pas vous retirer votre propre rôle d'administrateur" disabled{% endif %}>
+                                    Changer le rôle
+                                </button>
+                            </form>
 
-                        {% if user[0] != current_user_id %}
-                        <form class="user-form" action="{{ url_for('web_ui.delete_user', user_id=user[0]) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                            <button type="submit" class="delete-btn">Supprimer</button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            {% if user[0] != current_user_id %}
+                            <form class="user-form" action="{{ url_for('web_ui.delete_user', user_id=user[0]) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?\n\nCette action est irréversible.');">
+                                <button type="submit" class="delete-btn">Supprimer</button>
+                            </form>
+                            {% else %}
+                            <div class="info-message" style="margin: 5px 0; padding: 8px 12px; font-size: 12px;">
+                                <strong>Note :</strong> Vous ne pouvez pas supprimer votre propre compte
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <footer>
