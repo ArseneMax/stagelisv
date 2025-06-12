@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta property="og:image" content="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>LISV Contrats</title>
+        <link rel="icon" type="image/png" href="https://www.lisv.uvsq.fr/jsp/images/favicon.png" />
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" media="screen" href="https://www.lisv.uvsq.fr/wro/styles/634ade602296c910871b52c6c993802fd75d133e.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <style media="screen, print">
+            #pied_page_complement, #pied_page_complement a {
+                color: white;
+                background: #7f7f7f;
+                position: fixed;
+                bottom:0;
+                width: 100%;
+            }
+
+            #menu {
+                background: #4f8f00;
+            }
+
+            a, a:active, a:focus, a:visited {
+                color: #005493;
+            }
+
+            h1 {
+                color: #005493;
+            }
+
+            ::selection {
+                background-color: #005493;
+                color: white;
+            }
+
+            ::-moz-selection {
+                background-color: #005493;
+                color: white;
+            }
+
+            button {
+                background-color: white;
+                color: #005493;
+                border: 1px solid #005493;
+                border-radius: 4px;
+                padding: 8px 12px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 14px;
+            }
+
+            button:hover {
+                background-color: #005493;
+                color: white;
+                border: 1px solid #005493;
+            }
+
+            button:focus, button:active {
+                outline: 1px dotted #005493;
+            }
+
+            #menu_principal .menu_principal-actif.UVSQNEWS > a, #menu_principal .menu_principal-actif.UVSQNEWS > a span {
+                background-color: #005493 !important;
+            }
+
+            td, th {
+                text-align: center;
+                padding: 5px;
+                font-size: 12px;
+                min-width: 100px;
+                border: 1px solid #ddd;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                overflow-y: auto;
+                max-width: 100%;
+                max-height: 80vh;
+                position: relative;
+                margin-bottom: 150px;
+                white-space: nowrap;
+                scrollbar-width: auto;
+                scrollbar-color: #005493 #f1f1f1;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            thead {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            /* En-têtes de sections - première ligne */
+            thead tr:first-child th.section-header {
+                background-color: #005493;
+                color: white;
+                font-weight: bold;
+                position: sticky;
+                top: 0;
+                z-index: 103;
+                border-bottom: 1px solid #004080;
+                padding: 10px 5px;
+                height: 45px;
+            }
+
+            /* En-têtes de colonnes - deuxième ligne */
+            thead tr:nth-child(2) th {
+                background-color: white;
+                color: #333;
+                font-weight: bold;
+                position: sticky;
+                top: 45px;
+                z-index: 102;
+                border-bottom: 2px solid #005493;
+                padding: 8px 5px;
+                height: 40px;
+            }
+
+            /* Ligne de filtres - troisième ligne */
+            .filter-row {
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #005493;
+                position: sticky;
+                top: 85px;
+                z-index: 101;
+            }
+
+            .filter-row td {
+                padding: 5px 2px;
+                vertical-align: top;
+                background-color: #f8f9fa;
+            }
+
+            html, body {
+                overflow-x: hidden;
+            }
+
+            .editable {
+                cursor: pointer;
+            }
+
+            .editable:hover {
+                background-color: #f5f5f5;
+            }
+
+            .editing {
+                padding: 0 !important;
+            }
+
+            .editing input, .editing select, .editing textarea {
+                width: 100%;
+                padding: 4px;
+                box-sizing: border-box;
+                height: 100%;
+            }
+
+            .editing textarea {
+                height: 60px;
+                resize: none;
+            }
+
+            .editing input[type="date"] {
+                cursor: text;
+                position: relative;
+            }
+
+            .editing input[type="date"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 20px;
+                height: auto;
+                background: transparent;
+            }
+
+            .save-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px;
+                border-radius: 4px;
+                display: none;
+                z-index: 1000;
+            }
+
+            .action-buttons {
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .year-filter {
+                position: relative;
+                display: inline-block;
+            }
+
+            .year-filter select {
+                background-color: white;
+                color: #005493;
+                border: 1px solid #005493;
+                border-radius: 4px;
+                padding: 8px 12px;
+                cursor: pointer;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 14px;
+                min-width: 180px;
+                height: 40px;
+                width: auto;
+            }
+
+            .year-filter select:hover {
+                background-color: #f8f9fa;
+            }
+
+            .year-filter select:focus {
+                outline: 1px dotted #005493;
+                background-color: #005493;
+                color: white;
+            }
+
+            .year-info {
+                background-color: #d4edda;
+                border: 1px solid #c3e6cb;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .year-info h3 {
+                color: #155724;
+                margin: 0 0 10px 0;
+                font-size: 20px;
+            }
+
+            .year-info p {
+                color: #155724;
+                margin: 5px 0;
+            }
+
+            .column-filter {
+                width: 100%;
+                padding: 3px;
+                font-size: 11px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: white;
+                color: #333;
+                max-width: 95px;
+            }
+
+            .column-filter:focus {
+                border-color: #005493;
+                outline: none;
+                box-shadow: 0 0 3px rgba(0, 84, 147, 0.3);
+            }
+
+            .clear-filters-btn {
+                background-color: #dc3545;
+                color: white;
+                border: 1px solid #dc3545;
+                font-size: 12px;
+            }
+
+            .clear-filters-btn:hover {
+                background-color: #c82333;
+                border-color: #c82333;
+            }
+
+            .filtered-hidden {
+                display: none !important;
+            }
+
+            .filter-indicator {
+                background-color: #ffc107;
+                color: #333;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 10px;
+                font-size: 14px;
+                display: none;
+            }
+
+            .filter-indicator.active {
+                display: block;
+            }
+
+            .not-admin .editable {
+                cursor: default !important;
+            }
+
+            .not-admin .editable:hover {
+                background-color: transparent !important;
+            }
+
+            .not-admin .action-buttons .save-buttons {
+                display: none !important;
+            }
+
+            .admin-indicator {
+                background-color: #28a745;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .user-indicator {
+                background-color: #6c757d;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+
+            .save-buttons {
+                display: flex;
+                gap: 10px;
+            }
+
+            .money-column {
+                text-align: right;
+                font-family: monospace;
+            }
+
+            .money-column input {
+                text-align: right;
+            }
+
+            .filter-row td:nth-child(3),
+            .filter-row td:nth-child(4) {
+                min-width: 150px;
+            }
+
+            .filter-row td:nth-child(3) .column-filter,
+            .filter-row td:nth-child(4) .column-filter {
+                max-width: 140px;
+            }
+
+            .table-container::-webkit-scrollbar {
+                height: 12px;
+                width: 12px;
+            }
+
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb {
+                background: #005493;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
+
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #003d7a;
+            }
+
+            #menu_principal .menu_n1_desktop {
+                color: white !important;
+                text-decoration: none;
+                padding: 10px 15px;
+                border-radius: 0;
+                display: block;
+                transition: all 0.3s ease;
+            }
+
+            #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop {
+                background-color: #4f8f00 !important;
+            }
+
+            #menu_principal li:not(.menu_principal-actif) .menu_n1_desktop:hover {
+                color: #005493 !important;
+                background-color: #4f8f00 !important;
+            }
+
+            #menu_principal .menu_principal-actif .menu_n1_desktop,
+            #menu_principal .menu_principal-actif.UVSQNEWS > a,
+            #menu_principal .menu_principal-actif.UVSQNEWS > a span {
+                color: white !important;
+                background-color: #005493 !important;
+            }
+
+            @media (max-width: 768px) {
+                .table-container {
+                    max-height: 70vh;
+                    scrollbar-width: thin;
+                }
+
+                .table-container::-webkit-scrollbar {
+                    height: 16px;
+                    width: 16px;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .year-filter input {
+                    width: 100%;
+                }
+
+                .column-filter {
+                    font-size: 10px;
+                    padding: 2px;
+                }
+
+                /* Ajustement des positions sticky pour mobile */
+                thead tr:first-child th.section-header {
+                    top: 0;
+                    height: 40px;
+                    padding: 8px 3px;
+                }
+
+                thead tr:nth-child(2) th {
+                    top: 40px;
+                    height: 35px;
+                    padding: 6px 3px;
+                }
+
+                .filter-row {
+                    top: 75px;
+                }
+            }
+        </style>
+    </head>
+
+    <body class="{% if not current_user.is_authenticated or not current_user.is_admin() %}not-admin{% endif %}">
+        <div class="cartouche">
+            <div>
+                <div class="banniere clearfix" role="banner">
+                    <div class="banniere__logos banniere__logos__1">
+                        <div class="banniere__logo banniere__logo__desktop">
+                            <a href="https://www.lisv.uvsq.fr/" title="Retour à la page d'accueil">
+                                <img src="https://www.lisv.uvsq.fr/uas/lisv/LOGO/logo-lisv-2020.jpg" alt="UVSQ | Université Paris-Saclay | Aller à la page d'accueil"/>
+                            </a>
+                        </div>
+                        <div class="banniere__logo banniere__logo__mobile"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                        <div class="banniere__logo banniere__logo__desktop"></div>
+                    </div>
+                    <div class="banniere_baseline_reseaux">
+                        <div class="banniere__baselines">
+                            <div class="banniere__baseline">Laboratoire d' Ingénierie des Systèmes de Versailles (LISV)</div>
+                            <div class="banniere__baseline__complement">Université de Versailles Saint-Quentin-en-Yvelines</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav id="menu" role="navigation" class="plier-deplier__contenu--clos" aria-expanded="false" aria-label="Menu principal">
+            <ul id="menu_principal" class="menu_principal--riche mobile-menu__level js-mobile-menu__level">
+                <li class="close-button-main"></li>
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/" aria-expanded="false" role="button">
+                        <span>Effectif</span>
+                    </a>
+                </li>
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/publications" aria-expanded="false" role="button">
+                        <span>Publications HAL</span>
+                    </a>
+                </li>
+                <li class="mobile-menu__item js-mobile-menu__item menu__level--0">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/tableau" aria-expanded="false" role="button">
+                        <span>Tableau de données</span>
+                    </a>
+                </li>
+                <li class="menu_principal-actif UVSQNEWS mobile-menu__item js-mobile-menu__item menu__level--0 mobile-menu__item--UVSQNEWS">
+                    <a class="menu_n1_desktop type_rubrique_UVSQNEWS item__control-level-0" href="/contrats" aria-expanded="false" role="button">
+                        <span>Contrats</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main>
+            <br>
+
+            {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="admin-indicator">
+                    🔧 Mode administrateur - Modifications autorisées
+                </div>
+            {% endif %}
+
+            {% if selected_year %}
+            <div class="year-info">
+                <h3>Contrats actifs en {{ selected_year }}</h3>
+                <p><strong>{{ contrats|length }}</strong> contrat(s) trouvé(s) pour cette année</p>
+                <p><a href="/contrats" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Afficher toutes les années</a></p>
+            </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="save-buttons">
+                    <button id="saveAllButton">Sauvegarder toutes les modifications</button>
+                    <button class="clear-filters-btn" onclick="clearAllFilters()">Effacer tous les filtres</button>
+                </div>
+                {% else %}
+                <button class="clear-filters-btn" onclick="clearAllFilters()">Effacer tous les filtres</button>
+                {% endif %}
+
+                {% if current_user.is_authenticated %}
+                <button type="button" onclick="window.location.href='/logout'">Déconnexion</button>
+                    {% if current_user.is_admin() %}
+                    <button type="button" onclick="window.location.href='/admin/users'">Gestion des utilisateurs</button>
+                    {% endif %}
+                {% endif %}
+
+                <div class="year-filter">
+                    <input type="text" id="yearSelect" list="years-list"
+                           placeholder="Année sélectionnée"
+                           value="{{ selected_year or '' }}"
+                           style="background-color: white; color: #005493; border: 1px solid #005493; border-radius: 4px; padding: 8px 12px; cursor: text; font-family: 'Montserrat', sans-serif; font-size: 14px; min-width: 180px; height: 40px; width: auto; background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e'); background-position: right 8px center; background-repeat: no-repeat; background-size: 16px; padding-right: 32px;">
+                    <datalist id="years-list">
+                        <!-- Générer les 5 dernières années à partir d'aujourd'hui -->
+                        <script>
+                            const currentYear = new Date().getFullYear();
+                            const yearsDatalist = document.getElementById('years-list');
+                            for (let i = 0; i < 5; i++) {
+                                const year = currentYear - i;
+                                const option = document.createElement('option');
+                                option.value = year;
+                                yearsDatalist.appendChild(option);
+                            }
+                        </script>
+                    </datalist>
+                </div>
+            </div>
+
+            <div id="filterIndicator" class="filter-indicator">
+                <strong>Filtres actifs:</strong> <span id="activeFiltersText">Aucun</span>
+            </div>
+
+            <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
+
+            <div class="table-container">
+                <table id="contratsTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" colspan="5" class="section-header">Identification du projet</th>
+                            <th scope="col" colspan="5" class="section-header">Dates et validité</th>
+                            <th scope="col" colspan="2" class="section-header">Partenaires</th>
+                            <th scope="col" colspan="6" class="section-header">Montants et répartition</th>
+                        </tr>
+                        <tr>
+                            <!-- Identification du projet -->
+                            <th>WBS Element</th>
+                            <th>Ancienne Codification EOTP</th>
+                            <th>Nom du Projet</th>
+                            <th>Nom du projet 2</th>
+                            <th>Responsable</th>
+                            <!-- Dates et validité -->
+                            <th>Date début base</th>
+                            <th>Fin base</th>
+                            <th>Valide à partir du</th>
+                            <th>Fin de validité</th>
+                            <th>Date d'expiration</th>
+                            <!-- Partenaires -->
+                            <th>Donneur d'ordre</th>
+                            <th>Financeur</th>
+                            <!-- Montants et répartition -->
+                            <th>Montant final</th>
+                            <th>Montant Total</th>
+                            <th>FGUVSQ</th>
+                            <th>Part Fonctionnement</th>
+                            <th>Part personnel</th>
+                            <th>Part Investissement</th>
+                        </tr>
+                        <!-- Ligne de filtres -->
+                        <tr class="filter-row">
+                            <td><select class="column-filter" data-column="0"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="1"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="2"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="3"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="4"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="5"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="6"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="7"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="8"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="9"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="10"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="11"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="12"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="13"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="14"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="15"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="16"><option value="">Tous</option></select></td>
+                            <td><select class="column-filter" data-column="17"><option value="">Tous</option></select></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contrat in contrats %}
+                        <tr data-wbs="{{ contrat[0] if contrat[0] else '' }}">
+                            <!-- Identification du projet -->
+                            <td class="editable" data-column="WBS_element">{{ contrat[0] if contrat[0] else '' }}</td>
+                            <td class="editable" data-column="Ancienne_Codification_EOTP">{{ contrat[1] if contrat[1] else '' }}</td>
+                            <td class="editable" data-column="Nom_du_Projet" data-type="textarea">{{ contrat[2] if contrat[2] else '' }}</td>
+                            <td class="editable" data-column="Nom_du_projet2" data-type="textarea">{{ contrat[3] if contrat[3] else '' }}</td>
+                            <td class="editable" data-column="Responsable">{{ contrat[4] if contrat[4] else '' }}</td>
+                            <!-- Dates et validité -->
+                            <td class="editable" data-column="Date_début_base" data-type="date">{{ contrat[5] if contrat[5] else '' }}</td>
+                            <td class="editable" data-column="Fin_base" data-type="date">{{ contrat[6] if contrat[6] else '' }}</td>
+                            <td class="editable" data-column="Valide_à_partir_du" data-type="date">{{ contrat[7] if contrat[7] else '' }}</td>
+                            <td class="editable" data-column="Fin_de_validité" data-type="date">{{ contrat[8] if contrat[8] else '' }}</td>
+                            <td class="editable" data-column="Date_d_expiration" data-type="date">{{ contrat[9] if contrat[9] else '' }}</td>
+                            <!-- Partenaires -->
+                            <td class="editable" data-column="Donneur_d_ordre">{{ contrat[10] if contrat[10] else '' }}</td>
+                            <td class="editable" data-column="Financeur">{{ contrat[11] if contrat[11] else '' }}</td>
+                            <!-- Montants et répartition -->
+                            <td class="editable money-column" data-column="Montant_final" data-type="number">{{ "{:,.2f}".format(contrat[12]) if contrat[12] else '' }}</td>
+                            <td class="editable money-column" data-column="Montant_Total" data-type="number">{{ "{:,.2f}".format(contrat[13]) if contrat[13] else '' }}</td>
+                            <td class="editable" data-column="FGUVSQ">{{ contrat[14] if contrat[14] else '' }}</td>
+                            <td class="editable money-column" data-column="Part_Fonctionnement" data-type="number">{{ "{:,.2f}".format(contrat[15]) if contrat[15] else '' }}</td>
+                            <td class="editable money-column" data-column="Part_personnel" data-type="number">{{ "{:,.2f}".format(contrat[16]) if contrat[16] else '' }}</td>
+                            <td class="editable money-column" data-column="Part_Investissement" data-type="number">{{ "{:,.2f}".format(contrat[17]) if contrat[17] else '' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <br>
+        </main>
+
+        <footer>
+            <div id="pied_page_complement">
+                <div class="pied_page_complement__contenu clearifx">
+                    <ul>
+                        <li class="adresse">LISV<br />
+                            Bâtiment Boucher<br />
+                            Pôle scientifique et technologique de Vélizy<br />
+                            10-12 avenue de l'Europe<br />
+                            78140 Vélizy</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            // Variables globales pour les filtres
+            let columnFilters = {};
+            let allRowsData = [];
+
+            // Fonction pour filtrer par année
+            function filterByYear() {
+                const yearInput = document.getElementById('yearSelect');
+                let selectedYear = yearInput.value;
+
+                // Validation : seuls les chiffres
+                selectedYear = selectedYear.replace(/[^0-9]/g, '');
+                yearInput.value = selectedYear;
+
+                if (selectedYear && selectedYear.length === 4) {
+                    window.location.href = `/contrats?year=${selectedYear}`;
+                } else if (selectedYear === '') {
+                    window.location.href = '/contrats';
+                }
+            }
+
+            // Fonction pour effacer tous les filtres
+            function clearAllFilters() {
+                const filterSelects = document.querySelectorAll('.column-filter');
+                filterSelects.forEach(select => {
+                    select.value = '';
+                });
+                columnFilters = {};
+                applyFilters();
+                updateFilterIndicator();
+            }
+
+            // Fonction pour populer les filtres avec les valeurs distinctes
+            function populateFilters() {
+                const table = document.getElementById('contratsTable');
+                const tbody = table.getElementsByTagName('tbody')[0];
+                const rows = tbody.getElementsByTagName('tr');
+
+                const columnValues = {};
+
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    allRowsData.push(rows[i]);
+
+                    for (let j = 0; j < cells.length; j++) {
+                        const cellValue = cells[j].textContent.trim();
+
+                        if (!columnValues[j]) {
+                            columnValues[j] = new Set();
+                        }
+
+                        if (cellValue !== '') {
+                            columnValues[j].add(cellValue);
+                        }
+                    }
+                }
+
+                const filterSelects = document.querySelectorAll('.column-filter');
+                filterSelects.forEach((select, index) => {
+                    const columnIndex = parseInt(select.getAttribute('data-column'));
+
+                    if (columnValues[columnIndex]) {
+                        const sortedValues = Array.from(columnValues[columnIndex]).sort();
+
+                        sortedValues.forEach(value => {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = value.length > 30 ? value.substring(0, 30) + '...' : value;
+                            option.title = value;
+                            select.appendChild(option);
+                        });
+                    }
+
+                    select.addEventListener('change', function() {
+                        const columnIndex = parseInt(this.getAttribute('data-column'));
+                        const filterValue = this.value;
+
+                        if (filterValue === '') {
+                            delete columnFilters[columnIndex];
+                        } else {
+                            columnFilters[columnIndex] = filterValue;
+                        }
+
+                        applyFilters();
+                        updateFilterIndicator();
+                    });
+                });
+            }
+
+            // Fonction pour appliquer les filtres
+            function applyFilters() {
+                const table = document.getElementById('contratsTable');
+                const tbody = table.getElementsByTagName('tbody')[0];
+                const rows = tbody.getElementsByTagName('tr');
+
+                let visibleCount = 0;
+
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let shouldShow = true;
+
+                    for (const [columnIndex, filterValue] of Object.entries(columnFilters)) {
+                        const cellValue = cells[columnIndex].textContent.trim();
+
+                        if (cellValue !== filterValue) {
+                            shouldShow = false;
+                            break;
+                        }
+                    }
+
+                    if (shouldShow) {
+                        rows[i].classList.remove('filtered-hidden');
+                        visibleCount++;
+                    } else {
+                        rows[i].classList.add('filtered-hidden');
+                    }
+                }
+
+                console.log(`Filtres appliqués: ${visibleCount} ligne(s) visible(s)`);
+            }
+
+            // Fonction pour mettre à jour l'indicateur de filtres
+            function updateFilterIndicator() {
+                const indicator = document.getElementById('filterIndicator');
+                const activeFiltersText = document.getElementById('activeFiltersText');
+
+                const activeFilters = Object.keys(columnFilters);
+
+                if (activeFilters.length > 0) {
+                    indicator.classList.add('active');
+
+                    const filterDescriptions = activeFilters.map(columnIndex => {
+                        const headerCell = document.querySelector(`thead tr:nth-child(2) th:nth-child(${parseInt(columnIndex) + 1})`);
+                        const columnName = headerCell ? headerCell.textContent.trim() : `Colonne ${columnIndex}`;
+                        const filterValue = columnFilters[columnIndex];
+                        return `${columnName}: "${filterValue}"`;
+                    });
+
+                    activeFiltersText.textContent = filterDescriptions.join(', ');
+                } else {
+                    indicator.classList.remove('active');
+                    activeFiltersText.textContent = 'Aucun';
+                }
+            }
+
+            // Initialisation au chargement de la page
+            document.addEventListener('DOMContentLoaded', function() {
+                // Ajouter un événement pour le changement d'année
+                const yearInput = document.getElementById('yearSelect');
+                if (yearInput) {
+                    yearInput.addEventListener('input', function() {
+                        // Validation : seuls les chiffres
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                    });
+
+                    yearInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            filterByYear();
+                        }
+                    });
+
+                    yearInput.addEventListener('blur', function() {
+                        if (this.value && this.value.length === 4) {
+                            filterByYear();
+                        }
+                    });
+                }
+
+                // Populer les filtres
+                populateFilters();
+
+                // Vérifier si l'utilisateur est admin
+                const isAdmin = !document.body.classList.contains('not-admin');
+
+                if (!isAdmin) {
+                    console.log('Mode consultation uniquement - utilisateur non admin');
+                    return;
+                }
+
+                // Code d'édition pour les administrateurs
+                const editableCells = document.querySelectorAll('.editable');
+                const saveAllButton = document.getElementById('saveAllButton');
+                const notification = document.getElementById('saveNotification');
+                let changedCells = [];
+
+                function frDateToISO(frDate) {
+                    if (!frDate) return '';
+                    const parts = frDate.split('/');
+                    if (parts.length !== 3) return '';
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+
+                function isoDateToFr(isoDate) {
+                    if (!isoDate) return '';
+                    const date = new Date(isoDate);
+                    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                }
+
+                editableCells.forEach(cell => {
+                    cell.addEventListener('dblclick', function() {
+                        if (cell.classList.contains('editing')) return;
+
+                        const value = cell.textContent.trim();
+                        const dataType = cell.getAttribute('data-type') || 'text';
+                        cell.classList.add('editing');
+
+                        let inputElement;
+
+                        if (dataType === 'date') {
+                            inputElement = document.createElement('input');
+                            inputElement.type = 'date';
+                            if (value) {
+                                inputElement.value = frDateToISO(value);
+                            }
+                        } else if (dataType === 'textarea') {
+                            inputElement = document.createElement('textarea');
+                            inputElement.value = value;
+                        } else if (dataType === 'number') {
+                            inputElement = document.createElement('input');
+                            inputElement.type = 'number';
+                            inputElement.step = '0.01';
+                            // Nettoyer la valeur pour l'input number (enlever espaces et formatage)
+                            const cleanValue = value.replace(/[\s€,]/g, '').replace(',', '.');
+                            inputElement.value = cleanValue;
+                        } else {
+                            inputElement = document.createElement('input');
+                            inputElement.type = 'text';
+                            inputElement.value = value;
+                        }
+
+                        const oldContent = cell.innerHTML;
+                        cell.innerHTML = '';
+                        cell.appendChild(inputElement);
+                        inputElement.focus();
+
+                        inputElement.addEventListener('blur', finishEditing);
+                        inputElement.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter' && dataType !== 'textarea') {
+                                finishEditing();
+                            } else if (e.key === 'Escape') {
+                                cell.innerHTML = oldContent;
+                                cell.classList.remove('editing');
+                            }
+                        });
+
+                        function finishEditing() {
+                            let newValue;
+
+                            if (dataType === 'date' && inputElement.value) {
+                                newValue = isoDateToFr(inputElement.value);
+                            } else if (dataType === 'number') {
+                                // Formatter le nombre pour l'affichage français
+                                const numValue = parseFloat(inputElement.value);
+                                if (!isNaN(numValue)) {
+                                    newValue = numValue.toLocaleString('fr-FR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
+                                } else {
+                                    newValue = '';
+                                }
+                            } else {
+                                newValue = inputElement.value;
+                            }
+
+                            if (newValue !== value) {
+                                const row = cell.parentElement;
+                                const wbsElement = row.getAttribute('data-wbs');
+                                const column = cell.getAttribute('data-column');
+
+                                const existingChange = changedCells.find(change =>
+                                    change.wbs_element === wbsElement && change.column === column
+                                );
+
+                                let dbValue;
+                                if (dataType === 'date' && inputElement.value) {
+                                    dbValue = inputElement.value;
+                                } else if (dataType === 'number') {
+                                    dbValue = inputElement.value || null;
+                                } else {
+                                    dbValue = newValue || null;
+                                }
+
+                                if (existingChange) {
+                                    existingChange.value = dbValue;
+                                } else {
+                                    changedCells.push({
+                                        wbs_element: wbsElement,
+                                        column: column,
+                                        value: dbValue
+                                    });
+                                }
+
+                                const cellIndex = Array.from(cell.parentElement.children).indexOf(cell);
+                                if (columnFilters[cellIndex]) {
+                                    applyFilters();
+                                }
+                            }
+
+                            cell.innerHTML = newValue;
+                            cell.classList.remove('editing');
+                        }
+                    });
+                });
+
+                if (saveAllButton) {
+                    saveAllButton.addEventListener('click', function() {
+                        if (changedCells.length === 0) {
+                            alert('Aucune modification à sauvegarder');
+                            return;
+                        }
+
+                        console.log('Modifications à envoyer:', changedCells);
+
+                        fetch('/update_contrat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ changes: changedCells })
+                        })
+                        .then(response => {
+                            console.log('Réponse reçue:', response);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Données de réponse:', data);
+                            if (data.success) {
+                                notification.style.display = 'block';
+                                setTimeout(() => {
+                                    notification.style.display = 'none';
+                                }, 3000);
+                                changedCells = [];
+
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                            } else {
+                                alert('Erreur lors de la sauvegarde: ' + (data.error || 'Erreur inconnue'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur fetch:', error);
+                            alert('Une erreur est survenue lors de la sauvegarde');
+                        });
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
