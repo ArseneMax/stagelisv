@@ -30,7 +30,6 @@
                 color: #005493;
             }
 
-            /* Style pour la sélection de texte */
             ::selection {
                 background-color: #005493;
                 color: white;
@@ -62,7 +61,6 @@
                 outline: 1px dotted #005493;
             }
 
-            /* Styles pour les tableaux - version responsive améliorée */
             .table-container {
                 overflow-x: auto;
                 overflow-y: visible;
@@ -94,10 +92,6 @@
                 background: #003d7a;
             }
 
-            .table-container::-webkit-scrollbar-corner {
-                background: #f1f1f1;
-            }
-
             html, body {
                 overflow-x: hidden;
             }
@@ -121,19 +115,6 @@
                 white-space: normal;
                 vertical-align: middle;
                 background: transparent;
-            }
-
-            /* Style pour ressembler à la photo */
-            .member-row {
-                display: flex;
-                align-items: center;
-                padding: 10px 15px;
-                border-bottom: 1px solid #eee;
-                background: white;
-            }
-
-            .member-row:hover {
-                background-color: #f8f9fa;
             }
 
             .member-name {
@@ -256,6 +237,8 @@
 
             .year-filter {
                 flex: none;
+                position: relative;
+                display: inline-block;
             }
 
             .editable, .editable-special {
@@ -297,35 +280,6 @@
                 border-radius: 4px;
                 display: none;
                 z-index: 1000;
-            }
-
-            .year-filter {
-                position: relative;
-                display: inline-block;
-            }
-
-            .year-filter select {
-                background-color: white;
-                color: #005493;
-                border: 1px solid #005493;
-                border-radius: 4px;
-                padding: 8px 12px;
-                cursor: pointer;
-                font-family: 'Montserrat', sans-serif;
-                font-size: 14px;
-                min-width: 180px;
-                height: 40px;
-                width: auto;
-            }
-
-            .year-filter select:hover {
-                background-color: #f8f9fa;
-            }
-
-            .year-filter select:focus {
-                outline: 1px dotted #005493;
-                background-color: #005493;
-                color: white;
             }
 
             #menu_principal .menu_n1_desktop {
@@ -380,7 +334,6 @@
                 padding: 20px;
             }
 
-            /* Styles pour l'interface de modification des données spéciales */
             .special-edit-container {
                 display: flex;
                 flex-direction: column;
@@ -406,31 +359,6 @@
                 cursor: text;
             }
 
-            /* Amélioration pour les champs de date */
-            .date-range-inputs input[type="date"]::-webkit-calendar-picker-indicator {
-                cursor: pointer;
-                position: absolute;
-                right: 0;
-                top: 0;
-                bottom: 0;
-                width: 20px;
-                height: auto;
-                background: transparent;
-            }
-
-            .avis-zrr-inputs {
-                display: flex;
-                flex-direction: column;
-                gap: 3px;
-            }
-
-            .avis-zrr-inputs label {
-                font-size: 10px;
-                font-weight: bold;
-                color: #005493;
-            }
-
-            /* Masquer les éléments d'édition pour les non-admins */
             .not-admin .editable,
             .not-admin .editable-special {
                 cursor: default !important;
@@ -446,7 +374,6 @@
                 display: none !important;
             }
 
-            /* Style pour l'indicateur admin */
             .admin-indicator {
                 background-color: #28a745;
                 color: white;
@@ -456,17 +383,6 @@
                 text-align: center;
                 font-weight: bold;
             }
-
-            .user-indicator {
-                background-color: #6c757d;
-                color: white;
-                padding: 8px 15px;
-                border-radius: 4px;
-                margin-bottom: 15px;
-                text-align: center;
-            }
-
-            /* Styles pour le bouton de déconnexion */
         </style>
     </head>
 
@@ -526,18 +442,21 @@
                 </div>
             {% endif %}
 
-            {% if selected_year %}
+            <!-- Information sur l'année -->
+            {% if selected_year and selected_year != current_year %}
             <div class="year-info">
                 <h3>Membres par catégories - Année {{ selected_year }}</h3>
                 <p><em>Affichage des membres présents pendant l'année {{ selected_year }}</em></p>
-                <p><a href="/" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir toutes les catégories (toutes années)</a></p>
+                <p><a href="/" style="background-color: #6c757d; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px;">Voir l'année courante ({{ current_year }})</a></p>
+            </div>
+            {% elif selected_year and selected_year == current_year %}
+            <div class="year-info">
+                <h3>Membres par catégories - Année courante ({{ current_year }})</h3>
+                <p><em>Affichage des membres présents pendant l'année {{ current_year }}</em></p>
             </div>
             {% endif %}
 
-            {% if not selected_year %}
-                <h1 style="text-align: center; margin-bottom: 30px;">Membres du laboratoire par catégories</h1>
-            {% endif %}
-
+            <!-- Boutons d'action -->
             <div class="action-buttons">
                 {% if current_user.is_authenticated and current_user.is_admin() %}
                 <button id="saveAllButton">Sauvegarder toutes les modifications</button>
@@ -552,7 +471,7 @@
 
                 <div class="year-filter">
                     <input type="text" id="yearSelect" list="years-list"
-                           placeholder="Année sélectionné"
+                           placeholder="Année sélectionnée"
                            value="{{ selected_year or '' }}"
                            style="background-color: white; color: #005493; border: 1px solid #005493; border-radius: 4px; padding: 8px 12px; cursor: text; font-family: 'Montserrat', sans-serif; font-size: 14px; min-width: 180px; height: 40px; width: auto; background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e'); background-position: right 8px center; background-repeat: no-repeat; background-size: 16px; padding-right: 32px;">
                     <datalist id="years-list">
@@ -786,12 +705,10 @@
         </footer>
 
         <script>
-            // Fonction pour filtrer par année
             function filterByYear() {
                 const yearInput = document.getElementById('yearSelect');
                 let selectedYear = yearInput.value;
 
-                // Validation : seuls les chiffres
                 selectedYear = selectedYear.replace(/[^0-9]/g, '');
                 yearInput.value = selectedYear;
 
@@ -803,15 +720,12 @@
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                // Ajouter les événements pour le filtre année
                 const yearInput = document.getElementById('yearSelect');
 
-                // Validation en temps réel
                 yearInput.addEventListener('input', function() {
                     this.value = this.value.replace(/[^0-9]/g, '');
                 });
 
-                // Filtrage sur Enter ou perte de focus
                 yearInput.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         filterByYear();
@@ -824,45 +738,26 @@
                     }
                 });
 
-                // Gestion de la sélection dans le datalist
                 yearInput.addEventListener('change', function() {
                     if (this.value.length === 4) {
                         filterByYear();
                     }
                 });
-                // Vérifier si l'utilisateur est admin de manière plus robuste
+
                 const bodyClassList = document.body.classList;
                 const isAdmin = !bodyClassList.contains('not-admin');
-
-                console.log('Admin status:', isAdmin);
-                console.log('Body class list:', bodyClassList.toString());
-                console.log('Current user admin check from template');
-
-                // Test supplémentaire : vérifier si les boutons d'admin sont présents
                 const saveButton = document.getElementById('saveAllButton');
-                const adminIndicator = document.querySelector('.admin-indicator');
 
-                console.log('Save button exists:', !!saveButton);
-                console.log('Admin indicator exists:', !!adminIndicator);
-
-                // Si pas admin OU pas de bouton de sauvegarde, désactiver l'édition
                 if (!isAdmin || !saveButton) {
-                    console.log('Mode consultation uniquement - utilisateur non admin ou pas de bouton de sauvegarde');
-
-                    // Désactiver complètement les événements de double-clic
                     const allEditableCells = document.querySelectorAll('.editable, .editable-special');
                     allEditableCells.forEach(cell => {
                         cell.style.pointerEvents = 'none';
                         cell.style.cursor = 'default';
                         cell.removeAttribute('title');
-                        // Enlever complètement les classes d'édition
                         cell.classList.remove('editable', 'editable-special');
                     });
-
-                    return; // Arrêter ici pour les non-admins
+                    return;
                 }
-
-                console.log('Mode administrateur activé - édition autorisée');
 
                 const editableCells = document.querySelectorAll('.editable, .editable-special');
                 const saveAllButton = document.getElementById('saveAllButton');
@@ -882,7 +777,6 @@
                     return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
                 }
 
-                // Fonction pour créer l'interface d'édition des plages de dates
                 function createDateRangeEditor(cell) {
                     const dateArrivee = cell.getAttribute('data-date-arrivee') || '';
                     const dateDepart = cell.getAttribute('data-date-depart') || '';
@@ -893,7 +787,6 @@
                     const dateRangeDiv = document.createElement('div');
                     dateRangeDiv.className = 'date-range-inputs';
 
-                    // Date d'arrivée
                     const labelArrivee = document.createElement('label');
                     labelArrivee.textContent = 'Arrivée:';
                     const inputArrivee = document.createElement('input');
@@ -901,7 +794,6 @@
                     inputArrivee.value = dateArrivee ? frDateToISO(dateArrivee) : '';
                     inputArrivee.name = 'date_arrivee';
 
-                    // Date de départ
                     const labelDepart = document.createElement('label');
                     labelDepart.textContent = 'Départ:';
                     const inputDepart = document.createElement('input');
@@ -909,7 +801,6 @@
                     inputDepart.value = dateDepart ? frDateToISO(dateDepart) : '';
                     inputDepart.name = 'date_depart';
 
-                    // Bouton de validation
                     const validateButton = document.createElement('button');
                     validateButton.textContent = 'Valider';
                     validateButton.type = 'button';
@@ -935,83 +826,13 @@
                     };
                 }
 
-                // Fonction pour créer l'interface d'édition des avis ZRR
-                function createAvisZRREditor(cell) {
-                    const avisPositif = cell.getAttribute('data-avis-positif') || '';
-                    const avisNegatif = cell.getAttribute('data-avis-negatif') || '';
-
-                    const container = document.createElement('div');
-                    container.className = 'special-edit-container';
-
-                    const avisDiv = document.createElement('div');
-                    avisDiv.className = 'avis-zrr-inputs';
-
-                    // Avis ZRR positif
-                    const labelPositif = document.createElement('label');
-                    labelPositif.textContent = 'Avis positif:';
-                    const selectPositif = document.createElement('select');
-                    selectPositif.name = 'avis_positif';
-
-                    const optionsPositif = ['', 'Oui', 'Non'];
-                    optionsPositif.forEach(option => {
-                        const optElement = document.createElement('option');
-                        optElement.value = option;
-                        optElement.textContent = option;
-                        if (option === avisPositif) optElement.selected = true;
-                        selectPositif.appendChild(optElement);
-                    });
-
-                    // Avis ZRR négatif
-                    const labelNegatif = document.createElement('label');
-                    labelNegatif.textContent = 'Avis négatif:';
-                    const selectNegatif = document.createElement('select');
-                    selectNegatif.name = 'avis_negatif';
-
-                    const optionsNegatif = ['', 'Oui', 'Non'];
-                    optionsNegatif.forEach(option => {
-                        const optElement = document.createElement('option');
-                        optElement.value = option;
-                        optElement.textContent = option;
-                        if (option === avisNegatif) optElement.selected = true;
-                        selectNegatif.appendChild(optElement);
-                    });
-
-                    // Bouton de validation
-                    const validateButton = document.createElement('button');
-                    validateButton.textContent = 'Valider';
-                    validateButton.type = 'button';
-                    validateButton.style.marginTop = '5px';
-                    validateButton.style.fontSize = '11px';
-                    validateButton.style.padding = '2px 8px';
-
-                    avisDiv.appendChild(labelPositif);
-                    avisDiv.appendChild(selectPositif);
-                    avisDiv.appendChild(labelNegatif);
-                    avisDiv.appendChild(selectNegatif);
-                    avisDiv.appendChild(validateButton);
-
-                    container.appendChild(avisDiv);
-
-                    return {
-                        container: container,
-                        inputs: {
-                            positif: selectPositif,
-                            negatif: selectNegatif
-                        },
-                        validateButton: validateButton
-                    };
-                }
-
                 editableCells.forEach(cell => {
                     cell.addEventListener('dblclick', function() {
                         if (cell.classList.contains('editing')) return;
 
-                        console.log('Double-clic détecté sur:', cell);
-
                         cell.classList.add('editing');
                         const oldContent = cell.innerHTML;
 
-                        // Traitement spécial pour les cellules editable-special
                         if (cell.classList.contains('editable-special')) {
                             const specialType = cell.getAttribute('data-special-type');
 
@@ -1035,13 +856,11 @@
                                         dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                     }
 
-                                    // Ajouter les modifications pour date d'arrivée
+                                    const dbValueArrivee = editor.inputs.arrivee.value || null;
                                     const existingChangeArrivee = changedCells.find(change =>
                                         change.nom === nom && change.prenom === prenom &&
                                         change.date_arrivee === dateArriveeISO && change.column === 'Date_d_arrivée_dans_l_unité'
                                     );
-
-                                    const dbValueArrivee = editor.inputs.arrivee.value || null;
 
                                     if (existingChangeArrivee) {
                                         existingChangeArrivee.value = dbValueArrivee;
@@ -1055,13 +874,11 @@
                                         });
                                     }
 
-                                    // Ajouter les modifications pour date de départ
+                                    const dbValueDepart = editor.inputs.depart.value || null;
                                     const existingChangeDepart = changedCells.find(change =>
                                         change.nom === nom && change.prenom === prenom &&
                                         change.date_arrivee === dateArriveeISO && change.column === 'Date_de_départ_de_l_unité'
                                     );
-
-                                    const dbValueDepart = editor.inputs.depart.value || null;
 
                                     if (existingChangeDepart) {
                                         existingChangeDepart.value = dbValueDepart;
@@ -1075,11 +892,9 @@
                                         });
                                     }
 
-                                    // Mettre à jour les attributs data
                                     cell.setAttribute('data-date-arrivee', newDateArrivee);
                                     cell.setAttribute('data-date-depart', newDateDepart);
 
-                                    // Afficher le résultat
                                     const dateRange = [];
                                     if (newDateArrivee) dateRange.push(newDateArrivee);
                                     if (newDateDepart) dateRange.push(newDateDepart);
@@ -1101,97 +916,9 @@
                                         cell.classList.remove('editing');
                                     }
                                 });
-
-                            } else if (specialType === 'avis-zrr') {
-                                const editor = createAvisZRREditor(cell);
-                                cell.innerHTML = '';
-                                cell.appendChild(editor.container);
-                                editor.inputs.positif.focus();
-
-                                const finishAvisEditing = () => {
-                                    const newAvisPositif = editor.inputs.positif.value;
-                                    const newAvisNegatif = editor.inputs.negatif.value;
-
-                                    const row = cell.parentElement;
-                                    const nom = row.getAttribute('data-nom');
-                                    const prenom = row.getAttribute('data-prenom');
-                                    const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
-
-                                    let dateArriveeISO = null;
-                                    if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
-                                        dateArriveeISO = frDateToISO(dateArriveeOriginal);
-                                    }
-
-                                    // Ajouter les modifications pour avis positif
-                                    const existingChangePositif = changedCells.find(change =>
-                                        change.nom === nom && change.prenom === prenom &&
-                                        change.date_arrivee === dateArriveeISO && change.column === 'Avis_ZRR_positif'
-                                    );
-
-                                    if (existingChangePositif) {
-                                        existingChangePositif.value = newAvisPositif || null;
-                                    } else {
-                                        changedCells.push({
-                                            nom: nom,
-                                            prenom: prenom,
-                                            date_arrivee: dateArriveeISO,
-                                            column: 'Avis_ZRR_positif',
-                                            value: newAvisPositif || null
-                                        });
-                                    }
-
-                                    // Ajouter les modifications pour avis négatif
-                                    const existingChangeNegatif = changedCells.find(change =>
-                                        change.nom === nom && change.prenom === prenom &&
-                                        change.date_arrivee === dateArriveeISO && change.column === 'Avis_ZRR_négatif'
-                                    );
-
-                                    if (existingChangeNegatif) {
-                                        existingChangeNegatif.value = newAvisNegatif || null;
-                                    } else {
-                                        changedCells.push({
-                                            nom: nom,
-                                            prenom: prenom,
-                                            date_arrivee: dateArriveeISO,
-                                            column: 'Avis_ZRR_négatif',
-                                            value: newAvisNegatif || null
-                                        });
-                                    }
-
-                                    // Mettre à jour les attributs data
-                                    cell.setAttribute('data-avis-positif', newAvisPositif);
-                                    cell.setAttribute('data-avis-negatif', newAvisNegatif);
-
-                                    // Afficher le résultat
-                                    let displayText = '';
-                                    if (newAvisPositif === 'Oui') {
-                                        displayText = 'Positif';
-                                    } else if (newAvisNegatif === 'Oui') {
-                                        displayText = 'Négatif';
-                                    }
-
-                                    cell.innerHTML = displayText;
-                                    cell.classList.remove('editing');
-                                };
-
-                                editor.validateButton.addEventListener('click', finishAvisEditing);
-
-                                editor.inputs.positif.addEventListener('keydown', function(e) {
-                                    if (e.key === 'Escape') {
-                                        cell.innerHTML = oldContent;
-                                        cell.classList.remove('editing');
-                                    }
-                                });
-                                editor.inputs.negatif.addEventListener('keydown', function(e) {
-                                    if (e.key === 'Escape') {
-                                        cell.innerHTML = oldContent;
-                                        cell.classList.remove('editing');
-                                    }
-                                });
                             }
 
                         } else {
-                            // Traitement normal pour les cellules editable standard
                             const value = cell.textContent.trim();
                             const dataType = cell.getAttribute('data-type') || 'text';
                             const options = cell.getAttribute('data-options');
@@ -1199,9 +926,7 @@
 
                             let inputElement;
 
-                            // Traitement spécial pour la cellule nom/prénom combinée
                             if (column === 'Nom' && cell.classList.contains('member-name')) {
-                                // Créer deux champs pour nom et prénom
                                 const nomActuel = cell.getAttribute('data-nom') || '';
                                 const prenomActuel = cell.getAttribute('data-prenom') || '';
 
@@ -1232,14 +957,10 @@
                                     const newNom = nomInput.value.trim();
                                     const newPrenom = prenomInput.value.trim();
 
-                                    // Mettre à jour les attributs data
                                     cell.setAttribute('data-nom', newNom);
                                     cell.setAttribute('data-prenom', newPrenom);
-
-                                    // Mettre à jour l'affichage
                                     cell.innerHTML = `${newNom} ${newPrenom}`;
 
-                                    // Récupérer les identifiants de la ligne
                                     const row = cell.parentElement;
                                     const nomOriginal = row.getAttribute('data-nom');
                                     const prenomOriginal = row.getAttribute('data-prenom');
@@ -1250,7 +971,6 @@
                                         dateArriveeISO = frDateToISO(dateArriveeOriginal);
                                     }
 
-                                    // Ajouter les modifications pour le nom si changé
                                     if (newNom !== nomActuel) {
                                         const existingChangeNom = changedCells.find(change =>
                                             change.nom === nomOriginal && change.prenom === prenomOriginal &&
@@ -1270,7 +990,6 @@
                                         }
                                     }
 
-                                    // Ajouter les modifications pour le prénom si changé
                                     if (newPrenom !== prenomActuel) {
                                         const existingChangePrenom = changedCells.find(change =>
                                             change.nom === nomOriginal && change.prenom === prenomOriginal &&
@@ -1290,10 +1009,8 @@
                                         }
                                     }
 
-                                    // Mettre à jour les attributs data de la ligne pour les prochaines modifications
                                     row.setAttribute('data-nom', newNom);
                                     row.setAttribute('data-prenom', newPrenom);
-
                                     cell.classList.remove('editing');
                                 };
 
@@ -1316,7 +1033,6 @@
                                 });
 
                                 nomInput.addEventListener('blur', function() {
-                                    // Délai pour permettre le focus sur le deuxième champ
                                     setTimeout(() => {
                                         if (!prenomInput.matches(':focus')) {
                                             finishNameEditing();
@@ -1332,7 +1048,7 @@
                                     }, 100);
                                 });
 
-                                return; // Sortir de la fonction pour éviter le traitement standard
+                                return;
                             }
 
                             if (dataType === 'select' && options) {
@@ -1389,14 +1105,12 @@
                                 }
 
                                 if (newValue !== value) {
-                                    // Récupérer les identifiants uniques de la ligne
                                     const row = cell.parentElement;
                                     const nom = row.getAttribute('data-nom');
                                     const prenom = row.getAttribute('data-prenom');
                                     const dateArriveeOriginal = row.getAttribute('data-date-arrivee-original');
                                     const column = cell.getAttribute('data-column');
 
-                                    // Convertir la date d'arrivée au format ISO si nécessaire
                                     let dateArriveeISO = null;
                                     if (dateArriveeOriginal && dateArriveeOriginal.trim() !== '') {
                                         dateArriveeISO = frDateToISO(dateArriveeOriginal);
@@ -1426,7 +1140,6 @@
                                         });
                                     }
 
-                                    // Mettre à jour les attributs data de la ligne si on modifie le nom ou prénom
                                     if (column === 'Nom') {
                                         row.setAttribute('data-nom', newValue);
                                     } else if (column === 'Prénom') {
@@ -1452,8 +1165,6 @@
                             return;
                         }
 
-                        console.log('Modifications à envoyer:', changedCells);
-
                         fetch('/update_info', {
                             method: 'POST',
                             headers: {
@@ -1461,12 +1172,8 @@
                             },
                             body: JSON.stringify({ changes: changedCells })
                         })
-                        .then(response => {
-                            console.log('Réponse reçue:', response);
-                            return response.json();
-                        })
+                        .then(response => response.json())
                         .then(data => {
-                            console.log('Données de réponse:', data);
                             if (data.success) {
                                 notification.style.display = 'block';
                                 setTimeout(() => {

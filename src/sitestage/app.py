@@ -5,8 +5,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
+import datetime
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics,get_hal_publications,get_hal_doc_types,format_publication_data,test_hal_connection
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics, get_hal_publications, get_hal_doc_types, format_publication_data, test_hal_connection
 from .decorators import admin_required
 
 # Chargement des variables d'environnement
@@ -50,7 +51,13 @@ class SignupForm(FlaskForm):
 @web_ui.route('/')
 def index():
     """Route principale - affiche les membres par catégories (anciennes 'categories')"""
+    # Si aucune année n'est spécifiée, utiliser l'année courante
     year = request.args.get('year', type=int)
+    current_year = datetime.datetime.now().year
+
+    if year is None:
+        year = current_year
+
     available_years = get_available_years()
 
     categories_data = get_membres_by_category(year)
@@ -66,7 +73,8 @@ def index():
     return render_template('categories.html',
                            categories=organized_data,
                            available_years=available_years,
-                           selected_year=year)
+                           selected_year=year,
+                           current_year=current_year)
 
 
 @web_ui.route('/tableau')
@@ -245,7 +253,6 @@ def publications():
                                total_publications=0,
                                doc_types_labels=get_hal_doc_types(),
                                error="Erreur de connexion à l'API HAL")
-
 
 
 @web_ui.route('/test_hal')
