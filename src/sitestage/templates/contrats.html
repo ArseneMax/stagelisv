@@ -560,34 +560,24 @@
                 <table id="contratsTable">
                     <thead>
                         <tr>
-                            <th scope="col" colspan="5" class="section-header">Identification du projet</th>
-                            <th scope="col" colspan="5" class="section-header">Dates et validité</th>
-                            <th scope="col" colspan="2" class="section-header">Partenaires</th>
-                            <th scope="col" colspan="6" class="section-header">Montants et répartition</th>
+                            <th scope="col" colspan="3" class="section-header">Identification du projet</th>
+                            <th scope="col" colspan="2" class="section-header">Dates</th>
+                            <th scope="col" colspan="2" class="section-header">Partenaires et financement</th>
+                            <th scope="col" colspan="1" class="section-header">Montant</th>
                         </tr>
                         <tr>
                             <!-- Identification du projet -->
-                            <th>WBS Element</th>
-                            <th>Ancienne Codification EOTP</th>
+                            <th>EOTP</th>
                             <th>Nom du Projet</th>
-                            <th>Nom du projet 2</th>
-                            <th>Responsable</th>
-                            <!-- Dates et validité -->
-                            <th>Date début base</th>
-                            <th>Fin base</th>
-                            <th>Valide à partir du</th>
-                            <th>Fin de validité</th>
+                            <th>Nom de la Convention</th>
+                            <!-- Dates -->
+                            <th>Date début</th>
                             <th>Date d'expiration</th>
-                            <!-- Partenaires -->
-                            <th>Donneur d'ordre</th>
+                            <!-- Partenaires et financement -->
+                            <th>Responsable</th>
                             <th>Financeur</th>
-                            <!-- Montants et répartition -->
-                            <th>Montant final</th>
-                            <th>Montant Total</th>
-                            <th>FGUVSQ</th>
-                            <th>Part Fonctionnement</th>
-                            <th>Part personnel</th>
-                            <th>Part Investissement</th>
+                            <!-- Montant -->
+                            <th>Montant</th>
                         </tr>
                         <!-- Ligne de filtres -->
                         <tr class="filter-row">
@@ -599,43 +589,23 @@
                             <td><select class="column-filter" data-column="5"><option value="">Tous</option></select></td>
                             <td><select class="column-filter" data-column="6"><option value="">Tous</option></select></td>
                             <td><select class="column-filter" data-column="7"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="8"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="9"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="10"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="11"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="12"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="13"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="14"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="15"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="16"><option value="">Tous</option></select></td>
-                            <td><select class="column-filter" data-column="17"><option value="">Tous</option></select></td>
                         </tr>
                     </thead>
                     <tbody>
                         {% for contrat in contrats %}
-                        <tr data-wbs="{{ contrat[0] if contrat[0] else '' }}">
+                        <tr data-eotp="{{ contrat[0] if contrat[0] else '' }}">
                             <!-- Identification du projet -->
-                            <td class="editable" data-column="WBS_element">{{ contrat[0] if contrat[0] else '' }}</td>
-                            <td class="editable" data-column="Ancienne_Codification_EOTP">{{ contrat[1] if contrat[1] else '' }}</td>
-                            <td class="editable" data-column="Nom_du_Projet" data-type="textarea">{{ contrat[2] if contrat[2] else '' }}</td>
-                            <td class="editable" data-column="Nom_du_projet2" data-type="textarea">{{ contrat[3] if contrat[3] else '' }}</td>
-                            <td class="editable" data-column="Responsable">{{ contrat[4] if contrat[4] else '' }}</td>
-                            <!-- Dates et validité -->
-                            <td class="editable" data-column="Date_début_base" data-type="date">{{ contrat[5] if contrat[5] else '' }}</td>
-                            <td class="editable" data-column="Fin_base" data-type="date">{{ contrat[6] if contrat[6] else '' }}</td>
-                            <td class="editable" data-column="Valide_à_partir_du" data-type="date">{{ contrat[7] if contrat[7] else '' }}</td>
-                            <td class="editable" data-column="Fin_de_validité" data-type="date">{{ contrat[8] if contrat[8] else '' }}</td>
-                            <td class="editable" data-column="Date_d_expiration" data-type="date">{{ contrat[9] if contrat[9] else '' }}</td>
-                            <!-- Partenaires -->
-                            <td class="editable" data-column="Donneur_d_ordre">{{ contrat[10] if contrat[10] else '' }}</td>
-                            <td class="editable" data-column="Financeur">{{ contrat[11] if contrat[11] else '' }}</td>
-                            <!-- Montants et répartition -->
-                            <td class="editable money-column" data-column="Montant_final" data-type="number">{{ "{:,.2f}".format(contrat[12]) if contrat[12] else '' }}</td>
-                            <td class="editable money-column" data-column="Montant_Total" data-type="number">{{ "{:,.2f}".format(contrat[13]) if contrat[13] else '' }}</td>
-                            <td class="editable" data-column="FGUVSQ">{{ contrat[14] if contrat[14] else '' }}</td>
-                            <td class="editable money-column" data-column="Part_Fonctionnement" data-type="number">{{ "{:,.2f}".format(contrat[15]) if contrat[15] else '' }}</td>
-                            <td class="editable money-column" data-column="Part_personnel" data-type="number">{{ "{:,.2f}".format(contrat[16]) if contrat[16] else '' }}</td>
-                            <td class="editable money-column" data-column="Part_Investissement" data-type="number">{{ "{:,.2f}".format(contrat[17]) if contrat[17] else '' }}</td>
+                            <td class="editable" data-column="eotp">{{ contrat[0] if contrat[0] else '' }}</td>
+                            <td class="editable" data-column="nom_du_projet" data-type="textarea">{{ contrat[1] if contrat[1] else '' }}</td>
+                            <td class="editable" data-column="nom_de_la_convention" data-type="textarea">{{ contrat[2] if contrat[2] else '' }}</td>
+                            <!-- Dates -->
+                            <td class="editable" data-column="date_debut" data-type="date">{{ contrat[4] if contrat[4] else '' }}</td>
+                            <td class="editable" data-column="date_expiration" data-type="date">{{ contrat[5] if contrat[5] else '' }}</td>
+                            <!-- Partenaires et financement -->
+                            <td class="editable" data-column="responsable">{{ contrat[3] if contrat[3] else '' }}</td>
+                            <td class="editable" data-column="financeur">{{ contrat[6] if contrat[6] else '' }}</td>
+                            <!-- Montant -->
+                            <td class="editable money-column" data-column="montant" data-type="number">{{ "{:,.2f}".format(contrat[7]) if contrat[7] else '' }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -925,11 +895,11 @@
 
                             if (newValue !== value) {
                                 const row = cell.parentElement;
-                                const wbsElement = row.getAttribute('data-wbs');
+                                const eotpElement = row.getAttribute('data-eotp');
                                 const column = cell.getAttribute('data-column');
 
                                 const existingChange = changedCells.find(change =>
-                                    change.wbs_element === wbsElement && change.column === column
+                                    change.eotp === eotpElement && change.column === column
                                 );
 
                                 let dbValue;
@@ -945,7 +915,7 @@
                                     existingChange.value = dbValue;
                                 } else {
                                     changedCells.push({
-                                        wbs_element: wbsElement,
+                                        eotp: eotpElement,
                                         column: column,
                                         value: dbValue
                                     });

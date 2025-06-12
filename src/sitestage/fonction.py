@@ -1233,9 +1233,8 @@ def test_hal_connection():
         print(f" Erreur de connexion HAL: {e}")
         return False
 
-
 def select_all_contrats():
-    """Récupère tous les contrats de la base de données avec debug"""
+    """Récupère tous les contrats de la nouvelle base de données"""
     conn = get_db_connection()
     if conn is None:
         return "Échec de connexion à MySQL"
@@ -1249,26 +1248,16 @@ def select_all_contrats():
     for i, col_info in enumerate(columns_info):
         print(f"  Index {i}: {col_info[0]} ({col_info[1]})")
 
-    # Récupérer les données avec l'ordre explicite selon votre CREATE TABLE
+    # Récupérer les données avec l'ordre selon votre nouvelle CREATE TABLE
     cursor.execute('''SELECT 
-        wbs_element, 
-        ancienne_codification_eotp, 
+        eotp, 
         nom_du_projet, 
-        nom_du_projet2, 
+        nom_de_la_convention, 
         responsable, 
-        date_debut_base, 
-        fin_base, 
-        valide_a_partir_du, 
-        fin_de_validite, 
+        date_debut, 
         date_expiration, 
-        donneur_ordre, 
         financeur, 
-        montant_final, 
-        montant_total, 
-        fguvsq, 
-        part_fonctionnement, 
-        part_personnel, 
-        part_investissement
+        montant
     FROM contrat''')
 
     contrats = cursor.fetchall()
@@ -1283,8 +1272,8 @@ def select_all_contrats():
     for contrat in contrats:
         contrat_list = list(contrat)
 
-        # Formatage des dates (indices 5 à 9 selon l'ordre de la requête SELECT)
-        date_indices = [5, 6, 7, 8, 9]  # date_debut_base, fin_base, valide_a_partir_du, fin_de_validite, date_expiration
+        # Formatage des dates (indices 4 et 5 : date_debut, date_expiration)
+        date_indices = [4, 5]
         for idx in date_indices:
             if idx < len(contrat_list) and contrat_list[idx]:
                 contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
@@ -1292,71 +1281,6 @@ def select_all_contrats():
         contrats_list.append(contrat_list)
 
     return contrats_list
-
-
-def select_contrats_by_year(year):
-    """
-    Récupère les contrats actifs pendant une année donnée avec debug
-    """
-    conn = get_db_connection()
-    if conn is None:
-        return "Échec de connexion à MySQL"
-
-    cursor = conn.cursor()
-
-    # Utiliser la même requête SELECT explicite
-    query = """
-        SELECT 
-            wbs_element, 
-            ancienne_codification_eotp, 
-            nom_du_projet, 
-            nom_du_projet2, 
-            responsable, 
-            date_debut_base, 
-            fin_base, 
-            valide_a_partir_du, 
-            fin_de_validite, 
-            date_expiration, 
-            donneur_ordre, 
-            financeur, 
-            montant_final, 
-            montant_total, 
-            fguvsq, 
-            part_fonctionnement, 
-            part_personnel, 
-            part_investissement
-        FROM contrat
-        WHERE (date_debut_base IS NULL OR date_debut_base <= %s)
-          AND (fin_base IS NULL OR fin_base >= %s)
-    """
-
-    start_of_year = f"{year}-01-01"
-    end_of_year = f"{year}-12-31"
-
-    print(f"DEBUG: Filtrage contrats pour année {year}")
-    print(f"DEBUG: Période: {start_of_year} à {end_of_year}")
-
-    cursor.execute(query, (end_of_year, start_of_year))
-    contrats = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    print(f"DEBUG: Contrats trouvés pour {year}: {len(contrats)}")
-
-    contrats_list = []
-    for contrat in contrats:
-        contrat_list = list(contrat)
-
-        # Formatage des dates (indices 5 à 9)
-        date_indices = [5, 6, 7, 8, 9]
-        for idx in date_indices:
-            if idx < len(contrat_list) and contrat_list[idx]:
-                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
-
-        contrats_list.append(contrat_list)
-
-    return contrats_list
-
 
 def get_available_years_contrats():
     """
@@ -1375,9 +1299,104 @@ def get_available_years_contrats():
     print(f"DEBUG: Années disponibles pour contrats (5 dernières): {sorted(years, reverse=True)}")
     return sorted(years, reverse=True)
 
+    def select_all_contrats():
+        """Récupère tous les contrats de la nouvelle base de données"""
+
+    conn = get_db_connection()
+    if conn is None:
+        return "Échec de connexion à MySQL"
+
+    cursor = conn.cursor()
+
+    # Récupérer les données avec l'ordre selon votre nouvelle CREATE TABLE
+    cursor.execute('''SELECT eotp,
+                             nom_du_projet,
+                             nom_de_la_convention,
+                             responsable,
+                             date_debut,
+                             date_expiration,
+                             financeur,
+                             montant
+                      FROM contrat''')
+
+    contrats = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    print(f"DEBUG: Nombre de contrats récupérés: {len(contrats)}")
+    if contrats:
+        print(f"DEBUG: Premier contrat: {contrats[0]}")
+
+    contrats_list = []
+    for contrat in contrats:
+        contrat_list = list(contrat)
+
+        # Formatage des dates (indices 4 et 5 : date_debut, date_expiration)
+        date_indices = [4, 5]
+        for idx in date_indices:
+            if idx < len(contrat_list) and contrat_list[idx]:
+                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
+
+        contrats_list.append(contrat_list)
+
+    return contrats_list
+
+
+def select_contrats_by_year(year):
+    """
+    Récupère les contrats actifs pendant une année donnée avec la nouvelle structure
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return "Échec de connexion à MySQL"
+
+    cursor = conn.cursor()
+
+    # Utiliser la même requête SELECT avec les nouveaux noms de colonnes
+    query = """
+            SELECT eotp, \
+                   nom_du_projet, \
+                   nom_de_la_convention, \
+                   responsable, \
+                   date_debut, \
+                   date_expiration, \
+                   financeur, \
+                   montant
+            FROM contrat
+            WHERE (date_debut IS NULL OR date_debut <= %s)
+              AND (date_expiration IS NULL OR date_expiration >= %s) \
+            """
+
+    start_of_year = f"{year}-01-01"
+    end_of_year = f"{year}-12-31"
+
+    print(f"DEBUG: Filtrage contrats pour année {year}")
+    print(f"DEBUG: Période: {start_of_year} à {end_of_year}")
+
+    cursor.execute(query, (end_of_year, start_of_year))
+    contrats = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    print(f"DEBUG: Contrats trouvés pour {year}: {len(contrats)}")
+
+    contrats_list = []
+    for contrat in contrats:
+        contrat_list = list(contrat)
+
+        # Formatage des dates (indices 4 et 5)
+        date_indices = [4, 5]
+        for idx in date_indices:
+            if idx < len(contrat_list) and contrat_list[idx]:
+                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
+
+        contrats_list.append(contrat_list)
+
+    return contrats_list
+
 
 def update_db_contrat(conn, changes):
-    """Met à jour les informations des contrats dans la base de données en utilisant uniquement le WBS element"""
+    """Met à jour les informations des contrats dans la nouvelle base de données en utilisant EOTP"""
     try:
         cursor = conn.cursor()
         print(f"DEBUG: Début de update_db_contrat avec {len(changes)} modifications")
@@ -1385,51 +1404,41 @@ def update_db_contrat(conn, changes):
         for i, change in enumerate(changes):
             print(f"DEBUG: Traitement du changement {i}: {change}")
 
-            wbs_element = change.get('wbs_element')
+            eotp = change.get('eotp')
             column_name = change.get('column')
             value = change.get('value')
 
-            if not wbs_element or not column_name:
-                print(f"ERROR: WBS element ou nom de colonne manquant pour le changement {i}")
+            if not eotp or not column_name:
+                print(f"ERROR: EOTP ou nom de colonne manquant pour le changement {i}")
                 cursor.close()
                 return False
 
-            # Mapping simplifié des noms de colonnes vers la base de données
+            # Mapping des noms de colonnes vers la base de données
             column_mapping = {
-                'WBS_element': 'wbs_element',
-                'Ancienne_Codification_EOTP': 'ancienne_codification_eotp',
-                'Nom_du_Projet': 'nom_du_projet',
-                'Nom_du_projet2': 'nom_du_projet2',
-                'Responsable': 'responsable',
-                'Date_début_base': 'date_debut_base',
-                'Fin_base': 'fin_base',
-                'Valide_à_partir_du': 'valide_a_partir_du',
-                'Fin_de_validité': 'fin_de_validite',
-                'Date_d_expiration': 'date_expiration',
-                'Donneur_d_ordre': 'donneur_ordre',
-                'Financeur': 'financeur',
-                'Montant_final': 'montant_final',
-                'Montant_Total': 'montant_total',
-                'FGUVSQ': 'fguvsq',
-                'Part_Fonctionnement': 'part_fonctionnement',
-                'Part_personnel': 'part_personnel',
-                'Part_Investissement': 'part_investissement'
+                'eotp': 'eotp',
+                'nom_du_projet': 'nom_du_projet',
+                'nom_de_la_convention': 'nom_de_la_convention',
+                'responsable': 'responsable',
+                'date_debut': 'date_debut',
+                'date_expiration': 'date_expiration',
+                'financeur': 'financeur',
+                'montant': 'montant'
             }
 
             db_column = column_mapping.get(column_name, column_name)
 
             # Vérifier que le contrat existe
-            check_query = "SELECT COUNT(*) FROM contrat WHERE wbs_element = %s"
-            cursor.execute(check_query, (wbs_element,))
+            check_query = "SELECT COUNT(*) FROM contrat WHERE eotp = %s"
+            cursor.execute(check_query, (eotp,))
             count = cursor.fetchone()[0]
 
             if count == 0:
-                print(f"ERROR: Aucun contrat trouvé avec WBS element: {wbs_element}")
+                print(f"ERROR: Aucun contrat trouvé avec EOTP: {eotp}")
                 cursor.close()
                 return False
 
             # Traitement spécial pour les dates
-            date_columns = ['date_debut_base', 'fin_base', 'valide_a_partir_du', 'fin_de_validite', 'date_expiration']
+            date_columns = ['date_debut', 'date_expiration']
             if db_column in date_columns and value:
                 try:
                     value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
@@ -1444,9 +1453,8 @@ def update_db_contrat(conn, changes):
             elif db_column in date_columns and not value:
                 value = None
 
-            # Traitement spécial pour les montants
-            money_columns = ['montant_final', 'montant_total', 'part_fonctionnement', 'part_personnel', 'part_investissement']
-            if db_column in money_columns:
+            # Traitement spécial pour le montant
+            if db_column == 'montant':
                 if value and value != '':
                     try:
                         # Nettoyer la valeur (enlever espaces, virgules, etc.)
@@ -1458,15 +1466,15 @@ def update_db_contrat(conn, changes):
                 else:
                     value = None
 
-            # Mettre à jour le contrat en utilisant uniquement le WBS element
-            query = f"UPDATE contrat SET {db_column} = %s WHERE wbs_element = %s"
-            cursor.execute(query, (value, wbs_element))
+            # Mettre à jour le contrat en utilisant EOTP
+            query = f"UPDATE contrat SET {db_column} = %s WHERE eotp = %s"
+            cursor.execute(query, (value, eotp))
 
             affected_rows = cursor.rowcount
-            print(f"DEBUG: Lignes affectées pour {wbs_element} - {db_column}: {affected_rows}")
+            print(f"DEBUG: Lignes affectées pour {eotp} - {db_column}: {affected_rows}")
 
             if affected_rows == 0:
-                print(f"WARNING: Aucune ligne mise à jour pour WBS {wbs_element}")
+                print(f"WARNING: Aucune ligne mise à jour pour EOTP {eotp}")
 
         conn.commit()
         cursor.close()
