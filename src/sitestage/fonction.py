@@ -1232,3 +1232,252 @@ def test_hal_connection():
     except Exception as e:
         print(f" Erreur de connexion HAL: {e}")
         return False
+
+
+def select_all_contrats():
+    """Récupère tous les contrats de la base de données avec debug"""
+    conn = get_db_connection()
+    if conn is None:
+        return "Échec de connexion à MySQL"
+
+    cursor = conn.cursor()
+
+    # DEBUG: Récupérer d'abord la structure de la table
+    cursor.execute("DESCRIBE contrat")
+    columns_info = cursor.fetchall()
+    print("DEBUG: Structure de la table contrat:")
+    for i, col_info in enumerate(columns_info):
+        print(f"  Index {i}: {col_info[0]} ({col_info[1]})")
+
+    # Récupérer les données avec l'ordre explicite selon votre CREATE TABLE
+    cursor.execute('''SELECT 
+        wbs_element, 
+        ancienne_codification_eotp, 
+        nom_du_projet, 
+        nom_du_projet2, 
+        responsable, 
+        date_debut_base, 
+        fin_base, 
+        valide_a_partir_du, 
+        fin_de_validite, 
+        date_expiration, 
+        donneur_ordre, 
+        financeur, 
+        montant_final, 
+        montant_total, 
+        fguvsq, 
+        part_fonctionnement, 
+        part_personnel, 
+        part_investissement
+    FROM contrat''')
+
+    contrats = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    print(f"DEBUG: Nombre de contrats récupérés: {len(contrats)}")
+    if contrats:
+        print(f"DEBUG: Premier contrat: {contrats[0]}")
+
+    contrats_list = []
+    for contrat in contrats:
+        contrat_list = list(contrat)
+
+        # Formatage des dates (indices 5 à 9 selon l'ordre de la requête SELECT)
+        date_indices = [5, 6, 7, 8, 9]  # date_debut_base, fin_base, valide_a_partir_du, fin_de_validite, date_expiration
+        for idx in date_indices:
+            if idx < len(contrat_list) and contrat_list[idx]:
+                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
+
+        contrats_list.append(contrat_list)
+
+    return contrats_list
+
+
+def select_contrats_by_year(year):
+    """
+    Récupère les contrats actifs pendant une année donnée avec debug
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return "Échec de connexion à MySQL"
+
+    cursor = conn.cursor()
+
+    # Utiliser la même requête SELECT explicite
+    query = """
+        SELECT 
+            wbs_element, 
+            ancienne_codification_eotp, 
+            nom_du_projet, 
+            nom_du_projet2, 
+            responsable, 
+            date_debut_base, 
+            fin_base, 
+            valide_a_partir_du, 
+            fin_de_validite, 
+            date_expiration, 
+            donneur_ordre, 
+            financeur, 
+            montant_final, 
+            montant_total, 
+            fguvsq, 
+            part_fonctionnement, 
+            part_personnel, 
+            part_investissement
+        FROM contrat
+        WHERE (date_debut_base IS NULL OR date_debut_base <= %s)
+          AND (fin_base IS NULL OR fin_base >= %s)
+    """
+
+    start_of_year = f"{year}-01-01"
+    end_of_year = f"{year}-12-31"
+
+    print(f"DEBUG: Filtrage contrats pour année {year}")
+    print(f"DEBUG: Période: {start_of_year} à {end_of_year}")
+
+    cursor.execute(query, (end_of_year, start_of_year))
+    contrats = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    print(f"DEBUG: Contrats trouvés pour {year}: {len(contrats)}")
+
+    contrats_list = []
+    for contrat in contrats:
+        contrat_list = list(contrat)
+
+        # Formatage des dates (indices 5 à 9)
+        date_indices = [5, 6, 7, 8, 9]
+        for idx in date_indices:
+            if idx < len(contrat_list) and contrat_list[idx]:
+                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
+
+        contrats_list.append(contrat_list)
+
+    return contrats_list
+
+
+def get_available_years_contrats():
+    """
+    Récupère les 5 dernières années à partir de l'année actuelle pour les contrats.
+    Cette fonction ne dépend plus des données des contrats et génère simplement
+    les 5 dernières années à partir d'aujourd'hui.
+
+    Returns:
+        list: Liste des 5 dernières années triées par ordre décroissant
+    """
+    current_year = datetime.datetime.now().year
+
+    # Générer les 5 dernières années (année actuelle incluse)
+    years = list(range(current_year - 4, current_year + 1))
+
+    print(f"DEBUG: Années disponibles pour contrats (5 dernières): {sorted(years, reverse=True)}")
+    return sorted(years, reverse=True)
+
+
+def update_db_contrat(conn, changes):
+    """Met à jour les informations des contrats dans la base de données en utilisant uniquement le WBS element"""
+    try:
+        cursor = conn.cursor()
+        print(f"DEBUG: Début de update_db_contrat avec {len(changes)} modifications")
+
+        for i, change in enumerate(changes):
+            print(f"DEBUG: Traitement du changement {i}: {change}")
+
+            wbs_element = change.get('wbs_element')
+            column_name = change.get('column')
+            value = change.get('value')
+
+            if not wbs_element or not column_name:
+                print(f"ERROR: WBS element ou nom de colonne manquant pour le changement {i}")
+                cursor.close()
+                return False
+
+            # Mapping simplifié des noms de colonnes vers la base de données
+            column_mapping = {
+                'WBS_element': 'wbs_element',
+                'Ancienne_Codification_EOTP': 'ancienne_codification_eotp',
+                'Nom_du_Projet': 'nom_du_projet',
+                'Nom_du_projet2': 'nom_du_projet2',
+                'Responsable': 'responsable',
+                'Date_début_base': 'date_debut_base',
+                'Fin_base': 'fin_base',
+                'Valide_à_partir_du': 'valide_a_partir_du',
+                'Fin_de_validité': 'fin_de_validite',
+                'Date_d_expiration': 'date_expiration',
+                'Donneur_d_ordre': 'donneur_ordre',
+                'Financeur': 'financeur',
+                'Montant_final': 'montant_final',
+                'Montant_Total': 'montant_total',
+                'FGUVSQ': 'fguvsq',
+                'Part_Fonctionnement': 'part_fonctionnement',
+                'Part_personnel': 'part_personnel',
+                'Part_Investissement': 'part_investissement'
+            }
+
+            db_column = column_mapping.get(column_name, column_name)
+
+            # Vérifier que le contrat existe
+            check_query = "SELECT COUNT(*) FROM contrat WHERE wbs_element = %s"
+            cursor.execute(check_query, (wbs_element,))
+            count = cursor.fetchone()[0]
+
+            if count == 0:
+                print(f"ERROR: Aucun contrat trouvé avec WBS element: {wbs_element}")
+                cursor.close()
+                return False
+
+            # Traitement spécial pour les dates
+            date_columns = ['date_debut_base', 'fin_base', 'valide_a_partir_du', 'fin_de_validite', 'date_expiration']
+            if db_column in date_columns and value:
+                try:
+                    value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+                except ValueError:
+                    try:
+                        parts = value.split('/')
+                        if len(parts) == 3:
+                            value = datetime.datetime(int(parts[2]), int(parts[1]), int(parts[0])).date()
+                    except:
+                        print(f"ERROR: Impossible de convertir la date: {value}")
+                        value = None
+            elif db_column in date_columns and not value:
+                value = None
+
+            # Traitement spécial pour les montants
+            money_columns = ['montant_final', 'montant_total', 'part_fonctionnement', 'part_personnel', 'part_investissement']
+            if db_column in money_columns:
+                if value and value != '':
+                    try:
+                        # Nettoyer la valeur (enlever espaces, virgules, etc.)
+                        clean_value = str(value).replace(',', '').replace(' ', '').replace('€', '')
+                        value = float(clean_value) if clean_value else None
+                    except ValueError:
+                        print(f"ERROR: Impossible de convertir le montant: {value}")
+                        value = None
+                else:
+                    value = None
+
+            # Mettre à jour le contrat en utilisant uniquement le WBS element
+            query = f"UPDATE contrat SET {db_column} = %s WHERE wbs_element = %s"
+            cursor.execute(query, (value, wbs_element))
+
+            affected_rows = cursor.rowcount
+            print(f"DEBUG: Lignes affectées pour {wbs_element} - {db_column}: {affected_rows}")
+
+            if affected_rows == 0:
+                print(f"WARNING: Aucune ligne mise à jour pour WBS {wbs_element}")
+
+        conn.commit()
+        cursor.close()
+        print("DEBUG: Toutes les modifications ont été commitées avec succès")
+        return True
+
+    except Exception as e:
+        print(f"ERROR: Erreur lors de la mise à jour des contrats: {e}")
+        import traceback
+        traceback.print_exc()
+        if 'cursor' in locals():
+            cursor.close()
+        conn.rollback()
+        return False

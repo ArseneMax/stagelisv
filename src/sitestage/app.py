@@ -7,7 +7,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 import datetime
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics, get_hal_publications, get_hal_doc_types, format_publication_data, test_hal_connection
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics, get_hal_publications, get_hal_doc_types, format_publication_data, select_all_contrats, select_contrats_by_year, get_available_years_contrats, update_db_contrat
 from .decorators import admin_required
 
 # Chargement des variables d'environnement
@@ -255,14 +255,40 @@ def publications():
                                error="Erreur de connexion à l'API HAL")
 
 
-@web_ui.route('/test_hal')
-def test_hal():
-    """Route de test pour vérifier la connexion HAL"""
-    success = test_hal_connection()
-    if success:
-        flash("Connexion à l'API HAL réussie !", "success")
-    else:
-        flash("Erreur de connexion à l'API HAL", "error")
-    return redirect(url_for('web_ui.publications'))
 
+@web_ui.route('/contrats')
+@login_required
+@admin_required
+def contrats():
+    """Route pour afficher le tableau des contrats - nécessite une connexion admin"""
+    year = request.args.get('year', type=int)
+    available_years = get_available_years_contrats()
+
+    if year:
+        contrats = select_contrats_by_year(year)
+    else:
+        contrats = select_all_contrats()
+
+    return render_template('contrats.html',
+                           contrats=contrats,
+                           available_years=available_years,
+                           selected_year=year)
+
+
+@web_ui.route('/update_contrat', methods=['POST'])
+@admin_required
+def update_contrat():
+    """Route pour mettre à jour les informations des contrats - nécessite d'être admin"""
+    data = request.json
+    changes = data.get('changes', [])
+
+    if not changes:
+        return jsonify({'success': False, 'error': 'Aucune modification fournie'})
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({'success': False, 'error': 'Erreur de connexion à la base de données'})
+
+    success = update_db_contrat(conn, changes)
+    return jsonify({'success': success})
 app.register_blueprint(web_ui)
