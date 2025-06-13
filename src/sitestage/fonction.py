@@ -6,6 +6,8 @@ from flask_login import UserMixin
 from flask import flash
 import datetime
 
+from .ssh_pdf_manager import pdf_manager
+
 
 def get_db_connection():
     try:
@@ -1394,98 +1396,3 @@ def select_contrats_by_year(year):
 
     return contrats_list
 
-
-def update_db_contrat(conn, changes):
-    """Met à jour les informations des contrats dans la nouvelle base de données en utilisant EOTP"""
-    try:
-        cursor = conn.cursor()
-        print(f"DEBUG: Début de update_db_contrat avec {len(changes)} modifications")
-
-        for i, change in enumerate(changes):
-            print(f"DEBUG: Traitement du changement {i}: {change}")
-
-            eotp = change.get('eotp')
-            column_name = change.get('column')
-            value = change.get('value')
-
-            if not eotp or not column_name:
-                print(f"ERROR: EOTP ou nom de colonne manquant pour le changement {i}")
-                cursor.close()
-                return False
-
-            # Mapping des noms de colonnes vers la base de données
-            column_mapping = {
-                'eotp': 'eotp',
-                'nom_du_projet': 'nom_du_projet',
-                'nom_de_la_convention': 'nom_de_la_convention',
-                'responsable': 'responsable',
-                'date_debut': 'date_debut',
-                'date_expiration': 'date_expiration',
-                'financeur': 'financeur',
-                'montant': 'montant'
-            }
-
-            db_column = column_mapping.get(column_name, column_name)
-
-            # Vérifier que le contrat existe
-            check_query = "SELECT COUNT(*) FROM contrat WHERE eotp = %s"
-            cursor.execute(check_query, (eotp,))
-            count = cursor.fetchone()[0]
-
-            if count == 0:
-                print(f"ERROR: Aucun contrat trouvé avec EOTP: {eotp}")
-                cursor.close()
-                return False
-
-            # Traitement spécial pour les dates
-            date_columns = ['date_debut', 'date_expiration']
-            if db_column in date_columns and value:
-                try:
-                    value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
-                except ValueError:
-                    try:
-                        parts = value.split('/')
-                        if len(parts) == 3:
-                            value = datetime.datetime(int(parts[2]), int(parts[1]), int(parts[0])).date()
-                    except:
-                        print(f"ERROR: Impossible de convertir la date: {value}")
-                        value = None
-            elif db_column in date_columns and not value:
-                value = None
-
-            # Traitement spécial pour le montant
-            if db_column == 'montant':
-                if value and value != '':
-                    try:
-                        # Nettoyer la valeur (enlever espaces, virgules, etc.)
-                        clean_value = str(value).replace(',', '').replace(' ', '').replace('€', '')
-                        value = float(clean_value) if clean_value else None
-                    except ValueError:
-                        print(f"ERROR: Impossible de convertir le montant: {value}")
-                        value = None
-                else:
-                    value = None
-
-            # Mettre à jour le contrat en utilisant EOTP
-            query = f"UPDATE contrat SET {db_column} = %s WHERE eotp = %s"
-            cursor.execute(query, (value, eotp))
-
-            affected_rows = cursor.rowcount
-            print(f"DEBUG: Lignes affectées pour {eotp} - {db_column}: {affected_rows}")
-
-            if affected_rows == 0:
-                print(f"WARNING: Aucune ligne mise à jour pour EOTP {eotp}")
-
-        conn.commit()
-        cursor.close()
-        print("DEBUG: Toutes les modifications ont été commitées avec succès")
-        return True
-
-    except Exception as e:
-        print(f"ERROR: Erreur lors de la mise à jour des contrats: {e}")
-        import traceback
-        traceback.print_exc()
-        if 'cursor' in locals():
-            cursor.close()
-        conn.rollback()
-        return False

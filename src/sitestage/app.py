@@ -7,8 +7,9 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length
 import datetime
 
-from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics, get_hal_publications, get_hal_doc_types, format_publication_data, select_all_contrats, select_contrats_by_year, get_available_years_contrats, update_db_contrat
+from .fonction import User, get_db_connection, update_db_info, select_all_infos, get_available_years, select_infos_by_year, get_membres_by_category, get_membre_fields, get_hal_statistics, get_hal_publications, get_hal_doc_types, format_publication_data, select_all_contrats, select_contrats_by_year, get_available_years_contrats
 from .decorators import admin_required
+from .ssh_pdf_manager import serve_contract_pdf, check_pdf_exists
 
 # Chargement des variables d'environnement
 load_dotenv()
@@ -255,13 +256,13 @@ def publications():
                                error="Erreur de connexion à l'API HAL")
 
 
-
 @web_ui.route('/contrats')
-@login_required
-@admin_required
 def contrats():
-    """Route pour afficher le tableau des contrats - nécessite une connexion admin"""
+    """Route pour afficher le tableau des contrats - accès libre"""
     year = request.args.get('year', type=int)
+    eotp = request.args.get('eotp', '').strip()
+    financeur = request.args.get('financeur', '').strip()
+
     available_years = get_available_years_contrats()
 
     if year:
@@ -269,26 +270,61 @@ def contrats():
     else:
         contrats = select_all_contrats()
 
+    # Filtrage par EOTP si spécifié
+    if eotp:
+        contrats = [c for c in contrats if c[0] and eotp.lower() in c[0].lower()]
+
+    # Filtrage par financeur si spécifié
+    if financeur:
+        contrats = [c for c in contrats if c[6] and financeur.lower() in c[6].lower()]
+
     return render_template('contrats.html',
                            contrats=contrats,
                            available_years=available_years,
                            selected_year=year)
 
 
-@web_ui.route('/update_contrat', methods=['POST'])
-@admin_required
-def update_contrat():
-    """Route pour mettre à jour les informations des contrats - nécessite d'être admin"""
-    data = request.json
-    changes = data.get('changes', [])
+@web_ui.route('/contrats/<eotp>/pdf')
+def get_contract_pdf(eotp):
+    """Route pour servir le PDF d'un contrat via SSH"""
+    return serve_contract_pdf(eotp)
 
-    if not changes:
-        return jsonify({'success': False, 'error': 'Aucune modification fournie'})
 
-    conn = get_db_connection()
-    if conn is None:
-        return jsonify({'success': False, 'error': 'Erreur de connexion à la base de données'})
+@web_ui.route('/contrats/<eotp>/check-pdf')
+def check_contract_pdf(eotp):
+    """Route AJAX pour vérifier si un PDF existe"""
+    try:
+        exists = check_pdf_exists(eotp)
+        return jsonify({
+            'exists': exists,
+            'url': f'/contrats/{eotp}/pdf' if exists else None
+        })
+    except Exception as e:
+        print(f"Erreur check PDF pour {eotp}: {e}")
+        return jsonify({'exists': False, 'error': str(e)})
 
-    success = update_db_contrat(conn, changes)
-    return jsonify({'success': success})
+
+@web_ui.route('/api/pdf-status')
+def pdf_status_batch():
+    """Route pour vérifier le statut PDF de plusieurs contrats"""
+    eotps = request.args.getlist('eotp')
+    results = {}
+
+    print(f"Vérification PDF en lot pour: {eotps}")
+
+    for eotp in eotps:
+        if eotp:  # Ignorer les EOTP vides
+            try:
+                exists = check_pdf_exists(eotp)
+                results[eotp] = {
+                    'exists': exists,
+                    'url': f'/contrats/{eotp}/pdf' if exists else None
+                }
+            except Exception as e:
+                print(f"Erreur vérification PDF pour {eotp}: {e}")
+                results[eotp] = {'exists': False, 'error': str(e)}
+
+    return jsonify(results)
+
+
 app.register_blueprint(web_ui)
