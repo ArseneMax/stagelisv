@@ -260,8 +260,7 @@ def publications():
 def contrats():
     """Route pour afficher le tableau des contrats - accès libre"""
     year = request.args.get('year', type=int)
-    eotp = request.args.get('eotp', '').strip()
-    financeur = request.args.get('financeur', '').strip()
+    responsable = request.args.get('responsable', '').strip()
 
     available_years = get_available_years_contrats()
 
@@ -270,13 +269,9 @@ def contrats():
     else:
         contrats = select_all_contrats()
 
-    # Filtrage par EOTP si spécifié
-    if eotp:
-        contrats = [c for c in contrats if c[0] and eotp.lower() in c[0].lower()]
-
-    # Filtrage par financeur si spécifié
-    if financeur:
-        contrats = [c for c in contrats if c[6] and financeur.lower() in c[6].lower()]
+    # Filtrage par responsable si spécifié
+    if responsable:
+        contrats = [c for c in contrats if c[3] and responsable.lower() in c[3].lower()]
 
     return render_template('contrats.html',
                            contrats=contrats,

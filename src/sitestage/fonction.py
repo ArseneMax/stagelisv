@@ -1236,21 +1236,14 @@ def test_hal_connection():
         return False
 
 def select_all_contrats():
-    """Récupère tous les contrats de la nouvelle base de données"""
+    """Récupère tous les contrats de la nouvelle base de données, triés du plus récent au plus ancien"""
     conn = get_db_connection()
     if conn is None:
         return "Échec de connexion à MySQL"
 
     cursor = conn.cursor()
 
-    # DEBUG: Récupérer d'abord la structure de la table
-    cursor.execute("DESCRIBE contrat")
-    columns_info = cursor.fetchall()
-    print("DEBUG: Structure de la table contrat:")
-    for i, col_info in enumerate(columns_info):
-        print(f"  Index {i}: {col_info[0]} ({col_info[1]})")
-
-    # Récupérer les données avec l'ordre selon votre nouvelle CREATE TABLE
+    # Récupérer les données avec tri par date de début décroissante
     cursor.execute('''SELECT 
         eotp, 
         nom_du_projet, 
@@ -1260,21 +1253,75 @@ def select_all_contrats():
         date_expiration, 
         financeur, 
         montant
-    FROM contrat''')
+    FROM contrat
+    ORDER BY date_debut DESC, eotp DESC''')
 
     contrats = cursor.fetchall()
     cursor.close()
     conn.close()
 
     print(f"DEBUG: Nombre de contrats récupérés: {len(contrats)}")
-    if contrats:
-        print(f"DEBUG: Premier contrat: {contrats[0]}")
 
     contrats_list = []
     for contrat in contrats:
         contrat_list = list(contrat)
 
         # Formatage des dates (indices 4 et 5 : date_debut, date_expiration)
+        date_indices = [4, 5]
+        for idx in date_indices:
+            if idx < len(contrat_list) and contrat_list[idx]:
+                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
+
+        contrats_list.append(contrat_list)
+
+    return contrats_list
+
+# Modifier la fonction select_contrats_by_year pour trier par date
+def select_contrats_by_year(year):
+    """
+    Récupère les contrats actifs pendant une année donnée avec la nouvelle structure,
+    triés du plus récent au plus ancien
+    """
+    conn = get_db_connection()
+    if conn is None:
+        return "Échec de connexion à MySQL"
+
+    cursor = conn.cursor()
+
+    # Utiliser la même requête SELECT avec tri par date
+    query = """
+            SELECT eotp, 
+                   nom_du_projet, 
+                   nom_de_la_convention, 
+                   responsable, 
+                   date_debut, 
+                   date_expiration, 
+                   financeur, 
+                   montant
+            FROM contrat
+            WHERE (date_debut IS NULL OR date_debut <= %s)
+              AND (date_expiration IS NULL OR date_expiration >= %s)
+            ORDER BY date_debut DESC, eotp DESC
+            """
+
+    start_of_year = f"{year}-01-01"
+    end_of_year = f"{year}-12-31"
+
+    print(f"DEBUG: Filtrage contrats pour année {year}")
+    print(f"DEBUG: Période: {start_of_year} à {end_of_year}")
+
+    cursor.execute(query, (end_of_year, start_of_year))
+    contrats = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    print(f"DEBUG: Contrats trouvés pour {year}: {len(contrats)}")
+
+    contrats_list = []
+    for contrat in contrats:
+        contrat_list = list(contrat)
+
+        # Formatage des dates (indices 4 et 5)
         date_indices = [4, 5]
         for idx in date_indices:
             if idx < len(contrat_list) and contrat_list[idx]:
@@ -1334,59 +1381,6 @@ def get_available_years_contrats():
         contrat_list = list(contrat)
 
         # Formatage des dates (indices 4 et 5 : date_debut, date_expiration)
-        date_indices = [4, 5]
-        for idx in date_indices:
-            if idx < len(contrat_list) and contrat_list[idx]:
-                contrat_list[idx] = contrat_list[idx].strftime('%d/%m/%Y')
-
-        contrats_list.append(contrat_list)
-
-    return contrats_list
-
-
-def select_contrats_by_year(year):
-    """
-    Récupère les contrats actifs pendant une année donnée avec la nouvelle structure
-    """
-    conn = get_db_connection()
-    if conn is None:
-        return "Échec de connexion à MySQL"
-
-    cursor = conn.cursor()
-
-    # Utiliser la même requête SELECT avec les nouveaux noms de colonnes
-    query = """
-            SELECT eotp, \
-                   nom_du_projet, \
-                   nom_de_la_convention, \
-                   responsable, \
-                   date_debut, \
-                   date_expiration, \
-                   financeur, \
-                   montant
-            FROM contrat
-            WHERE (date_debut IS NULL OR date_debut <= %s)
-              AND (date_expiration IS NULL OR date_expiration >= %s) \
-            """
-
-    start_of_year = f"{year}-01-01"
-    end_of_year = f"{year}-12-31"
-
-    print(f"DEBUG: Filtrage contrats pour année {year}")
-    print(f"DEBUG: Période: {start_of_year} à {end_of_year}")
-
-    cursor.execute(query, (end_of_year, start_of_year))
-    contrats = cursor.fetchall()
-    cursor.close()
-    conn.close()
-
-    print(f"DEBUG: Contrats trouvés pour {year}: {len(contrats)}")
-
-    contrats_list = []
-    for contrat in contrats:
-        contrat_list = list(contrat)
-
-        # Formatage des dates (indices 4 et 5)
         date_indices = [4, 5]
         for idx in date_indices:
             if idx < len(contrat_list) and contrat_list[idx]:
