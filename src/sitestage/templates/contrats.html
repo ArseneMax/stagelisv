@@ -429,8 +429,8 @@
                 <!-- Section des statistiques -->
                 <div class="statistics-section">
                     <div class="stat-card">
-                        <div class="stat-number">{{ contrats|length }}</div>
-                        <div class="stat-label">Contrats totaux</div>
+                        <div class="stat-number" id="currentContracts">0</div>
+                        <div class="stat-label">Contrats en cours</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="currentYearAmount">0 €</div>
@@ -483,11 +483,12 @@
                 <!-- Résultats -->
                 <div style="margin-bottom: 20px;">
                     <strong>{{ contrats|length }}</strong> contrat(s) trouvé(s)
-                    {% if selected_year or request.args.get('eotp') or request.args.get('financeur') %}
+                    {% if selected_year or request.args.get('responsable') %}
                         avec les filtres appliqués
                     {% endif %}
                 </div>
 
+                <div id="saveNotification" class="save-notification">Modifications enregistrées avec succès!</div>
 
                 <!-- Liste des contrats -->
                 {% if contrats %}
@@ -556,7 +557,7 @@
 
                 {% else %}
                 <div class="no-results">
-                    {% if selected_year or request.args.get('eotp') or request.args.get('financeur') %}
+                    {% if selected_year or request.args.get('responsable') %}
                         Aucun contrat trouvé avec les critères sélectionnés.
                     {% else %}
                         Aucun contrat trouvé pour le moment.
@@ -737,6 +738,7 @@
             // Calculer les statistiques modifiées
             document.addEventListener('DOMContentLoaded', function() {
                 let currentYearAmount = 0;
+                let currentContractsCount = 0;
                 const currentYear = new Date().getFullYear();
 
                 // Parcourir tous les contrats pour calculer les statistiques
@@ -776,16 +778,28 @@
                         }
                     }
 
-                    // Vérifier si le contrat est actif pendant l'année en cours
-                    if (contractAmount > 0 && contractStartYear &&
+                    // Vérifier si le contrat est actif pendant l'année en cours (en cours)
+                    if (contractStartYear &&
                         contractStartYear <= currentYear &&
                         (!contractEndYear || contractEndYear >= currentYear)) {
-                        currentYearAmount += contractAmount;
+
+                        // Incrémenter le nombre de contrats en cours
+                        currentContractsCount++;
+
+                        // Ajouter au montant si le montant est valide
+                        if (contractAmount > 0) {
+                            currentYearAmount += contractAmount;
+                        }
                     }
                 });
 
                 // Mettre à jour les statistiques
                 const currentYearAmountElement = document.getElementById('currentYearAmount');
+                const currentContractsElement = document.getElementById('currentContracts');
+
+                if (currentContractsElement) {
+                    currentContractsElement.textContent = currentContractsCount;
+                }
 
                 if (currentYearAmountElement) {
                     currentYearAmountElement.textContent = currentYearAmount.toLocaleString('fr-FR', {
